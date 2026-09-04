@@ -14,6 +14,7 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+  TextEditingController confirmEmailController = TextEditingController();
 
   TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey1 = GlobalKey<FormState>();
@@ -135,6 +136,71 @@ class _RegisterState extends State<Register> {
                           validator: AppValidation.validateEmail,
                           decoration: InputDecoration(
                             hintText: 'Email',
+                            hintStyle: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
+                            fillColor: AppColor.greyColor,
+                            filled: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              borderSide: const BorderSide(color: Colors.red),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              borderSide: const BorderSide(color: Colors.red),
+                            ),
+                            constraints: const BoxConstraints(
+                              maxHeight: 60,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 0),
+                          ),
+                          style: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                          onPressed: () {},
+                          icon: Image.asset(
+                            'lib/assests/images/icon_email.png',
+                            width: 80,
+                            height: 35,
+                          )),
+                      Container(
+                        width: 260,
+                        child: TextFormField(
+                          keyboardType: TextInputType.emailAddress,
+                          cursorColor: Colors.black,
+                          controller: confirmEmailController,
+                          textAlign: TextAlign.center,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Filed Required";
+                            }
+                            if (value.trim().toLowerCase() !=
+                                emailController.text.trim().toLowerCase()) {
+                              return "Emails do not match";
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            hintText: 'Confirm Email',
                             hintStyle: TextStyle(
                               fontSize: 18,
                               color: Colors.black,

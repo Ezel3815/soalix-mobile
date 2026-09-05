@@ -55,7 +55,7 @@ class ApiController {
     }
   }
 
-   static Future<void> register(String username, String email, String password,
+     static Future<void> register(String username, String email, String password,
       BuildContext context) async {
     try {
       final response = await dio.post(
@@ -67,7 +67,11 @@ class ApiController {
         },
       );
       if (response.statusCode == 201) {
-        await login(email, password, context);
+        Map<String, dynamic> json = response.data;
+        Get.offNamed(AppRoutes.mainRoute);
+        sharedPref.setString('token', json['token']);
+        sharedPref.setString(
+            "user", jsonEncode(UserModel.fromJson(json['user'])));
       } else {
         showSnackBarWidget(message: response.data['message'] ?? "");
       }

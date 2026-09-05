@@ -39,9 +39,8 @@ class CardViewScreen extends GetView<CardViewController> {
             child: Obx(
               () => PageView.builder(
                 itemBuilder: (context, index) {
-                  print(controller.getFrontAlign());
                   return SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(20),
                     child: Obx(
                       () => Column(
                         children: [
@@ -54,11 +53,11 @@ class CardViewScreen extends GetView<CardViewController> {
   ''',
                               textStyle: TextStyle(
                                 fontSize: controller.getFrontSize(),
-                                color: Colors.black,
+                                color: AppColor.textPrimary,
                               ),
                             ),
                             if (controller.data.image.isNotEmpty) ...[
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 14),
                               SizedBox(
                                 width: controller.data.imageData.width * width,
                                 height:
@@ -92,13 +91,13 @@ class CardViewScreen extends GetView<CardViewController> {
                             ],
                             if (controller.showAnswer) ...[
                               if (controller.getBackText().isNotEmpty) ...[
-                                const SizedBox(height: 10),
-                                const Divider(
+                                const SizedBox(height: 14),
+                                Divider(
                                   height: 0,
-                                  thickness: 3,
-                                  color: Colors.black,
+                                  thickness: 1,
+                                  color: Colors.black.withOpacity(0.08),
                                 ),
-                                const SizedBox(height: 10),
+                                const SizedBox(height: 14),
                                 HtmlWidget(
                                   '''
   <div style="text-align:${controller.getBackAlign()};" dir="${controller.isArabic(controller.getBackText()) ? 'rtl' : 'ltr'}">
@@ -107,18 +106,18 @@ class CardViewScreen extends GetView<CardViewController> {
   ''',
                                   textStyle: TextStyle(
                                     fontSize: controller.getBackSize(),
-                                    color: Colors.black,
+                                    color: AppColor.textPrimary,
                                   ),
                                 ),
                               ],
                               if (controller.getCommentText().isNotEmpty) ...[
-                                const SizedBox(height: 10),
-                                const Divider(
+                                const SizedBox(height: 14),
+                                Divider(
                                   height: 0,
-                                  thickness: 3,
-                                  color: Colors.black,
+                                  thickness: 1,
+                                  color: Colors.black.withOpacity(0.08),
                                 ),
-                                const SizedBox(height: 10),
+                                const SizedBox(height: 14),
                                 HtmlWidget(
                                   '''
   <div style="text-align:${controller.getCommentAlign()};" dir="${controller.isArabic(controller.getCommentText()) ? 'rtl' : 'ltr'}">
@@ -127,10 +126,10 @@ class CardViewScreen extends GetView<CardViewController> {
   ''',
                                   textStyle: TextStyle(
                                     fontSize: controller.getCommentSize(),
-                                    color: Colors.black,
+                                    color: AppColor.textPrimary,
                                   ),
                                 ),
-                                const SizedBox(height: 10),
+                                const SizedBox(height: 14),
                               ],
                             ],
                           ] else ...[
@@ -142,27 +141,27 @@ class CardViewScreen extends GetView<CardViewController> {
   ''',
                               textStyle: TextStyle(
                                 fontSize: controller.getFrontSize(),
-                                color: Colors.black,
+                                color: AppColor.textPrimary,
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 14),
                             if (controller
                                 .cards[index].frontImageUrl.isNotEmpty)
                               AspectRatio(
                                 aspectRatio: 4 / 3,
                                 child: AppImage(
                                   image: controller.cards[index].frontImageUrl,
-                                  radius: 10,
+                                  radius: 16,
                                 ),
                               ),
                             if (controller.showAnswer) ...[
-                              const SizedBox(height: 10),
-                              const Divider(
+                              const SizedBox(height: 14),
+                              Divider(
                                 height: 0,
-                                thickness: 3,
-                                color: Colors.black,
+                                thickness: 1,
+                                color: Colors.black.withOpacity(0.08),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 14),
                               HtmlWidget(
                                 '''
   <div style="text-align:${controller.getBackAlign()};" dir="${controller.isArabic(controller.getBackText()) ? 'rtl' : 'ltr'}">
@@ -171,26 +170,24 @@ class CardViewScreen extends GetView<CardViewController> {
   ''',
                                 textStyle: TextStyle(
                                   fontSize: controller.getBackSize(),
-                                  color: Colors.black,
+                                  color: AppColor.textPrimary,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 14),
                               if (controller
                                   .cards[index].backImageUrl.isNotEmpty)
                                 AspectRatio(
                                   aspectRatio: 4 / 3,
                                   child: AppImage(
                                     image: controller.cards[index].backImageUrl,
-                                    radius: 10,
+                                    radius: 16,
                                   ),
                                 ),
                             ],
                           ],
                           if (controller
                               .cards[index].documentTitle.isNotEmpty) ...[
-                            const SizedBox(
-                              height: 10,
-                            ),
+                            const SizedBox(height: 14),
                             InkWell(
                               onTap: () async {
                                 if (await isFileValid(controller
@@ -210,33 +207,46 @@ class CardViewScreen extends GetView<CardViewController> {
                                           .cards[index].documentUrl}"));
                                 }
                               },
-                              child: RichText(
-                                text: TextSpan(
-                                  children: [
-                                    const TextSpan(
-                                      text:
-                                          "There is a file for this card named: \n",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 18,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: controller.cards[index].documentTitle,
-                                      style: const TextStyle(
-                                        color: AppColor.greenColor,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 18,
-                                      ),
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(14),
+                                decoration: BoxDecoration(
+                                  color: AppColor.surfaceColor,
+                                  borderRadius: BorderRadius.circular(14),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.06),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 3),
                                     ),
                                   ],
                                 ),
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      const TextSpan(
+                                        text:
+                                            "Attached file: \n",
+                                        style: TextStyle(
+                                          color: AppColor.textSecondary,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: controller.cards[index].documentTitle,
+                                        style: const TextStyle(
+                                          color: AppColor.greenColor,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
-                            const SizedBox(
-                              height: 10,
-                            ),
+                            const SizedBox(height: 14),
                           ],
                           const Divider(
                             height: 0,
@@ -261,12 +271,12 @@ class CardViewScreen extends GetView<CardViewController> {
                   onTap: controller.toggleAnswer,
                   child: Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(16),
                     decoration: const BoxDecoration(
                       color: AppColor.greenColor,
                       borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
+                        topLeft: Radius.circular(24),
+                        topRight: Radius.circular(24),
                       ),
                     ),
                     child: Column(
@@ -275,9 +285,9 @@ class CardViewScreen extends GetView<CardViewController> {
                         Text(
                           controller.showAnswer ? "Hide Answer" : "Show Answer",
                           style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
                           ),
                         ),
                       ],
@@ -286,139 +296,101 @@ class CardViewScreen extends GetView<CardViewController> {
                 );
               } else {
                 if (controller.showAnswer) {
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (controller.cards[controller.pageViewIndex].type ==
-                          "OCCLUSION") ...[
-                        InkWell(
-                          onTap: controller.changeToggleMask,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 4),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(25),
-                              border: Border.all(
-                                color: Colors.grey,
-                                width: 1.0,
+                  return Container(
+                    decoration: const BoxDecoration(
+                      color: AppColor.scaffoldBackgroundColor,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (controller.cards[controller.pageViewIndex].type ==
+                            "OCCLUSION") ...[
+                          const SizedBox(height: 10),
+                          InkWell(
+                            onTap: controller.changeToggleMask,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: AppColor.greenColor,
+                                  width: 1.2,
+                                ),
+                                color: AppColor.surfaceColor,
                               ),
-                              color: const Color(0xFFCFCFCF),
-                            ),
-                            child: const Text(
-                              'Toggle Mask',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
+                              child: const Text(
+                                'Toggle Mask',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColor.greenColor,
+                                ),
                               ),
                             ),
                           ),
+                        ],
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(14, 14, 14, 18),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Expanded(
+                                child: _GradeButton(
+                                  label: "Again",
+                                  color: const Color(0xFFE4574C),
+                                  textColor: Colors.white,
+                                  onTap: () => controller
+                                      .onTapOnStatusButton("AGAIN"),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: _GradeButton(
+                                  label: "Hard",
+                                  color: const Color(0xFFE8A33D),
+                                  textColor: Colors.white,
+                                  onTap: () =>
+                                      controller.onTapOnStatusButton("HARD"),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: _GradeButton(
+                                  label: "Good",
+                                  color: AppColor.greenColor,
+                                  textColor: Colors.white,
+                                  onTap: () =>
+                                      controller.onTapOnStatusButton("GOOD"),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: _GradeButton(
+                                  label: "Easy",
+                                  color: AppColor.lightGreenColor,
+                                  textColor: AppColor.textPrimary,
+                                  onTap: () =>
+                                      controller.onTapOnStatusButton("EASY"),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 10)
                       ],
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                style: const ButtonStyle(
-                                  backgroundColor:
-                                      WidgetStatePropertyAll(Colors.red),
-                                  padding: WidgetStatePropertyAll(
-                                      EdgeInsets.symmetric(vertical: 4)),
-                                ),
-                                onPressed: () =>
-                                    controller.onTapOnStatusButton("AGAIN"),
-                                child: const Text(
-                                  "Again",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: ElevatedButton(
-                                style: const ButtonStyle(
-                                  backgroundColor: WidgetStatePropertyAll(
-                                      AppColor.lightRedColor),
-                                  padding: WidgetStatePropertyAll(
-                                      EdgeInsets.symmetric(vertical: 4)),
-                                ),
-                                onPressed: () =>
-                                    controller.onTapOnStatusButton("HARD"),
-                                child: const Text(
-                                  "Hard",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: ElevatedButton(
-                                style: const ButtonStyle(
-                                  backgroundColor: WidgetStatePropertyAll(
-                                      AppColor.greenColor),
-                                  padding: WidgetStatePropertyAll(
-                                      EdgeInsets.symmetric(vertical: 4)),
-                                ),
-                                onPressed: () =>
-                                    controller.onTapOnStatusButton("GOOD"),
-                                child: const Text(
-                                  "Good",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: ElevatedButton(
-                                style: const ButtonStyle(
-                                  backgroundColor: WidgetStatePropertyAll(
-                                      AppColor.lightGreenColor),
-                                  padding: WidgetStatePropertyAll(
-                                      EdgeInsets.symmetric(vertical: 4)),
-                                ),
-                                onPressed: () =>
-                                    controller.onTapOnStatusButton("EASY"),
-                                child: const Text(
-                                  "Easy",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                    ),
                   );
                 } else {
                   return InkWell(
                     onTap: controller.toggleAnswer,
                     child: Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(16),
                       decoration: const BoxDecoration(
                         color: AppColor.greenColor,
                         borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
+                          topLeft: Radius.circular(24),
+                          topRight: Radius.circular(24),
                         ),
                       ),
                       child: Column(
@@ -429,9 +401,9 @@ class CardViewScreen extends GetView<CardViewController> {
                                 ? "Hide Answer"
                                 : "Show Answer",
                             style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
                             ),
                           ),
                         ],
@@ -444,6 +416,45 @@ class CardViewScreen extends GetView<CardViewController> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _GradeButton extends StatelessWidget {
+  final String label;
+  final Color color;
+  final Color textColor;
+  final VoidCallback onTap;
+
+  const _GradeButton({
+    required this.label,
+    required this.color,
+    required this.textColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: color,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

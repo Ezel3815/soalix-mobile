@@ -15,7 +15,6 @@ class CardScreen extends GetView<CardController> {
     final screenSize = MediaQuery.of(context).size;
     final screenHeight = screenSize.height;
 
-
     return Scaffold(
       drawer: const AppDrawer(),
       key: controller.scaffoldKey,
@@ -23,7 +22,8 @@ class CardScreen extends GetView<CardController> {
       floatingActionButton: !controller.deck.editable
           ? null
           : FloatingActionButton(
-              backgroundColor: AppColor.lightGreenColor,
+              backgroundColor: AppColor.greenColor,
+              elevation: 3,
               onPressed: () {
                 Get.toNamed(
                   AppRoutes.addCardRoute,
@@ -35,8 +35,8 @@ class CardScreen extends GetView<CardController> {
               },
               child: const Icon(
                 Icons.add,
-                size: 30,
-                color: Colors.black,
+                size: 28,
+                color: Colors.white,
               ),
             ),
       body: Container(
@@ -46,94 +46,95 @@ class CardScreen extends GetView<CardController> {
           color: AppColor.scaffoldBackgroundColor,
           image: DecorationImage(
             image: AssetImage('lib/assests/images/background_5.jpg'),
-            fit: BoxFit.fill, // يمكنك تعديل هذا الخيار حسب الحاجة
+            fit: BoxFit.fill,
           ),
         ),
         child: SafeArea(
           child: Column(
             children: [
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                children: [
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  InkWell(
-                    onTap: () => Get.back(),
-                    child: const Icon(
-                      Icons.arrow_back,
-                      size: 35,
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Image.asset(
-                        height: 30,
-                        width: 100,
-                        'lib/assests/images/logodeck.png',
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    InkWell(
+                      onTap: () => Get.back(),
+                      child: const Icon(
+                        Icons.arrow_back,
+                        size: 26,
+                        color: AppColor.textPrimary,
                       ),
-                      Text(
-                        "Add Cards",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black.withOpacity(.4),
+                    ),
+                    const SizedBox(width: 14),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Image.asset(
+                          height: 28,
+                          width: 100,
+                          fit: BoxFit.contain,
+                          alignment: Alignment.centerLeft,
+                          'lib/assests/images/logodeck.png',
                         ),
-                      )
-                    ],
-                  ),
-                  const Spacer(),
-                  if (controller.deck.editable)
-                    IconButton(
-                      onPressed: () {
-                        controller.editDeckController.text =
-                            controller.deck.title;
-                        Get.dialog(const EditDeckDialog());
-                      },
-                      icon: const Icon(
-                        Icons.edit,
-                      ),
+                        const SizedBox(height: 2),
+                        const Text(
+                          "Cards",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColor.textSecondary,
+                          ),
+                        ),
+                      ],
                     ),
-                  // IconButton(
-                  //   onPressed: () {
-                  //     Get.dialog(
-                  //        DeleteDialog(
-                  //         title: "Are you sure you want to delete this deck ?",
-                  //          onTapDelete: controller.deleteDeck,
-                  //       ),
-                  //     );
-                  //   },
-                  //   icon: const Icon(
-                  //     Icons.delete_forever,
-                  //     color: Colors.red,
-                  //   ),
-                  // ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                ],
+                    const Spacer(),
+                    if (controller.deck.editable)
+                      InkWell(
+                        onTap: () {
+                          controller.editDeckController.text =
+                              controller.deck.title;
+                          Get.dialog(const EditDeckDialog());
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColor.surfaceColor,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.06),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.chevron_right,
+                            size: 22,
+                            color: AppColor.textPrimary,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-              const SizedBox(
-                height: 30,
-              ),
+              const SizedBox(height: 24),
               Obx(
                 () => Expanded(
                   child: controller.loading
-                      ? const Center(child: CircularProgressIndicator())
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: AppColor.greenColor,
+                          ),
+                        )
                       : controller.cards.isEmpty
                           ? const Center(
                               child: Text(
-                                "No Data Found",
+                                "No cards yet",
                                 style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColor.textSecondary,
                                 ),
                               ),
                             )
@@ -141,6 +142,7 @@ class CardScreen extends GetView<CardController> {
                               () => ListView.separated(
                                 padding: const EdgeInsets.only(bottom: 20),
                                 itemBuilder: (context, index) => InkWell(
+                                  borderRadius: BorderRadius.circular(16),
                                   onTap: () {
                                     Get.toNamed(
                                       AppRoutes.cardViewRoute,
@@ -163,19 +165,6 @@ class CardScreen extends GetView<CardController> {
                             ),
                 ),
               ),
-              // const Row(
-              //   children: [
-              //     SizedBox(
-              //       width: 10,
-              //     ),
-              //     Text(
-              //         textAlign: TextAlign.left,
-              //         'studied 0 cards in 0 seconds today (0s/card)',
-              //         style: TextStyle(
-              //             fontSize: 16,
-              //             color: Colors.black)),
-              //   ],
-              // )
             ],
           ),
         ),

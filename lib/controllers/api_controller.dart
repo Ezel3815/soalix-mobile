@@ -55,7 +55,7 @@ class ApiController {
     }
   }
 
-  static Future<void> register(String username, String email, String password,
+   static Future<void> register(String username, String email, String password,
       BuildContext context) async {
     try {
       final response = await dio.post(
@@ -66,9 +66,8 @@ class ApiController {
           'password': password,
         },
       );
-
       if (response.statusCode == 201) {
-        Get.toNamed(AppRoutes.activateCodeRoute);
+        await login(email, password, context);
       } else {
         showSnackBarWidget(message: response.data['message'] ?? "");
       }
@@ -81,7 +80,6 @@ class ApiController {
       }
     }
   }
-
   static Future<void> activate(
       String code, String email, BuildContext context) async {
     try {

@@ -19,6 +19,7 @@ class _RegisterState extends State<Register> {
   TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey1 = GlobalKey<FormState>();
   bool isPasswordValid = false;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -317,23 +318,42 @@ class _RegisterState extends State<Register> {
                         width: 220,
                         height: 40,
                         child: InkWell(
-                          onTap: () async {
-                            if (_formKey1.currentState!.validate()) {
-                              await ApiController.register(
-                                  usernameController.text,
-                                  emailController.text,
-                                  passwordController.text,
-                                  context);
-                            }
-                          },
-                          child: const Center(
-                              child: Text(
-                            'Register',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.black,
-                            ),
-                          )),
+                          onTap: isLoading
+                              ? null
+                              : () async {
+                                  if (_formKey1.currentState!.validate()) {
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+                                    await ApiController.register(
+                                        usernameController.text,
+                                        emailController.text,
+                                        passwordController.text,
+                                        context);
+                                    if (mounted) {
+                                      setState(() {
+                                        isLoading = false;
+                                      });
+                                    }
+                                  }
+                                },
+                          child: Center(
+                              child: isLoading
+                                  ? const SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                        color: Colors.black,
+                                      ),
+                                    )
+                                  : const Text(
+                                      'Register',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.black,
+                                      ),
+                                    )),
                         ),
                       ),
                     ],

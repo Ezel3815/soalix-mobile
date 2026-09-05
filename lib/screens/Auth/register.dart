@@ -313,7 +313,7 @@ class _RegisterState extends State<Register> {
                           borderRadius: BorderRadius.circular(25),
                           color: isPasswordValid
                               ? AppColor.greenColor
-                              : AppColor.darkGreenColor,
+                              : AppColor.disabledColor,
                         ),
                         width: 220,
                         height: 40,

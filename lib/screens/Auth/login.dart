@@ -26,9 +26,62 @@ class _RegisterState extends State<Login> {
     });
     await ApiController.login(
         emailController.text, passwordController.text, context);
-    setState(() {
-      loading = false;
-    });
+    if (mounted) {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
+
+  InputDecoration _fieldDecoration(String hint) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(
+        fontSize: 15,
+        color: AppColor.textSecondary,
+        fontWeight: FontWeight.w400,
+      ),
+      filled: true,
+      fillColor: AppColor.surfaceColor,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AppColor.greenColor, width: 1.5),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: Colors.redAccent, width: 1.2),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
+      ),
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+    );
+  }
+
+  Widget _fieldWrapper({required Widget child}) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: child,
+    );
   }
 
   @override
@@ -44,7 +97,7 @@ class _RegisterState extends State<Login> {
             color: AppColor.scaffoldBackgroundColor,
             image: DecorationImage(
               image: AssetImage('lib/assests/images/background_5.jpg'),
-              fit: BoxFit.fill, // يمكنك تعديل هذا الخيار حسب الحاجة
+              fit: BoxFit.fill,
             ),
           ),
         ),
@@ -54,240 +107,151 @@ class _RegisterState extends State<Login> {
             key: _formKey1,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 28),
               child: Column(
-                // crossAxisAlignment: CrossAxisAlignment.center,
-                //mainAxisSize: MainAxisSize.min,
-
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(
-                    height: 45,
-                  ),
+                  const SizedBox(height: 40),
                   Image.asset(
                     "lib/assests/images/ddd.png",
                   ),
+                  const SizedBox(height: 8),
                   const Text(
                     'Login',
-                    style: TextStyle(fontSize: 30, color: Colors.black),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                      color: AppColor.textPrimary,
+                      letterSpacing: -0.3,
+                    ),
                   ),
+                  const SizedBox(height: 6),
                   const Text(
                     'Sign in to continue',
-                    style: TextStyle(fontSize: 20, color: Colors.black),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: AppColor.textSecondary,
+                    ),
                   ),
-                  Row(
-                    children: [
-                      IconButton(
-                          onPressed: () {},
-                          icon: Image.asset(
-                            'lib/assests/images/icon_email.png',
-                            width: 80,
-                            height: 35,
-                          )),
-                      SizedBox(
-                        width: 260,
-                        child: TextFormField(
-                          cursorColor: Colors.black,
-                          keyboardType: TextInputType.emailAddress,
-                          textAlign: TextAlign.center,
-                          controller: emailController,
-                          validator: AppValidation.validateEmail,
-                          decoration: InputDecoration(
-                            hintText: 'Email',
-                            hintStyle: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.black,
-                            ),
-                            fillColor: AppColor.greyColor,
-                            filled: true,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            focusedErrorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25),
-                              borderSide: const BorderSide(color: Colors.red),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25),
-                              borderSide: const BorderSide(color: Colors.red),
-                            ),
-                            constraints: const BoxConstraints(
-                              maxHeight: 60,
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 0),
-                          ),
-                          style: const TextStyle(
-                            fontSize: 20,
-                            color: Colors.black,
-                          ),
+                  const SizedBox(height: 28),
+                  _fieldWrapper(
+                    child: TextFormField(
+                      cursorColor: AppColor.greenColor,
+                      keyboardType: TextInputType.emailAddress,
+                      controller: emailController,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: AppColor.textPrimary,
+                      ),
+                      validator: AppValidation.validateEmail,
+                      decoration: _fieldDecoration('Email'),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  _fieldWrapper(
+                    child: TextFormField(
+                      controller: passwordController,
+                      obscureText: true,
+                      cursorColor: AppColor.greenColor,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: AppColor.textPrimary,
+                      ),
+                      onChanged: (value) {
+                        isPasswordValid =
+                            value.isNotEmpty && value.length >= 6;
+                        setState(() {});
+                      },
+                      validator: AppValidation.validatePassword,
+                      decoration: _fieldDecoration('Password'),
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  SizedBox(
+                    height: 52,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isPasswordValid
+                            ? AppColor.greenColor
+                            : AppColor.disabledColor,
+                        foregroundColor: Colors.white,
+                        elevation: isPasswordValid ? 3 : 0,
+                        shadowColor: AppColor.greenColor.withOpacity(0.4),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                    ],
+                      onPressed: loading
+                          ? null
+                          : () {
+                              if (_formKey1.currentState!.validate()) {
+                                onTapLogin();
+                              }
+                            },
+                      child: loading
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text(
+                              'Login',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                    ),
                   ),
-                  Row(
-                    children: [
-                      IconButton(
-                          onPressed: () {},
-                          icon: Image.asset(
-                            'lib/assests/images/icon_password.png',
-                            width: 80,
-                            height: 35,
-                          )),
-                      SizedBox(
-                        width: 260,
-                        child: TextFormField(
-                          controller: passwordController,
-                          obscureText: true,
-                          cursorColor: Colors.black,
-                          textAlign: TextAlign.center,
-                          onChanged: (value) {
-                            isPasswordValid =
-                                value.isNotEmpty && value.length >= 6;
-                            setState(() {});
-                          },
-                          validator: AppValidation.validatePassword,
-                          decoration: InputDecoration(
-                            hintText: 'Password',
-                            hintStyle: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.black,
-                            ),
-                            fillColor: AppColor.greyColor,
-                            filled: true,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            focusedErrorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25),
-                              borderSide: const BorderSide(color: Colors.red),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25),
-                              borderSide: const BorderSide(color: Colors.red),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 0,
-                            ),
-                          ),
-                          style: const TextStyle(
-                            fontSize: 20,
-                            color: Colors.black,
-                          ),
+                  const SizedBox(height: 18),
+                  Center(
+                    child: InkWell(
+                      onTap: () {
+                        Get.toNamed(AppRoutes.forgetPassowrdRoute);
+                      },
+                      child: const Text(
+                        'Forgot Password',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColor.greenColor,
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 12),
                   Row(
-                    mainAxisAlignment: loading
-                        ? MainAxisAlignment.center
-                        : MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(
-                        width: 100,
+                      const Text(
+                        "Don't have an account? ",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColor.textSecondary,
+                        ),
                       ),
                       InkWell(
                         onTap: () {
-                          if (_formKey1.currentState!.validate()) {
-                            onTapLogin();
-                          }
-                        },
-                        child: loading
-                            ? const Center(child: CircularProgressIndicator())
-                            : Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(25),
-                                  color: isPasswordValid
-                                      ? AppColor.greenColor
-                                      : AppColor.darkGreenColor,
-                                ),
-                                width: 220,
-                                height: 40,
-                                child: const Center(
-                                    child: Text(
-                                  'Login',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.black,
-                                  ),
-                                )),
-                              ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
-                      const SizedBox(
-                        width: 110,
-                      ),
-                      Center(
-                          child: InkWell(
-                        onTap: () {
-                          Get.toNamed(AppRoutes.forgetPassowrdRoute);
-                          // Navigator.of(context).push(MaterialPageRoute(
-                          //     builder: (context) => const ForgotPassword()));
-                        },
-                        child: const Text(
-                          'Forgot Password',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ))
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const SizedBox(
-                        width: 110,
-                      ),
-                      const Center(
-                          child: Text(
-                        'Don`t have an account ?',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black,
-                        ),
-                      )),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Center(
-                          child: InkWell(
-                        onTap: () {
                           Get.toNamed(AppRoutes.registerRoute);
-                          // Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          //     builder: (context) => const Register()));
                         },
                         child: const Text(
                           'Register',
                           style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.black,
-                            decoration: TextDecoration.underline,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: AppColor.greenColor,
                           ),
                         ),
-                      ))
+                      ),
                     ],
                   ),
+                  const SizedBox(height: 24),
                 ],
               ),
             ),

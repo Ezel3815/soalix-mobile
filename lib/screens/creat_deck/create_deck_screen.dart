@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:upgrade/controllers/create_deck_controller.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
@@ -18,7 +19,7 @@ class CreateDeckScreen extends GetView<CreateDeckController> {
             color: AppColor.scaffoldBackgroundColor,
             image: DecorationImage(
               image: AssetImage('lib/assests/images/background_5.jpg'),
-              fit: BoxFit.fill, // يمكنك تعديل هذا الخيار حسب الحاجة
+              fit: BoxFit.fill,
             ),
           ),
         ),
@@ -29,74 +30,112 @@ class CreateDeckScreen extends GetView<CreateDeckController> {
           body: SafeArea(
             child: Column(
               children: [
-                const SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  children: [
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    InkWell(
-                      onTap: () =>
-                          controller.scaffoldKey.currentState?.openDrawer(),
-                      child: const Icon(
-                        Icons.dehaze,
-                        size: 35,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Image.asset(
-                          height: 30,
-                          width: 100,
-                          'lib/assests/images/logodeck.png',
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    children: [
+                      InkWell(
+                        onTap: () => controller.scaffoldKey.currentState
+                            ?.openDrawer(),
+                        child: const Icon(
+                          Icons.dehaze,
+                          size: 28,
+                          color: AppColor.textPrimary,
                         ),
-                        Text(
-                          "Create Deck",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black.withOpacity(.4),
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 250,
-                ),
-                InkWell(
-                  onTap: () {
-                    _showMyDialog(context);
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(
-                        color: Colors.grey,
-                        width: 1.0,
                       ),
-                      color: AppColor.greyColor,
-                    ),
-                    width: 300,
-                    child: const Center(
-                        child: Text(
-                      'Create deck',
-                      style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
+                      const SizedBox(width: 14),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Image.asset(
+                            height: 28,
+                            width: 100,
+                            fit: BoxFit.contain,
+                            alignment: Alignment.centerLeft,
+                            'lib/assests/images/logodeck.png',
                           ),
-                    )),
+                          const SizedBox(height: 2),
+                          const Text(
+                            "Create Deck",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColor.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(
-                  height: 40,
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 88,
+                          height: 88,
+                          decoration: BoxDecoration(
+                            color: AppColor.greenColor.withOpacity(0.12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            PhosphorIcons.folderPlus(PhosphorIconsStyle.bold),
+                            size: 40,
+                            color: AppColor.greenColor,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        const Text(
+                          "Start a new deck",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            color: AppColor.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 40),
+                          child: Text(
+                            "Organize your flashcards into a deck to start studying",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColor.textSecondary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        SizedBox(
+                          width: 240,
+                          height: 52,
+                          child: ElevatedButton(
+                            onPressed: () => _showMyDialog(context),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColor.greenColor,
+                              foregroundColor: Colors.white,
+                              elevation: 3,
+                              shadowColor:
+                                  AppColor.greenColor.withOpacity(0.4),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            child: const Text(
+                              'Create Deck',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -110,91 +149,133 @@ class CreateDeckScreen extends GetView<CreateDeckController> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return SizedBox(
-          height: 300,
-          width: 300,
-          child: Form(
-            key: controller.formKey,
-            child: AlertDialog(
-              backgroundColor: AppColor.scaffoldBackgroundColor,
-              title: const Text(
-                'Create deck',
-                style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.black,
-                  ),
-              ),
-              content: Column(
+        return Dialog(
+          backgroundColor: AppColor.scaffoldBackgroundColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Form(
+              key: controller.formKey,
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const SizedBox(
-                    height: 10,
+                  const Text(
+                    'New Deck',
+                    style: TextStyle(
+                      fontSize: 19,
+                      fontWeight: FontWeight.w700,
+                      color: AppColor.textPrimary,
+                    ),
                   ),
-                  TextFormField(
-                    controller: controller.deckController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "This field is required.";
-                      }
-                      return null;
-                    },
-                    cursorColor: Colors.black,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 16),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+                  const SizedBox(height: 20),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.06),
+                          blurRadius: 10,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: TextFormField(
+                      controller: controller.deckController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "This field is required.";
+                        }
+                        return null;
+                      },
+                      cursorColor: AppColor.greenColor,
+                      decoration: InputDecoration(
+                        hintText: "Deck name",
+                        hintStyle: const TextStyle(
+                          color: AppColor.textSecondary,
+                          fontSize: 15,
+                        ),
+                        filled: true,
+                        fillColor: AppColor.surfaceColor,
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 18, vertical: 14),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: const BorderSide(
+                              color: AppColor.greenColor, width: 1.5),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide:
+                              const BorderSide(color: Colors.redAccent),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: const BorderSide(
+                              color: Colors.redAccent, width: 1.5),
+                        ),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.red),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.red),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: AppColor.textPrimary,
                       ),
                     ),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        fontSize: 20,
-                        color: Colors.black,
                   ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextButton(
+                          onPressed: () => Get.back(),
+                          style: TextButton.styleFrom(
+                            padding:
+                                const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: AppColor.textSecondary,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: controller.createDeck,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColor.greenColor,
+                            foregroundColor: Colors.white,
+                            padding:
+                                const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Create',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(
-                    height: 40,
-                  )
                 ],
               ),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text(
-                    'Cancel',
-                    style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black,
-                 ),
-                  ),
-                  onPressed: () {
-                    Get.back();
-                  },
-                ),
-                TextButton(
-                  onPressed: controller.createDeck,
-                  child: const Text(
-                    'Ok',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ],
             ),
           ),
         );

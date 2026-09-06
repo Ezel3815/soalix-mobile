@@ -20,5 +20,10 @@ class Api {
 
   static String getCards(int id) => '$baseUrl/cards/$id';
   static const String getDocument = '$baseUrl/media/documents';
-  static  String answerCard(int id) => '$baseUrl/cards/answer/$id';
+   static  String answerCard(int id) => '$baseUrl/cards/answer/$id';
+  static String getProfile(int id) => '$baseUrl/users/$id/profile';
+  static String followUser(int id) => '$baseUrl/users/$id/follow';
+  static String unfollowUser(int id) => '$baseUrl/users/$id/follow';
+  static const String updateProfile = '$baseUrl/users/me/profile';
+}
 }

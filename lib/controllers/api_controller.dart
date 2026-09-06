@@ -11,6 +11,7 @@ import 'package:upgrade/di.dart';
 import 'package:upgrade/entity/card_entity.dart';
 import 'package:upgrade/entity/deck_entity.dart';
 import 'package:upgrade/entity/document_entity.dart';
+import 'package:upgrade/entity/profile_entity.dart';
 import 'package:upgrade/mapper/app_mapper.dart';
 import 'package:upgrade/models/card_model.dart';
 import 'package:upgrade/models/deck_model.dart';
@@ -684,6 +685,104 @@ class ApiController {
         showSnackBarWidget(message: ErrorHandler.handle(e).failure.message ?? "");
       }
     }
+  }
+
+  static Future<ProfileEntity?> getProfile(int id) async {
+    try {
+      final response = await dio.get(
+        Api.getProfile(id),
+        options: GetOptions.getOptions(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return ProfileEntity.fromJson(response.data);
+      } else {
+        showSnackBarWidget(message: response.data['message'] ?? "");
+      }
+    } catch (e) {
+      if (ErrorHandler.handle(e).failure.code != -6) {
+        showSnackBarWidget(
+            message: ErrorHandler.handle(e).failure.message ?? "");
+      }
+    }
+    return null;
+  }
+
+  static Future<bool> followUser(int id) async {
+    try {
+      final response = await dio.post(
+        Api.followUser(id),
+        options: GetOptions.getOptions(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        showSnackBarWidget(message: response.data['message'] ?? "");
+      }
+    } catch (e) {
+      if (ErrorHandler.handle(e).failure.code != -6) {
+        showSnackBarWidget(
+            message: ErrorHandler.handle(e).failure.message ?? "");
+      }
+    }
+    return false;
+  }
+
+  static Future<bool> unfollowUser(int id) async {
+    try {
+      final response = await dio.delete(
+        Api.unfollowUser(id),
+        options: GetOptions.getOptions(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        showSnackBarWidget(message: response.data['message'] ?? "");
+      }
+    } catch (e) {
+      if (ErrorHandler.handle(e).failure.code != -6) {
+        showSnackBarWidget(
+            message: ErrorHandler.handle(e).failure.message ?? "");
+      }
+    }
+    return false;
+  }
+
+  static Future<bool> updateProfile({
+    String? username,
+    String? avatarHair,
+    String? avatarHairColor,
+    String? avatarSkinColor,
+    String? avatarClothingColor,
+    bool? avatarGlasses,
+  }) async {
+    try {
+      final Map<String, dynamic> data = {};
+      if (username != null) data['username'] = username;
+      if (avatarHair != null) data['avatar_hair'] = avatarHair;
+      if (avatarHairColor != null) data['avatar_hair_color'] = avatarHairColor;
+      if (avatarSkinColor != null) data['avatar_skin_color'] = avatarSkinColor;
+      if (avatarClothingColor != null) {
+        data['avatar_clothing_color'] = avatarClothingColor;
+      }
+      if (avatarGlasses != null) data['avatar_glasses'] = avatarGlasses;
+
+      final response = await dio.put(
+        Api.updateProfile,
+        data: data,
+        options: GetOptions.getOptions(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        showSnackBarWidget(message: response.data['message'] ?? "");
+      }
+    } catch (e) {
+      if (ErrorHandler.handle(e).failure.code != -6) {
+        showSnackBarWidget(
+            message: ErrorHandler.handle(e).failure.message ?? "");
+      }
+    }
+    return false;
   }
 
   static logout() async {

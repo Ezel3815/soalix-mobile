@@ -1,0 +1,67 @@
+class ProfileEntity {
+  final int id;
+  final String name;
+  final String email;
+  final String? username;
+  final String? avatarHair;
+  final String? avatarHairColor;
+  final String? avatarSkinColor;
+  final String? avatarClothingColor;
+  final bool avatarGlasses;
+  final int currentStreak;
+  final int followersCount;
+  final int followingCount;
+  final bool isFollowing;
+  final bool isFriend;
+
+  ProfileEntity({
+    required this.id,
+    required this.name,
+    required this.email,
+    this.username,
+    this.avatarHair,
+    this.avatarHairColor,
+    this.avatarSkinColor,
+    this.avatarClothingColor,
+    required this.avatarGlasses,
+    required this.currentStreak,
+    required this.followersCount,
+    required this.followingCount,
+    required this.isFollowing,
+    required this.isFriend,
+  });
+
+  factory ProfileEntity.fromJson(Map<String, dynamic> json) {
+    return ProfileEntity(
+      id: json['id'],
+      name: json['name'] ?? '',
+      email: json['email'] ?? '',
+      username: json['username'],
+      avatarHair: json['avatar_hair'],
+      avatarHairColor: json['avatar_hair_color'],
+      avatarSkinColor: json['avatar_skin_color'],
+      avatarClothingColor: json['avatar_clothing_color'],
+      avatarGlasses: json['avatar_glasses'] ?? false,
+      currentStreak: json['current_streak'] ?? 0,
+      followersCount: json['followersCount'] ?? 0,
+      followingCount: json['followingCount'] ?? 0,
+      isFollowing: json['isFollowing'] ?? false,
+      isFriend: json['isFriend'] ?? false,
+    );
+  }
+
+  /// Builds the DiceBear "Personas" avatar URL for this profile.
+  String get avatarUrl {
+    final params = <String, String>{
+      'seed': id.toString(),
+      if (avatarHair != null) 'hair': avatarHair!,
+      if (avatarHairColor != null) 'hairColor': avatarHairColor!,
+      if (avatarSkinColor != null) 'skinColor': avatarSkinColor!,
+      if (avatarClothingColor != null) 'clothingColor': avatarClothingColor!,
+      'glassesProbability': avatarGlasses ? '100' : '0',
+    };
+    final query =
+        params.entries.map((e) => '${e.key}=${e.value}').join('&');
+    return 'https://api.dicebear.com/9.x/personas/svg?$query';
+  }
+}

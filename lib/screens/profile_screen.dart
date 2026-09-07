@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:upgrade/api.dart';
 import 'package:upgrade/controllers/profile_controller.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
+import 'package:upgrade/widgets/app_image.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -88,16 +89,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                             Center(
-                              child: SizedBox(
+                              child: Container(
                                 width: 160,
                                 height: 160,
-                                child: SvgPicture.network(
-                                  profile.avatarUrl,
-                                  placeholderBuilder: (context) => const Center(
-                                    child: CircularProgressIndicator(
-                                      color: AppColor.greenColor,
-                                    ),
-                                  ),
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.white,
+                                ),
+                                child: ClipOval(
+                                  child: (profile.avatarPhotoName != null &&
+                                          profile.avatarPhotoName!.isNotEmpty)
+                                      ? AppImage(
+                                          image: profile.avatarPhotoName!,
+                                          width: 160,
+                                          height: 160,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Icon(
+                                          PhosphorIcons.userCircle(
+                                              PhosphorIconsStyle.light),
+                                          size: 100,
+                                          color: AppColor.greenColor,
+                                        ),
                                 ),
                               ),
                             ),
@@ -111,9 +124,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       right: 0,
                       child: Center(
                         child: InkWell(
-                          onTap: () {
-                            // Avatar editor screen — next step
-                          },
+                          onTap: controller.uploadingPhoto.value
+                              ? null
+                              : controller.pickAndUploadAvatar,
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
@@ -131,15 +144,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
-                                  PhosphorIcons.pencilSimple(
-                                      PhosphorIconsStyle.bold),
-                                  size: 14,
-                                  color: Colors.white,
-                                ),
+                                controller.uploadingPhoto.value
+                                    ? const SizedBox(
+                                        width: 14,
+                                        height: 14,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : Icon(
+                                        PhosphorIcons.camera(
+                                            PhosphorIconsStyle.bold),
+                                        size: 14,
+                                        color: Colors.white,
+                                      ),
                                 const SizedBox(width: 6),
                                 const Text(
-                                  "Edit Avatar",
+                                  "Change Photo",
                                   style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,

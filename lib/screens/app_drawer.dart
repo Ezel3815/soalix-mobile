@@ -77,9 +77,9 @@ class AppDrawer extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 leading: iconBadge(
-                  PhosphorIcons.fileText(PhosphorIconsStyle.bold),
+                  PhosphorIcons.userCircle(PhosphorIconsStyle.bold),
                 ),
-                title: Text("Document", style: itemStyle()),
+                title: Text("Profile", style: itemStyle()),
                 onTap: () {
                   Get.back();
                   Get.until(

@@ -13,6 +13,7 @@ class ProfileEntity {
   final int followingCount;
   final bool isFollowing;
   final bool isFriend;
+  final DateTime? createdAt;
 
   ProfileEntity({
     required this.id,
@@ -29,6 +30,7 @@ class ProfileEntity {
     required this.followingCount,
     required this.isFollowing,
     required this.isFriend,
+    this.createdAt,
   });
 
   factory ProfileEntity.fromJson(Map<String, dynamic> json) {
@@ -47,6 +49,9 @@ class ProfileEntity {
       followingCount: json['followingCount'] ?? 0,
       isFollowing: json['isFollowing'] ?? false,
       isFriend: json['isFriend'] ?? false,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'])
+          : null,
     );
   }
 

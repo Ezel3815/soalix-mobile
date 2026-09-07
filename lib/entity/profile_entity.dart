@@ -55,18 +55,7 @@ class ProfileEntity {
     );
   }
 
-  /// Builds the DiceBear "Personas" avatar URL for this profile.
-  String get avatarUrl {
-    final params = <String, String>{
-      'seed': id.toString(),
-      if (avatarHair != null) 'hair': avatarHair!,
-      if (avatarHairColor != null) 'hairColor': avatarHairColor!,
-      if (avatarSkinColor != null) 'skinColor': avatarSkinColor!,
-      if (avatarClothingColor != null) 'clothingColor': avatarClothingColor!,
-      'glassesProbability': avatarGlasses ? '100' : '0',
-    };
-    final query =
-        params.entries.map((e) => '${e.key}=${e.value}').join('&');
-    return 'https://api.dicebear.com/9.x/personas/svg?$query';
-  }
+  /// Returns the profile photo URL if one has been uploaded (stored in
+  /// avatar_hair, reusing the existing media upload system), otherwise null.
+  String? get avatarPhotoName => avatarHair;
 }

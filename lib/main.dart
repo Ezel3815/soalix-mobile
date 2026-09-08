@@ -146,6 +146,8 @@ class AnimatedLogosState extends State<AnimatedLogos>
 }
 
 class AppRoutes {
+  static const String searchUsersRoute = "/searchUsersRoute";
+  static const String viewProfileRoute = "/viewProfileRoute";
   static const String splashRoute = "/";
   static const String onboardingRoute = "/onbordingRoute";
   static const String cardRoute = "/cardRoute";

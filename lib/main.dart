@@ -162,6 +162,8 @@ class AppRoutes {
   static const String mainRoute = "/mainRoute";
 
   static final List<GetPage> pages = [
+    GetPage(name: searchUsersRoute, page: () => const SearchUsersScreen()),
+    GetPage(name: viewProfileRoute, page: () => ProfileScreen(userId: Get.arguments)),
     GetPage(
       name: splashRoute,
       page: () => const AnimatedLogos(),

@@ -7,55 +7,63 @@ import 'package:upgrade/main.dart';
 import 'package:upgrade/models/user_model.dart';
 
 class ProfileController extends GetxController {
+  final int? targetUserId;
+  ProfileController({this.targetUserId});
+
   final Rx<ProfileEntity?> profile = Rx<ProfileEntity?>(null);
   final RxBool loading = false.obs;
   final RxBool uploadingPhoto = false.obs;
   int? myId;
 
+  bool get isOwnProfile => targetUserId == null || targetUserId == myId;
+
   @override
   void onInit() {
-    loadMyProfile();
+    myId = getMyId();
+    load();
     super.onInit();
   }
 
   int? getMyId() {
     final userJson = sharedPref.getString("user");
     if (userJson == null) return null;
-    final user = UserModel.fromJson(jsonDecode(userJson));
-    return user.id;
+    return UserModel.fromJson(jsonDecode(userJson)).id;
   }
 
-  Future<void> loadMyProfile() async {
-    myId = getMyId();
-    if (myId == null) return;
+  Future<void> load() async {
+    final id = targetUserId ?? myId;
+    if (id == null) return;
     loading.value = true;
-    profile.value = await ApiController.getProfile(myId!);
+    profile.value = await ApiController.getProfile(id);
     loading.value = false;
   }
 
-  Future<void> toggleFollow(int targetUserId) async {
+  Future<void> toggleFollow() async {
     if (profile.value == null) return;
+    final id = profile.value!.id;
     if (profile.value!.isFollowing) {
-      await ApiController.unfollowUser(targetUserId);
+      await ApiController.unfollowUser(id);
     } else {
-      await ApiController.followUser(targetUserId);
+      await ApiController.followUser(id);
     }
-    profile.value = await ApiController.getProfile(targetUserId);
+    profile.value = await ApiController.getProfile(id);
   }
 
   Future<void> pickAndUploadAvatar() async {
     final pickedFile = await ImagePicker()
         .pickImage(source: ImageSource.gallery, imageQuality: 50);
     if (pickedFile == null) return;
-
     uploadingPhoto.value = true;
     final imageName = await ApiController.uploadImage(pickedFile.path);
     if (imageName != null) {
       await ApiController.updateProfile(avatarHair: imageName);
-      if (myId != null) {
-        profile.value = await ApiController.getProfile(myId!);
-      }
+      await load();
     }
     uploadingPhoto.value = false;
+  }
+
+  Future<void> updateUsername(String username) async {
+    final success = await ApiController.updateProfile(username: username);
+    if (success) await load();
   }
 }

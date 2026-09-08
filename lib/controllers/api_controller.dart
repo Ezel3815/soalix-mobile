@@ -785,6 +785,25 @@ class ApiController {
     return false;
   }
 
+    static Future<List<ProfileEntity>> searchUsers(String query) async {
+    try {
+      final response = await dio.get(
+        Api.searchUsers,
+        queryParameters: {'q': query},
+        options: GetOptions.getOptions(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return (response.data as List)
+            .map((e) => ProfileEntity.fromJson(e))
+            .toList();
+      }
+    } catch (e) {
+      if (ErrorHandler.handle(e).failure.code != -6) {
+        showSnackBarWidget(message: ErrorHandler.handle(e).failure.message ?? "");
+      }
+    }
+    return [];
+  }
   static logout() async {
     await sharedPref.remove("token");
     Get.offAllNamed(AppRoutes.loginRoute);

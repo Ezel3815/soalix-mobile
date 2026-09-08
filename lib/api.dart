@@ -1,4 +1,6 @@
 class Api {
+  static const String searchUsers = '$baseUrl/users/search';
+  static String viewProfile(int id) => '$baseUrl/users/$id/profile';
   static const String baseUrl = 'https://soalix-backend.onrender.com';
   static const String imageUrl = '$baseUrl/public/';
   static const String login = '$baseUrl/auth/login';

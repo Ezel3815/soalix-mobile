@@ -63,7 +63,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     Container(
                       width: double.infinity,
-                      height: 280,
+                      height: 260,
                       decoration: const BoxDecoration(
                         color: AppColor.lightGreenColor,
                       ),
@@ -80,14 +80,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   child: Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.5),
+                                      color: Colors.white.withOpacity(0.6),
                                       shape: BoxShape.circle,
                                     ),
                                     child: Icon(
                                       PhosphorIcons.magnifyingGlass(
                                           PhosphorIconsStyle.bold),
                                       size: 22,
-                                      color: AppColor.textPrimary,
+                                      color: AppColor.darkGreenColor,
                                     ),
                                   ),
                                 ),
@@ -103,14 +103,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   child: Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.5),
+                                      color: Colors.white.withOpacity(0.6),
                                       shape: BoxShape.circle,
                                     ),
                                     child: Icon(
                                       PhosphorIcons.gearSix(
                                           PhosphorIconsStyle.bold),
                                       size: 22,
-                                      color: AppColor.textPrimary,
+                                      color: AppColor.darkGreenColor,
                                     ),
                                   ),
                                 ),
@@ -118,27 +118,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             Center(
                               child: Container(
-                                width: 160,
-                                height: 160,
-                                decoration: const BoxDecoration(
+                                width: 152,
+                                height: 152,
+                                decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: Colors.white,
+                                  border: Border.all(
+                                    color: AppColor.greenColor,
+                                    width: 3,
+                                  ),
                                 ),
-                                child: ClipOval(
-                                  child: (profile.avatarPhotoName != null &&
-                                          profile.avatarPhotoName!.isNotEmpty)
-                                      ? AppImage(
-                                          image: profile.avatarPhotoName!,
-                                          width: 160,
-                                          height: 160,
-                                          fit: BoxFit.cover,
-                                        )
-                                      : Icon(
-                                          PhosphorIcons.userCircle(
-                                              PhosphorIconsStyle.light),
-                                          size: 100,
-                                          color: AppColor.greenColor,
-                                        ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(4),
+                                  child: ClipOval(
+                                    child: (profile.avatarPhotoName != null &&
+                                            profile.avatarPhotoName!
+                                                .isNotEmpty)
+                                        ? AppImage(
+                                            image: profile.avatarPhotoName!,
+                                            width: 144,
+                                            height: 144,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Icon(
+                                            PhosphorIcons.userCircle(
+                                                PhosphorIconsStyle.light),
+                                            size: 96,
+                                            color: AppColor.greenColor,
+                                          ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -159,7 +167,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
                             decoration: BoxDecoration(
-                              color: AppColor.greenColor,
+                              color: AppColor.darkGreenColor,
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
@@ -233,27 +241,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               : FontWeight.w600,
                         ),
                       ),
-                      const SizedBox(height: 18),
-                      Row(
-                        children: [
-                          _StatItem(
+                      const SizedBox(height: 20),
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        decoration: BoxDecoration(
+                          color: AppColor.surfaceColor,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _StatItem(
+                              icon: PhosphorIcons.flame(
+                                  PhosphorIconsStyle.fill),
+                              iconColor: AppColor.warningColor,
+                              value: "${profile.currentStreak}",
+                              label: "Streak",
+                            ),
+                            Container(
+                                width: 1,
+                                height: 32,
+                                color: Colors.black.withOpacity(0.06)),
+                            _StatItem(
                               value: "${profile.followingCount}",
-                              label: "Following"),
-                          const SizedBox(width: 20),
-                          Container(
-                              width: 1, height: 30, color: Colors.black.withOpacity(0.08)),
-                          const SizedBox(width: 20),
-                          _StatItem(
+                              label: "Following",
+                            ),
+                            Container(
+                                width: 1,
+                                height: 32,
+                                color: Colors.black.withOpacity(0.06)),
+                            _StatItem(
                               value: "${profile.followersCount}",
-                              label: "Followers"),
-                        ],
+                              label: "Followers",
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 20),
                       Row(
                         children: [
                           Expanded(
                             child: SizedBox(
-                              height: 44,
+                              height: 52,
                               child: controller.isOwnProfile
                                   ? OutlinedButton(
                                       onPressed: () {
@@ -264,7 +300,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             color: AppColor.greenColor),
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
-                                              BorderRadius.circular(12),
+                                              BorderRadius.circular(16),
                                         ),
                                       ),
                                       child: const Text(
@@ -283,11 +319,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             ? Colors.white
                                             : AppColor.greenColor,
                                         elevation: 0,
-                                        side: BorderSide(
+                                        side: const BorderSide(
                                             color: AppColor.greenColor),
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
-                                              BorderRadius.circular(12),
+                                              BorderRadius.circular(16),
                                         ),
                                       ),
                                       child: Row(
@@ -300,7 +336,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               PhosphorIcons.usersThree(
                                                   PhosphorIconsStyle.fill),
                                               size: 15,
-                                              color: AppColor.greenColor,
+                                              color: profile.isFollowing
+                                                  ? AppColor.greenColor
+                                                  : Colors.white,
                                             ),
                                             const SizedBox(width: 6),
                                           ],
@@ -325,12 +363,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           const SizedBox(width: 10),
                           Container(
-                            width: 44,
-                            height: 44,
+                            width: 52,
+                            height: 52,
                             decoration: BoxDecoration(
                               border: Border.all(
                                   color: AppColor.greenColor.withOpacity(0.4)),
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(16),
                             ),
                             child: Icon(
                               PhosphorIcons.shareNetwork(
@@ -340,56 +378,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                         ],
-                      ),
-                      const SizedBox(height: 28),
-                      const Text(
-                        "Overview",
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                          color: AppColor.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppColor.surfaceColor,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.06),
-                              blurRadius: 10,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            const Text("🔥", style: TextStyle(fontSize: 26)),
-                            const SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "${profile.currentStreak}",
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColor.textPrimary,
-                                  ),
-                                ),
-                                const Text(
-                                  "Day streak",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: AppColor.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
                       ),
                       const SizedBox(height: 30),
                     ],
@@ -407,27 +395,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
 class _StatItem extends StatelessWidget {
   final String value;
   final String label;
-  const _StatItem({required this.value, required this.label});
+  final IconData? icon;
+  final Color? iconColor;
+  const _StatItem({
+    required this.value,
+    required this.label,
+    this.icon,
+    this.iconColor,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.baseline,
-      textBaseline: TextBaseline.alphabetic,
+    return Column(
       children: [
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w700,
-            color: AppColor.textPrimary,
-          ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 16, color: iconColor ?? AppColor.textPrimary),
+              const SizedBox(width: 4),
+            ],
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: AppColor.textPrimary,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 5),
+        const SizedBox(height: 2),
         Text(
           label,
           style: const TextStyle(
-            fontSize: 13,
+            fontSize: 12,
             color: AppColor.textSecondary,
           ),
         ),

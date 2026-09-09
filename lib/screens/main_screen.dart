@@ -29,16 +29,16 @@ class MainScreen extends GetView<MainController> {
               size: 28,
             ),
             Icon(
-              controller.page == 1
-                  ? Icons.add_circle_rounded
-                  : Icons.add_circle_outline_rounded,
+              controller.page == 1 ? Icons.style_rounded : Icons.style_outlined,
               color: controller.page == 1
                   ? Colors.white
                   : AppColor.textSecondary,
               size: 28,
             ),
             Icon(
-              controller.page == 2 ? Icons.style_rounded : Icons.style_outlined,
+              controller.page == 2
+                  ? Icons.person_rounded
+                  : Icons.person_outline_rounded,
               color: controller.page == 2
                   ? Colors.white
                   : AppColor.textSecondary,

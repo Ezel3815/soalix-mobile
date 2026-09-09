@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:upgrade/screens/creat_deck/create_deck_screen.dart';
+import 'package:upgrade/screens/library_screen.dart';
 import 'package:upgrade/screens/profile_screen.dart';
 import 'package:upgrade/screens/years_screen.dart';
 
@@ -20,7 +20,7 @@ class MainController extends GetxController {
 
   final pages = const [
     YearsScreen(),
-    CreateDeckScreen(),
+    LibraryScreen(),
     ProfileScreen(),
   ];
 }

@@ -25,6 +25,8 @@ import 'package:upgrade/screens/creat_deck/shape_creator.dart';
 import 'package:upgrade/screens/creat_deck/card_screen.dart';
 import 'package:upgrade/screens/intro/onbording_screen.dart';
 import 'package:upgrade/screens/main_screen.dart';
+import 'package:upgrade/screens/profile_screen.dart';
+import 'package:upgrade/screens/search_users_screen.dart';
 
 late SharedPreferences sharedPref;
 

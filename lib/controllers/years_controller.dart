@@ -12,12 +12,17 @@ class YearsController extends GetxController {
   set loading(value) => _loading.value = value;
 
   getAllDeck() async {
-    loading = true;
-    decks.clear();
-    final responseDecks = await ApiController.getDecks();
-    final responseMyDecks = await ApiController.getMyDecks();
-    decks.addAll(responseDecks);
-    decks.addAll(responseMyDecks);
+    // Only show the full-screen spinner on the very first load.
+    // On refreshes, keep showing the existing decks while new data loads.
+    final isFirstLoad = decks.isEmpty;
+    if (isFirstLoad) loading = true;
+
+    final results = await Future.wait([
+      ApiController.getDecks(),
+      ApiController.getMyDecks(),
+    ]);
+
+    decks = [...results[0], ...results[1]];
     loading = false;
   }
 

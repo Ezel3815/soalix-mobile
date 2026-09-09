@@ -17,7 +17,7 @@ class YearsController extends GetxController {
 
   set loading(value) => _loading.value = value;
 
-  getAllDeck() async {
+  Future<void> getAllDeck() async {
     // Only show the full-screen spinner on the very first load.
     // On refreshes, keep showing the existing decks while new data loads.
     final isFirstLoad = decks.isEmpty;
@@ -38,7 +38,7 @@ class YearsController extends GetxController {
     return UserModel.fromJson(jsonDecode(userJson)).id;
   }
 
-  getMyProfile() async {
+  Future<void> getMyProfile() async {
     final id = _getMyId();
     if (id == null) return;
     profile.value = await ApiController.getProfile(id);

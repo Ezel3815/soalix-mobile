@@ -33,7 +33,8 @@ class ProfileController extends GetxController {
   Future<void> load() async {
     final id = targetUserId ?? myId;
     if (id == null) return;
-    loading.value = true;
+    final isFirstLoad = profile.value == null;
+    if (isFirstLoad) loading.value = true;
     profile.value = await ApiController.getProfile(id);
     loading.value = false;
   }

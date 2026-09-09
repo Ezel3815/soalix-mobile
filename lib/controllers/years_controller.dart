@@ -1,11 +1,17 @@
+import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:upgrade/controllers/api_controller.dart';
 import 'package:upgrade/entity/deck_entity.dart';
+import 'package:upgrade/entity/profile_entity.dart';
+import 'package:upgrade/main.dart';
+import 'package:upgrade/models/user_model.dart';
 
 class YearsController extends GetxController {
   final RxBool _loading = false.obs;
 
   List<DeckEntity> decks = [];
+
+  final Rx<ProfileEntity?> profile = Rx<ProfileEntity?>(null);
 
   bool get loading => _loading.value;
 
@@ -26,9 +32,24 @@ class YearsController extends GetxController {
     loading = false;
   }
 
+  int? _getMyId() {
+    final userJson = sharedPref.getString("user");
+    if (userJson == null) return null;
+    return UserModel.fromJson(jsonDecode(userJson)).id;
+  }
+
+  getMyProfile() async {
+    final id = _getMyId();
+    if (id == null) return;
+    profile.value = await ApiController.getProfile(id);
+  }
+
   @override
   void onInit() async {
-    await getAllDeck();
+    await Future.wait([
+      getAllDeck(),
+      getMyProfile(),
+    ]);
     super.onInit();
   }
 }

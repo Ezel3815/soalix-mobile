@@ -25,10 +25,20 @@ class AppImage extends StatelessWidget {
     this.imageColor,
   });
 
+  /// Cloudinary uploads (post-migration) already store a full URL.
+  /// Legacy local-disk uploads store just a filename and need the
+  /// backend's base image URL prepended.
+  String get _resolvedUrl {
+    if (image.startsWith("http://") || image.startsWith("https://")) {
+      return image;
+    }
+    return Api.imageUrl + image;
+  }
+
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
-      imageUrl: Api.imageUrl + image,
+      imageUrl: _resolvedUrl,
       width: width,
       height: height,
       fit: fit,

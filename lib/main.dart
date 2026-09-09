@@ -21,6 +21,7 @@ import 'package:upgrade/screens/Auth/register.dart';
 import 'package:upgrade/screens/Preparatory%20Year/preparatory_year_screen.dart';
 import 'package:upgrade/screens/card_view_screen.dart';
 import 'package:upgrade/screens/creat_deck/add_card_screen.dart';
+import 'package:upgrade/screens/creat_deck/create_deck_screen.dart';
 import 'package:upgrade/screens/creat_deck/shape_creator.dart';
 import 'package:upgrade/screens/creat_deck/card_screen.dart';
 import 'package:upgrade/screens/intro/onbording_screen.dart';
@@ -50,7 +51,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: "SOALIX",
+      title: "MOZAIK",
       debugShowCheckedModeBanner: false,
       getPages: AppRoutes.pages,
       theme: ThemeData(
@@ -162,6 +163,7 @@ class AppRoutes {
   static const String preparatoryYearRoute = "/preparatoryYearRoute";
   static const String cardViewRoute = "/cardViewRoute";
   static const String mainRoute = "/mainRoute";
+  static const String createDeckRoute = "/createDeckRoute";
 
   static final List<GetPage> pages = [
     GetPage(name: searchUsersRoute, page: () => const SearchUsersScreen()),
@@ -236,6 +238,16 @@ class AppRoutes {
           () => CardViewController(),
         ),
       ),
+    ),
+    GetPage(
+      // CreateDeckScreen used to be a bottom-nav tab; it's now reached
+      // from a "+" button inside the Library screen instead, so it
+      // needs a real named route. CreateDeckController is already
+      // registered (lazyPut) via mainRoute's bindings below, and
+      // stays alive for the lifetime of the main tab shell, so no
+      // extra binding is needed here.
+      name: createDeckRoute,
+      page: () => const CreateDeckScreen(),
     ),
     GetPage(
       name: mainRoute,

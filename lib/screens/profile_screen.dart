@@ -3,12 +3,14 @@ import 'package:get/get.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:upgrade/api.dart';
 import 'package:upgrade/controllers/profile_controller.dart';
+import 'package:upgrade/main.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
 import 'package:upgrade/widgets/app_image.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final int? userId;
+  const ProfileScreen({super.key, this.userId});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -16,7 +18,10 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  final controller = Get.put(ProfileController());
+  late final controller = Get.put(
+    ProfileController(targetUserId: widget.userId),
+    tag: widget.userId?.toString() ?? "me",
+  );
 
   String _formatJoined(DateTime? date) {
     if (date == null) return "";
@@ -65,6 +70,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: SafeArea(
                         child: Stack(
                           children: [
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: InkWell(
+                                  onTap: () =>
+                                      Get.toNamed(AppRoutes.searchUsersRoute),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.5),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      PhosphorIcons.magnifyingGlass(
+                                          PhosphorIconsStyle.bold),
+                                      size: 22,
+                                      color: AppColor.textPrimary,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                             Align(
                               alignment: Alignment.topRight,
                               child: Padding(
@@ -226,26 +254,73 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Expanded(
                             child: SizedBox(
                               height: 44,
-                              child: OutlinedButton(
-                                onPressed: () {
-                                  // Edit profile — future step
-                                },
-                                style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(
-                                      color: AppColor.greenColor),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                                child: const Text(
-                                  "EDIT PROFILE",
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColor.greenColor,
-                                  ),
-                                ),
-                              ),
+                              child: controller.isOwnProfile
+                                  ? OutlinedButton(
+                                      onPressed: () {
+                                        // Edit profile — future step
+                                      },
+                                      style: OutlinedButton.styleFrom(
+                                        side: const BorderSide(
+                                            color: AppColor.greenColor),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        "EDIT PROFILE",
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppColor.greenColor,
+                                        ),
+                                      ),
+                                    )
+                                  : ElevatedButton(
+                                      onPressed: controller.toggleFollow,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: profile.isFollowing
+                                            ? Colors.white
+                                            : AppColor.greenColor,
+                                        elevation: 0,
+                                        side: BorderSide(
+                                            color: AppColor.greenColor),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          if (profile.isFriend) ...[
+                                            Icon(
+                                              PhosphorIcons.usersThree(
+                                                  PhosphorIconsStyle.fill),
+                                              size: 15,
+                                              color: AppColor.greenColor,
+                                            ),
+                                            const SizedBox(width: 6),
+                                          ],
+                                          Text(
+                                            profile.isFriend
+                                                ? "FRIENDS"
+                                                : profile.isFollowing
+                                                    ? "FOLLOWING"
+                                                    : "FOLLOW",
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w700,
+                                              color: profile.isFollowing
+                                                  ? AppColor.greenColor
+                                                  : Colors.white,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                             ),
                           ),
                           const SizedBox(width: 10),

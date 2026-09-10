@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:upgrade/entity/deck_entity.dart';
 import 'package:upgrade/main.dart';
 import 'package:upgrade/resources.dart';
+import 'package:upgrade/utils/chapter_navigation.dart';
 import 'package:upgrade/widgets/app_snack_bar.dart';
 
 class DeckWidget extends StatelessWidget {
@@ -30,10 +31,7 @@ class DeckWidget extends StatelessWidget {
           );
         } else {
           /// CARDS_DECK
-          Get.toNamed(
-            AppRoutes.cardRoute,
-            arguments: model,
-          );
+          openChapter(model);
         }
       },
       child: Container(

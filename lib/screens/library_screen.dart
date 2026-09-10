@@ -95,7 +95,7 @@ class LibraryScreen extends StatelessWidget {
                           border: InputBorder.none,
                           isDense: true,
                           contentPadding: EdgeInsets.symmetric(vertical: 14),
-                          hintText: "Search your flashcard sets",
+                          hintText: "Search subjects",
                           hintStyle: TextStyle(
                             fontSize: 13,
                             color: AppColor.textSecondary,
@@ -142,11 +142,11 @@ class LibraryScreen extends StatelessWidget {
             const SizedBox(height: 14),
             Expanded(
               child: Obx(() {
-                final decks = controller.filteredDecks;
-                if (decks.isEmpty) {
+                final subjects = controller.filteredSubjects;
+                if (subjects.isEmpty) {
                   return const Center(
                     child: Text(
-                      "No flashcard sets found",
+                      "No subjects found",
                       style: TextStyle(color: AppColor.textSecondary),
                     ),
                   );
@@ -160,9 +160,9 @@ class LibraryScreen extends StatelessWidget {
                     crossAxisSpacing: 14,
                     childAspectRatio: 0.92,
                   ),
-                  itemCount: decks.length,
-                  itemBuilder: (context, index) => _DeckCard(
-                    deck: decks[index],
+                  itemCount: subjects.length,
+                  itemBuilder: (context, index) => _SubjectCard(
+                    subject: subjects[index],
                     accentColor:
                         _deckAccentColors[index % _deckAccentColors.length],
                   ),
@@ -213,21 +213,31 @@ class _FilterPill extends StatelessWidget {
   }
 }
 
-class _DeckCard extends StatelessWidget {
-  final DeckEntity deck;
+class _SubjectCard extends StatelessWidget {
+  final DeckEntity subject;
   final Color accentColor;
-  const _DeckCard({required this.deck, required this.accentColor});
+  const _SubjectCard({required this.subject, required this.accentColor});
 
   @override
   Widget build(BuildContext context) {
-    final total = deck.cards.length;
+    // Subjects are folders (PACKAGE_DECK) — their cards live on their
+    // chapter children, not on the subject node itself.
+    final allCards = subject.children.expand((c) => c.cards).toList();
+    final total = allCards.length;
     final answered =
-        deck.cards.where((c) => c.answer.isNotEmpty && c.answer != "NONE").length;
+        allCards.where((c) => c.answer.isNotEmpty && c.answer != "NONE").length;
     final progress = total == 0 ? 0.0 : answered / total;
 
     return InkWell(
       borderRadius: BorderRadius.circular(18),
-      onTap: () => Get.toNamed(AppRoutes.cardRoute, arguments: deck),
+      onTap: () => Get.toNamed(
+        AppRoutes.preparatoryYearRoute,
+        arguments: {
+          "id": subject.id,
+          "decks": subject.children,
+        },
+        preventDuplicates: false,
+      ),
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
@@ -269,7 +279,7 @@ class _DeckCard extends StatelessWidget {
             ),
             const Spacer(),
             Text(
-              deck.title,
+              subject.title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(

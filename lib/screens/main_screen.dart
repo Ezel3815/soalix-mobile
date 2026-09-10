@@ -26,28 +26,32 @@ class MainScreen extends GetView<MainController> {
               color: controller.page == 0
                   ? Colors.white
                   : AppColor.textSecondary,
-              size: 28,
+              size: 26,
             ),
             Icon(
               controller.page == 1 ? Icons.style_rounded : Icons.style_outlined,
               color: controller.page == 1
                   ? Colors.white
                   : AppColor.textSecondary,
-              size: 28,
+              size: 26,
             ),
             Icon(
               controller.page == 2
-                  ? Icons.person_rounded
-                  : Icons.person_outline_rounded,
+                  ? Icons.bar_chart_rounded
+                  : Icons.bar_chart_outlined,
               color: controller.page == 2
                   ? Colors.white
                   : AppColor.textSecondary,
-              size: 28,
+              size: 26,
             ),
-            const Icon(
-              Icons.menu_rounded,
-              color: AppColor.textSecondary,
-              size: 28,
+            Icon(
+              controller.page == 3
+                  ? Icons.person_rounded
+                  : Icons.person_outline_rounded,
+              color: controller.page == 3
+                  ? Colors.white
+                  : AppColor.textSecondary,
+              size: 26,
             ),
           ],
           index: controller.page,

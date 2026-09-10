@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:upgrade/entity/deck_entity.dart';
-import 'package:upgrade/main.dart';
 import 'package:upgrade/resources.dart';
+import 'package:upgrade/utils/chapter_navigation.dart';
 
 /// Renders a list of chapter decks as a guided lesson path.
 /// Every node is open — there is no progression lock. Progress
@@ -90,7 +90,7 @@ class _LessonNode extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       // No lock check — every chapter is open, user can skip freely.
-      onTap: () => Get.toNamed(AppRoutes.cardRoute, arguments: chapter),
+      onTap: () => openChapter(chapter),
       child: IntrinsicHeight(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,

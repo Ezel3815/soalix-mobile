@@ -10,30 +10,34 @@ class LibraryController extends GetxController {
   final RxString query = "".obs;
   final Rx<LibraryFilter> filter = LibraryFilter.all.obs;
 
-  /// Recursively walks the nested Year/Semester/Subject deck tree and
-  /// collects every leaf CARDS_DECK — the actual flashcard sets a user
-  /// can browse and study, regardless of how deep they're nested.
-  List<DeckEntity> _flattenCardDecks(List<DeckEntity> decks) {
+  /// A "subject" is a PACKAGE_DECK whose direct children are all leaf
+  /// CARDS_DECK (chapters) — one level above the chapters, e.g.
+  /// "English Vocabulary" containing several lesson chapters. This is
+  /// the same convention used for Progress's subject breakdown.
+  List<DeckEntity> _collectSubjects(List<DeckEntity> decks) {
     final result = <DeckEntity>[];
     for (final deck in decks) {
-      if (deck.type == "CARDS_DECK") {
+      if (deck.type != "PACKAGE_DECK") continue;
+      final isSubjectLevel = deck.children.isNotEmpty &&
+          deck.children.every((c) => c.type == "CARDS_DECK");
+      if (isSubjectLevel) {
         result.add(deck);
       } else {
-        result.addAll(_flattenCardDecks(deck.children));
+        result.addAll(_collectSubjects(deck.children));
       }
     }
     return result;
   }
 
-  List<DeckEntity> get filteredDecks {
-    var decks = _flattenCardDecks(yearsController.decks);
+  List<DeckEntity> get filteredSubjects {
+    var subjects = _collectSubjects(yearsController.decks);
 
     switch (filter.value) {
       case LibraryFilter.mine:
-        decks = decks.where((d) => d.editable).toList();
+        subjects = subjects.where((d) => d.editable).toList();
         break;
       case LibraryFilter.public:
-        decks = decks.where((d) => !d.editable).toList();
+        subjects = subjects.where((d) => !d.editable).toList();
         break;
       case LibraryFilter.all:
         break;
@@ -41,9 +45,9 @@ class LibraryController extends GetxController {
 
     if (query.value.trim().isNotEmpty) {
       final q = query.value.trim().toLowerCase();
-      decks = decks.where((d) => d.title.toLowerCase().contains(q)).toList();
+      subjects = subjects.where((d) => d.title.toLowerCase().contains(q)).toList();
     }
 
-    return decks;
+    return subjects;
   }
 }

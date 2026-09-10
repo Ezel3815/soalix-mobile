@@ -15,6 +15,37 @@ import 'package:upgrade/resources.dart';
 
 class CardViewController extends GetxController {
   late bool isView;
+
+  // Session tracking — additive only, does not change the existing
+  // grading buttons, the answerCard API call, or OCCLUSION logic.
+  DateTime _sessionStart = DateTime.now();
+  int sessionCorrect = 0;
+  int sessionWrong = 0;
+  final List<CardEntity> sessionMistakes = [];
+
+  void _recordAnswer(String answer, CardEntity card) {
+    if (answer == "GOOD" || answer == "EASY") {
+      sessionCorrect += 1;
+    } else if (answer == "AGAIN" || answer == "HARD") {
+      sessionWrong += 1;
+      if (!sessionMistakes.any((c) => c.id == card.id)) {
+        sessionMistakes.add(card);
+      }
+    }
+  }
+
+  void _goToSessionResult() {
+    Get.offNamed(
+      AppRoutes.sessionResultRoute,
+      arguments: {
+        'correct': sessionCorrect,
+        'wrong': sessionWrong,
+        'minutes': DateTime.now().difference(_sessionStart).inMinutes,
+        'mistakes': sessionMistakes,
+        'isView': isView,
+      },
+    );
+  }
   final Rx<ShapeCreatorEntity> _data = ShapeCreatorModel().toDomain().obs;
   late PageController pageController;
 
@@ -177,6 +208,7 @@ class CardViewController extends GetxController {
   }
 
   onTapOnStatusButton(String answer) async {
+    _recordAnswer(answer, cards[pageViewIndex]);
 
     if (cards[pageViewIndex].type == "OCCLUSION") {
       if(answer == "AGAIN") {
@@ -202,9 +234,7 @@ class CardViewController extends GetxController {
 
           _cards.refresh();
         } else {
-          Get.until((route) {
-            return Get.currentRoute == AppRoutes.cardRoute;
-          });
+          _goToSessionResult();
         }
       }
     } else {
@@ -223,9 +253,7 @@ class CardViewController extends GetxController {
           getOCCData();
         }
       } else {
-        Get.until((route) {
-          return Get.currentRoute == AppRoutes.cardRoute;
-        });
+        _goToSessionResult();
       }
     }
     await ApiController.answerCard(cardID: cards[pageViewIndex].id, answer: answer);

@@ -28,6 +28,7 @@ import 'package:upgrade/screens/intro/onbording_screen.dart';
 import 'package:upgrade/screens/main_screen.dart';
 import 'package:upgrade/screens/profile_screen.dart';
 import 'package:upgrade/screens/search_users_screen.dart';
+import 'package:upgrade/screens/session_result_screen.dart';
 
 late SharedPreferences sharedPref;
 
@@ -164,6 +165,7 @@ class AppRoutes {
   static const String cardViewRoute = "/cardViewRoute";
   static const String mainRoute = "/mainRoute";
   static const String createDeckRoute = "/createDeckRoute";
+  static const String sessionResultRoute = "/sessionResultRoute";
 
   static final List<GetPage> pages = [
     GetPage(name: searchUsersRoute, page: () => const SearchUsersScreen()),
@@ -248,6 +250,10 @@ class AppRoutes {
       // extra binding is needed here.
       name: createDeckRoute,
       page: () => const CreateDeckScreen(),
+    ),
+    GetPage(
+      name: sessionResultRoute,
+      page: () => const SessionResultScreen(),
     ),
     GetPage(
       name: mainRoute,

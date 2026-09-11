@@ -42,13 +42,7 @@ class CardScreen extends GetView<CardController> {
       body: Container(
         width: double.infinity,
         height: screenHeight,
-        decoration: const BoxDecoration(
-          color: AppColor.scaffoldBackgroundColor,
-          image: DecorationImage(
-            image: AssetImage('lib/assests/images/background_5.jpg'),
-            fit: BoxFit.fill,
-          ),
-        ),
+        color: AppColor.scaffoldBackgroundColor,
         child: SafeArea(
           child: Column(
             children: [

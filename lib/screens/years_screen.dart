@@ -113,10 +113,10 @@ class _Header extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(
-                    PhosphorIcons.flame(PhosphorIconsStyle.fill),
-                    size: 15,
-                    color: AppColor.warningColor,
+                  Image.asset(
+                    "lib/assests/images/stats/streak.png",
+                    width: 16,
+                    height: 16,
                   ),
                   const SizedBox(width: 4),
                   Text(

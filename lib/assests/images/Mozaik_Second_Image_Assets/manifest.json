@@ -1,0 +1,757 @@
+{
+  "source": "wide_clean_graphic_design_board_icon_system_imag.png",
+  "asset_type": "cropped_exact_visuals_from_second_generated_board",
+  "icons": [
+    {
+      "name": "app_icon_dark",
+      "group": "brand_app",
+      "file": "icons/app_icon_dark.png",
+      "crop_center": [
+        90,
+        195
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "app_icon_light",
+      "group": "brand_app",
+      "file": "icons/app_icon_light.png",
+      "crop_center": [
+        220,
+        195
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "logo_mark",
+      "group": "brand_app",
+      "file": "icons/logo_mark.png",
+      "crop_center": [
+        335,
+        195
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "wordmark",
+      "group": "brand_app",
+      "file": "icons/wordmark.png",
+      "crop_center": [
+        465,
+        195
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "home",
+      "group": "main_navigation",
+      "file": "icons/home.png",
+      "crop_center": [
+        650,
+        195
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "library",
+      "group": "main_navigation",
+      "file": "icons/library.png",
+      "crop_center": [
+        735,
+        195
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "learn",
+      "group": "main_navigation",
+      "file": "icons/learn.png",
+      "crop_center": [
+        820,
+        195
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "progress",
+      "group": "main_navigation",
+      "file": "icons/progress.png",
+      "crop_center": [
+        900,
+        195
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "profile",
+      "group": "main_navigation",
+      "file": "icons/profile.png",
+      "crop_center": [
+        980,
+        195
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "search",
+      "group": "content_actions",
+      "file": "icons/search.png",
+      "crop_center": [
+        720,
+        390
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "filter",
+      "group": "content_actions",
+      "file": "icons/filter.png",
+      "crop_center": [
+        830,
+        390
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "sort",
+      "group": "content_actions",
+      "file": "icons/sort.png",
+      "crop_center": [
+        945,
+        390
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "more",
+      "group": "content_actions",
+      "file": "icons/more.png",
+      "crop_center": [
+        1055,
+        390
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "add",
+      "group": "content_actions",
+      "file": "icons/add.png",
+      "crop_center": [
+        1195,
+        390
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "edit",
+      "group": "content_actions",
+      "file": "icons/edit.png",
+      "crop_center": [
+        1325,
+        390
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "delete",
+      "group": "content_actions",
+      "file": "icons/delete.png",
+      "crop_center": [
+        1450,
+        390
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "english_vocabulary",
+      "group": "subject_deck",
+      "file": "icons/english_vocabulary.png",
+      "crop_center": [
+        75,
+        390
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "mathematics_fundamentals",
+      "group": "subject_deck",
+      "file": "icons/mathematics_fundamentals.png",
+      "crop_center": [
+        170,
+        390
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "science_basics",
+      "group": "subject_deck",
+      "file": "icons/science_basics.png",
+      "crop_center": [
+        275,
+        390
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "arabic_language",
+      "group": "subject_deck",
+      "file": "icons/arabic_language.png",
+      "crop_center": [
+        380,
+        390
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "general_knowledge",
+      "group": "subject_deck",
+      "file": "icons/general_knowledge.png",
+      "crop_center": [
+        485,
+        390
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "business_english",
+      "group": "subject_deck",
+      "file": "icons/business_english.png",
+      "crop_center": [
+        580,
+        390
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "lesson_active",
+      "group": "learning_path",
+      "file": "icons/lesson_active.png",
+      "crop_center": [
+        75,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "lesson_current",
+      "group": "learning_path",
+      "file": "icons/lesson_current.png",
+      "crop_center": [
+        175,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "lesson_upcoming",
+      "group": "learning_path",
+      "file": "icons/lesson_upcoming.png",
+      "crop_center": [
+        275,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "lesson_locked",
+      "group": "learning_path",
+      "file": "icons/lesson_locked.png",
+      "crop_center": [
+        375,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "lesson_completed",
+      "group": "learning_path",
+      "file": "icons/lesson_completed.png",
+      "crop_center": [
+        475,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "flashcards",
+      "group": "learning_tools",
+      "file": "icons/flashcards.png",
+      "crop_center": [
+        70,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "quiz",
+      "group": "learning_tools",
+      "file": "icons/quiz.png",
+      "crop_center": [
+        165,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "practice",
+      "group": "learning_tools",
+      "file": "icons/practice.png",
+      "crop_center": [
+        260,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "notes",
+      "group": "learning_tools",
+      "file": "icons/notes.png",
+      "crop_center": [
+        350,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "bookmark",
+      "group": "learning_tools",
+      "file": "icons/bookmark.png",
+      "crop_center": [
+        440,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "download",
+      "group": "learning_tools",
+      "file": "icons/download.png",
+      "crop_center": [
+        530,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "upload",
+      "group": "learning_tools",
+      "file": "icons/upload.png",
+      "crop_center": [
+        620,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "link",
+      "group": "learning_tools",
+      "file": "icons/link.png",
+      "crop_center": [
+        710,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "play",
+      "group": "session_media",
+      "file": "icons/play.png",
+      "crop_center": [
+        840,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "video",
+      "group": "session_media",
+      "file": "icons/video.png",
+      "crop_center": [
+        930,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "audio",
+      "group": "session_media",
+      "file": "icons/audio.png",
+      "crop_center": [
+        1020,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "timer",
+      "group": "session_media",
+      "file": "icons/timer.png",
+      "crop_center": [
+        1110,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "focus",
+      "group": "session_media",
+      "file": "icons/focus.png",
+      "crop_center": [
+        1200,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "next",
+      "group": "session_media",
+      "file": "icons/next.png",
+      "crop_center": [
+        1290,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "previous",
+      "group": "session_media",
+      "file": "icons/previous.png",
+      "crop_center": [
+        1380,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "live_session",
+      "group": "session_media",
+      "file": "icons/live_session.png",
+      "crop_center": [
+        1470,
+        555
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "streak",
+      "group": "progress_stats",
+      "file": "icons/streak.png",
+      "crop_center": [
+        70,
+        720
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "daily_goal",
+      "group": "progress_stats",
+      "file": "icons/daily_goal.png",
+      "crop_center": [
+        165,
+        720
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "statistics",
+      "group": "progress_stats",
+      "file": "icons/statistics.png",
+      "crop_center": [
+        260,
+        720
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "reports",
+      "group": "progress_stats",
+      "file": "icons/reports.png",
+      "crop_center": [
+        355,
+        720
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "achievement",
+      "group": "progress_stats",
+      "file": "icons/achievement.png",
+      "crop_center": [
+        450,
+        720
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "trophy",
+      "group": "progress_stats",
+      "file": "icons/trophy.png",
+      "crop_center": [
+        545,
+        720
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "points",
+      "group": "progress_stats",
+      "file": "icons/points.png",
+      "crop_center": [
+        640,
+        720
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "level",
+      "group": "progress_stats",
+      "file": "icons/level.png",
+      "crop_center": [
+        735,
+        720
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "settings",
+      "group": "profile_settings",
+      "file": "icons/settings.png",
+      "crop_center": [
+        850,
+        720
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "notifications",
+      "group": "profile_settings",
+      "file": "icons/notifications.png",
+      "crop_center": [
+        945,
+        720
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "help",
+      "group": "profile_settings",
+      "file": "icons/help.png",
+      "crop_center": [
+        1040,
+        720
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "language",
+      "group": "profile_settings",
+      "file": "icons/language.png",
+      "crop_center": [
+        1135,
+        720
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "account",
+      "group": "profile_settings",
+      "file": "icons/account.png",
+      "crop_center": [
+        1230,
+        720
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "support",
+      "group": "profile_settings",
+      "file": "icons/support.png",
+      "crop_center": [
+        1325,
+        720
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "privacy",
+      "group": "profile_settings",
+      "file": "icons/privacy.png",
+      "crop_center": [
+        1420,
+        720
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "logout",
+      "group": "profile_settings",
+      "file": "icons/logout.png",
+      "crop_center": [
+        1500,
+        720
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "success",
+      "group": "system_states",
+      "file": "icons/success.png",
+      "crop_center": [
+        70,
+        880
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "warning",
+      "group": "system_states",
+      "file": "icons/warning.png",
+      "crop_center": [
+        165,
+        880
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "error",
+      "group": "system_states",
+      "file": "icons/error.png",
+      "crop_center": [
+        260,
+        880
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "info",
+      "group": "system_states",
+      "file": "icons/info.png",
+      "crop_center": [
+        355,
+        880
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "loading",
+      "group": "system_states",
+      "file": "icons/loading.png",
+      "crop_center": [
+        450,
+        880
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "empty_state",
+      "group": "system_states",
+      "file": "icons/empty_state.png",
+      "crop_center": [
+        545,
+        880
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "completed",
+      "group": "system_states",
+      "file": "icons/completed.png",
+      "crop_center": [
+        640,
+        880
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "locked",
+      "group": "system_states",
+      "file": "icons/locked.png",
+      "crop_center": [
+        735,
+        880
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "calendar",
+      "group": "miscellaneous",
+      "file": "icons/calendar.png",
+      "crop_center": [
+        820,
+        880
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "today",
+      "group": "miscellaneous",
+      "file": "icons/today.png",
+      "crop_center": [
+        920,
+        880
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "schedule",
+      "group": "miscellaneous",
+      "file": "icons/schedule.png",
+      "crop_center": [
+        1020,
+        880
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "reminder",
+      "group": "miscellaneous",
+      "file": "icons/reminder.png",
+      "crop_center": [
+        1120,
+        880
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "group",
+      "group": "miscellaneous",
+      "file": "icons/group.png",
+      "crop_center": [
+        1220,
+        880
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "share",
+      "group": "miscellaneous",
+      "file": "icons/share.png",
+      "crop_center": [
+        1320,
+        880
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "invite",
+      "group": "miscellaneous",
+      "file": "icons/invite.png",
+      "crop_center": [
+        1420,
+        880
+      ],
+      "size_px": 100
+    },
+    {
+      "name": "comment",
+      "group": "miscellaneous",
+      "file": "icons/comment.png",
+      "crop_center": [
+        1510,
+        880
+      ],
+      "size_px": 100
+    }
+  ],
+  "count": 75
+}

@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:upgrade/controllers/api_controller.dart';
 import 'package:upgrade/controllers/years_controller.dart';
+import 'package:upgrade/entity/achievement.dart';
 import 'package:upgrade/entity/leaderboard_entry.dart';
 import 'package:upgrade/entity/card_entity.dart';
 import 'package:upgrade/entity/deck_entity.dart';
@@ -34,9 +35,19 @@ class ProgressController extends GetxController {
     leaderboardLoading.value = false;
   }
 
+  final RxList<Achievement> achievements = <Achievement>[].obs;
+  final RxBool achievementsLoading = false.obs;
+
+  Future<void> loadAchievements() async {
+    achievementsLoading.value = true;
+    achievements.assignAll(await ApiController.getAchievements());
+    achievementsLoading.value = false;
+  }
+
   @override
   void onInit() {
     loadLeaderboard();
+    loadAchievements();
     super.onInit();
   }
 

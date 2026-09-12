@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
+import 'package:upgrade/controllers/api_controller.dart';
 import 'package:upgrade/controllers/years_controller.dart';
+import 'package:upgrade/entity/leaderboard_entry.dart';
 import 'package:upgrade/entity/card_entity.dart';
 import 'package:upgrade/entity/deck_entity.dart';
 
@@ -17,11 +19,26 @@ class SubjectProgress {
   double get mastery => totalCards == 0 ? 0 : masteredCards / totalCards;
 }
 
-enum ProgressTab { statistics, achievements }
+enum ProgressTab { statistics, leaderboard, achievements }
 
 class ProgressController extends GetxController {
   final yearsController = Get.find<YearsController>();
   final Rx<ProgressTab> tab = ProgressTab.statistics.obs;
+
+  final RxList<LeaderboardEntry> leaderboard = <LeaderboardEntry>[].obs;
+  final RxBool leaderboardLoading = false.obs;
+
+  Future<void> loadLeaderboard() async {
+    leaderboardLoading.value = true;
+    leaderboard.assignAll(await ApiController.getLeaderboard());
+    leaderboardLoading.value = false;
+  }
+
+  @override
+  void onInit() {
+    loadLeaderboard();
+    super.onInit();
+  }
 
   List<CardEntity> _allCards(List<DeckEntity> decks) {
     final result = <CardEntity>[];

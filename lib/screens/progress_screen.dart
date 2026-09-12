@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:upgrade/controllers/progress_controller.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
+import 'package:upgrade/utils/subject_icon.dart';
 
 class ProgressScreen extends StatelessWidget {
   const ProgressScreen({super.key});
@@ -171,8 +172,7 @@ class _StatisticsBody extends StatelessWidget {
               children: [
                 Expanded(
                   child: _SummaryStat(
-                    icon: Icons.local_fire_department_rounded,
-                    color: AppColor.warningColor,
+                    imageAsset: "lib/assests/images/stats/streak.png",
                     value: "${controller.streak}",
                     label: "Day streak",
                   ),
@@ -289,16 +289,16 @@ class _StatisticsBody extends StatelessWidget {
                     child: Row(
                       children: [
                         Container(
-                          width: 34,
-                          height: 34,
+                          width: 38,
+                          height: 38,
+                          padding: const EdgeInsets.all(4),
                           decoration: BoxDecoration(
-                            color: AppColor.lightGreenColor,
-                            borderRadius: BorderRadius.circular(9),
+                            color: AppColor.lightGreenColor.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Icon(
-                            Icons.style_rounded,
-                            size: 16,
-                            color: AppColor.darkGreenColor,
+                          child: Image.asset(
+                            subjectIconAsset(s.title),
+                            fit: BoxFit.contain,
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -350,13 +350,15 @@ class _StatisticsBody extends StatelessWidget {
 }
 
 class _SummaryStat extends StatelessWidget {
-  final IconData icon;
-  final Color color;
+  final IconData? icon;
+  final Color? color;
+  final String? imageAsset;
   final String value;
   final String label;
   const _SummaryStat({
-    required this.icon,
-    required this.color,
+    this.icon,
+    this.color,
+    this.imageAsset,
     required this.value,
     required this.label,
   });
@@ -365,7 +367,10 @@ class _SummaryStat extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(icon, color: color, size: 24),
+        if (imageAsset != null)
+          Image.asset(imageAsset!, width: 26, height: 26)
+        else
+          Icon(icon, color: color, size: 24),
         const SizedBox(height: 6),
         Text(
           value,

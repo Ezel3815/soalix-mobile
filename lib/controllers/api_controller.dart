@@ -11,6 +11,7 @@ import 'package:upgrade/di.dart';
 import 'package:upgrade/entity/card_entity.dart';
 import 'package:upgrade/entity/deck_entity.dart';
 import 'package:upgrade/entity/document_entity.dart';
+import 'package:upgrade/entity/achievement.dart';
 import 'package:upgrade/entity/daily_mission.dart';
 import 'package:upgrade/entity/leaderboard_entry.dart';
 import 'package:upgrade/entity/profile_entity.dart';
@@ -785,6 +786,25 @@ class ApiController {
       }
     }
     return false;
+  }
+
+    static Future<List<Achievement>> getAchievements() async {
+    try {
+      final response = await dio.get(
+        Api.achievements,
+        options: GetOptions.getOptions(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return (response.data as List)
+            .map((e) => Achievement.fromJson(e))
+            .toList();
+      }
+    } catch (e) {
+      if (ErrorHandler.handle(e).failure.code != -6) {
+        showSnackBarWidget(message: ErrorHandler.handle(e).failure.message ?? "");
+      }
+    }
+    return [];
   }
 
     static Future<List<DailyMission>> getDailyMissions() async {

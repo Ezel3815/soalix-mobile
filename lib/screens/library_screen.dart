@@ -6,6 +6,7 @@ import 'package:upgrade/entity/deck_entity.dart';
 import 'package:upgrade/main.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
+import 'package:upgrade/utils/subject_icon.dart';
 
 /// A small set of accent colors used only to visually distinguish deck
 /// cards in the library grid (not tied to any real "subject category"
@@ -258,16 +259,16 @@ class _SubjectCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  width: 38,
-                  height: 38,
+                  width: 42,
+                  height: 42,
+                  padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: accentColor.withOpacity(0.14),
-                    borderRadius: BorderRadius.circular(10),
+                    color: AppColor.lightGreenColor.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(
-                    Icons.style_rounded,
-                    size: 18,
-                    color: accentColor,
+                  child: Image.asset(
+                    subjectIconAsset(subject.title),
+                    fit: BoxFit.contain,
                   ),
                 ),
                 Icon(

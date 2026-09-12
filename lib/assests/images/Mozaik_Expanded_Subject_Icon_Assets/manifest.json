@@ -1,0 +1,544 @@
+{
+  "name": "Mozaik Expanded Subject & Category Icon Set",
+  "source_reference": "reference/mozaik_expanded_subject_icon_library.png",
+  "format": "PNG",
+  "usage": "Use as app image assets; preserve the complete rounded tile and visual treatment.",
+  "subject_count": 71,
+  "action_count": 18,
+  "assets": [
+    {
+      "name": "math",
+      "type": "subject",
+      "section": "core_subjects",
+      "file": "subjects/math.png"
+    },
+    {
+      "name": "science",
+      "type": "subject",
+      "section": "core_subjects",
+      "file": "subjects/science.png"
+    },
+    {
+      "name": "english",
+      "type": "subject",
+      "section": "core_subjects",
+      "file": "subjects/english.png"
+    },
+    {
+      "name": "languages",
+      "type": "subject",
+      "section": "core_subjects",
+      "file": "subjects/languages.png"
+    },
+    {
+      "name": "history",
+      "type": "subject",
+      "section": "core_subjects",
+      "file": "subjects/history.png"
+    },
+    {
+      "name": "geography",
+      "type": "subject",
+      "section": "core_subjects",
+      "file": "subjects/geography.png"
+    },
+    {
+      "name": "biology",
+      "type": "subject",
+      "section": "core_subjects",
+      "file": "subjects/biology.png"
+    },
+    {
+      "name": "chemistry",
+      "type": "subject",
+      "section": "core_subjects",
+      "file": "subjects/chemistry.png"
+    },
+    {
+      "name": "physics",
+      "type": "subject",
+      "section": "core_subjects",
+      "file": "subjects/physics.png"
+    },
+    {
+      "name": "technology",
+      "type": "subject",
+      "section": "core_subjects",
+      "file": "subjects/technology.png"
+    },
+    {
+      "name": "computer-science",
+      "type": "subject",
+      "section": "core_subjects",
+      "file": "subjects/computer-science.png"
+    },
+    {
+      "name": "engineering",
+      "type": "subject",
+      "section": "core_subjects",
+      "file": "subjects/engineering.png"
+    },
+    {
+      "name": "arts",
+      "type": "subject",
+      "section": "core_subjects",
+      "file": "subjects/arts.png"
+    },
+    {
+      "name": "music",
+      "type": "subject",
+      "section": "core_subjects",
+      "file": "subjects/music.png"
+    },
+    {
+      "name": "literature",
+      "type": "subject",
+      "section": "core_subjects",
+      "file": "subjects/literature.png"
+    },
+    {
+      "name": "business",
+      "type": "subject",
+      "section": "professional_career",
+      "file": "subjects/business.png"
+    },
+    {
+      "name": "economics",
+      "type": "subject",
+      "section": "professional_career",
+      "file": "subjects/economics.png"
+    },
+    {
+      "name": "finance",
+      "type": "subject",
+      "section": "professional_career",
+      "file": "subjects/finance.png"
+    },
+    {
+      "name": "marketing",
+      "type": "subject",
+      "section": "professional_career",
+      "file": "subjects/marketing.png"
+    },
+    {
+      "name": "management",
+      "type": "subject",
+      "section": "professional_career",
+      "file": "subjects/management.png"
+    },
+    {
+      "name": "entrepreneurship",
+      "type": "subject",
+      "section": "professional_career",
+      "file": "subjects/entrepreneurship.png"
+    },
+    {
+      "name": "law",
+      "type": "subject",
+      "section": "professional_career",
+      "file": "subjects/law.png"
+    },
+    {
+      "name": "medicine",
+      "type": "subject",
+      "section": "professional_career",
+      "file": "subjects/medicine.png"
+    },
+    {
+      "name": "health",
+      "type": "subject",
+      "section": "professional_career",
+      "file": "subjects/health.png"
+    },
+    {
+      "name": "psychology",
+      "type": "subject",
+      "section": "professional_career",
+      "file": "subjects/psychology.png"
+    },
+    {
+      "name": "education",
+      "type": "subject",
+      "section": "professional_career",
+      "file": "subjects/education.png"
+    },
+    {
+      "name": "communication",
+      "type": "subject",
+      "section": "professional_career",
+      "file": "subjects/communication.png"
+    },
+    {
+      "name": "design",
+      "type": "subject",
+      "section": "professional_career",
+      "file": "subjects/design.png"
+    },
+    {
+      "name": "agriculture",
+      "type": "subject",
+      "section": "professional_career",
+      "file": "subjects/agriculture.png"
+    },
+    {
+      "name": "photography",
+      "type": "subject",
+      "section": "creative_media",
+      "file": "subjects/photography.png"
+    },
+    {
+      "name": "video",
+      "type": "subject",
+      "section": "creative_media",
+      "file": "subjects/video.png"
+    },
+    {
+      "name": "audio",
+      "type": "subject",
+      "section": "creative_media",
+      "file": "subjects/audio.png"
+    },
+    {
+      "name": "animation",
+      "type": "subject",
+      "section": "creative_media",
+      "file": "subjects/animation.png"
+    },
+    {
+      "name": "film",
+      "type": "subject",
+      "section": "creative_media",
+      "file": "subjects/film.png"
+    },
+    {
+      "name": "graphic-design",
+      "type": "subject",
+      "section": "creative_media",
+      "file": "subjects/graphic-design.png"
+    },
+    {
+      "name": "illustration",
+      "type": "subject",
+      "section": "creative_media",
+      "file": "subjects/illustration.png"
+    },
+    {
+      "name": "writing",
+      "type": "subject",
+      "section": "creative_media",
+      "file": "subjects/writing.png"
+    },
+    {
+      "name": "journalism",
+      "type": "subject",
+      "section": "creative_media",
+      "file": "subjects/journalism.png"
+    },
+    {
+      "name": "social-media",
+      "type": "subject",
+      "section": "creative_media",
+      "file": "subjects/social-media.png"
+    },
+    {
+      "name": "broadcasting",
+      "type": "subject",
+      "section": "creative_media",
+      "file": "subjects/broadcasting.png"
+    },
+    {
+      "name": "content-creation",
+      "type": "subject",
+      "section": "creative_media",
+      "file": "subjects/content-creation.png"
+    },
+    {
+      "name": "fashion",
+      "type": "subject",
+      "section": "creative_media",
+      "file": "subjects/fashion.png"
+    },
+    {
+      "name": "culinary-arts",
+      "type": "subject",
+      "section": "creative_media",
+      "file": "subjects/culinary-arts.png"
+    },
+    {
+      "name": "self-development",
+      "type": "subject",
+      "section": "life_skills_personal_growth",
+      "file": "subjects/self-development.png"
+    },
+    {
+      "name": "mindfulness",
+      "type": "subject",
+      "section": "life_skills_personal_growth",
+      "file": "subjects/mindfulness.png"
+    },
+    {
+      "name": "productivity",
+      "type": "subject",
+      "section": "life_skills_personal_growth",
+      "file": "subjects/productivity.png"
+    },
+    {
+      "name": "time-management",
+      "type": "subject",
+      "section": "life_skills_personal_growth",
+      "file": "subjects/time-management.png"
+    },
+    {
+      "name": "leadership",
+      "type": "subject",
+      "section": "life_skills_personal_growth",
+      "file": "subjects/leadership.png"
+    },
+    {
+      "name": "emotional-intelligence",
+      "type": "subject",
+      "section": "life_skills_personal_growth",
+      "file": "subjects/emotional-intelligence.png"
+    },
+    {
+      "name": "stress-relief",
+      "type": "subject",
+      "section": "life_skills_personal_growth",
+      "file": "subjects/stress-relief.png"
+    },
+    {
+      "name": "wellness",
+      "type": "subject",
+      "section": "life_skills_personal_growth",
+      "file": "subjects/wellness.png"
+    },
+    {
+      "name": "fitness",
+      "type": "subject",
+      "section": "life_skills_personal_growth",
+      "file": "subjects/fitness.png"
+    },
+    {
+      "name": "sleep",
+      "type": "subject",
+      "section": "life_skills_personal_growth",
+      "file": "subjects/sleep.png"
+    },
+    {
+      "name": "habits",
+      "type": "subject",
+      "section": "life_skills_personal_growth",
+      "file": "subjects/habits.png"
+    },
+    {
+      "name": "creativity",
+      "type": "subject",
+      "section": "life_skills_personal_growth",
+      "file": "subjects/creativity.png"
+    },
+    {
+      "name": "problem-solving",
+      "type": "subject",
+      "section": "life_skills_personal_growth",
+      "file": "subjects/problem-solving.png"
+    },
+    {
+      "name": "critical-thinking",
+      "type": "subject",
+      "section": "life_skills_personal_growth",
+      "file": "subjects/critical-thinking.png"
+    },
+    {
+      "name": "robotics",
+      "type": "subject",
+      "section": "stem_advanced",
+      "file": "subjects/robotics.png"
+    },
+    {
+      "name": "coding",
+      "type": "subject",
+      "section": "stem_advanced",
+      "file": "subjects/coding.png"
+    },
+    {
+      "name": "data-science",
+      "type": "subject",
+      "section": "stem_advanced",
+      "file": "subjects/data-science.png"
+    },
+    {
+      "name": "ai",
+      "type": "subject",
+      "section": "stem_advanced",
+      "file": "subjects/ai.png"
+    },
+    {
+      "name": "environmental-science",
+      "type": "subject",
+      "section": "stem_advanced",
+      "file": "subjects/environmental-science.png"
+    },
+    {
+      "name": "renewable-energy",
+      "type": "subject",
+      "section": "stem_advanced",
+      "file": "subjects/renewable-energy.png"
+    },
+    {
+      "name": "nanotechnology",
+      "type": "subject",
+      "section": "stem_advanced",
+      "file": "subjects/nanotechnology.png"
+    },
+    {
+      "name": "mathematics-advanced",
+      "type": "subject",
+      "section": "stem_advanced",
+      "file": "subjects/mathematics-advanced.png"
+    },
+    {
+      "name": "biotechnology",
+      "type": "subject",
+      "section": "stem_advanced",
+      "file": "subjects/biotechnology.png"
+    },
+    {
+      "name": "genetics",
+      "type": "subject",
+      "section": "stem_advanced",
+      "file": "subjects/genetics.png"
+    },
+    {
+      "name": "astronomy",
+      "type": "subject",
+      "section": "stem_advanced",
+      "file": "subjects/astronomy.png"
+    },
+    {
+      "name": "quantum-physics",
+      "type": "subject",
+      "section": "stem_advanced",
+      "file": "subjects/quantum-physics.png"
+    },
+    {
+      "name": "game-design",
+      "type": "subject",
+      "section": "stem_advanced",
+      "file": "subjects/game-design.png"
+    },
+    {
+      "name": "virtual-reality",
+      "type": "subject",
+      "section": "stem_advanced",
+      "file": "subjects/virtual-reality.png"
+    },
+    {
+      "name": "home",
+      "type": "action",
+      "section": "additional_ui_icons",
+      "file": "actions/home.png"
+    },
+    {
+      "name": "library",
+      "type": "action",
+      "section": "additional_ui_icons",
+      "file": "actions/library.png"
+    },
+    {
+      "name": "learn",
+      "type": "action",
+      "section": "additional_ui_icons",
+      "file": "actions/learn.png"
+    },
+    {
+      "name": "analytics",
+      "type": "action",
+      "section": "additional_ui_icons",
+      "file": "actions/analytics.png"
+    },
+    {
+      "name": "profile",
+      "type": "action",
+      "section": "additional_ui_icons",
+      "file": "actions/profile.png"
+    },
+    {
+      "name": "search",
+      "type": "action",
+      "section": "additional_ui_icons",
+      "file": "actions/search.png"
+    },
+    {
+      "name": "filter",
+      "type": "action",
+      "section": "additional_ui_icons",
+      "file": "actions/filter.png"
+    },
+    {
+      "name": "sort",
+      "type": "action",
+      "section": "additional_ui_icons",
+      "file": "actions/sort.png"
+    },
+    {
+      "name": "location",
+      "type": "action",
+      "section": "additional_ui_icons",
+      "file": "actions/location.png"
+    },
+    {
+      "name": "more",
+      "type": "action",
+      "section": "additional_ui_icons",
+      "file": "actions/more.png"
+    },
+    {
+      "name": "settings",
+      "type": "action",
+      "section": "additional_ui_icons",
+      "file": "actions/settings.png"
+    },
+    {
+      "name": "back",
+      "type": "action",
+      "section": "additional_ui_icons",
+      "file": "actions/back.png"
+    },
+    {
+      "name": "forward",
+      "type": "action",
+      "section": "additional_ui_icons",
+      "file": "actions/forward.png"
+    },
+    {
+      "name": "add",
+      "type": "action",
+      "section": "additional_ui_icons",
+      "file": "actions/add.png"
+    },
+    {
+      "name": "notification",
+      "type": "notification",
+      "section": "notifications",
+      "file": "actions/notification.png"
+    },
+    {
+      "name": "message",
+      "type": "notification",
+      "section": "notifications",
+      "file": "actions/message.png"
+    },
+    {
+      "name": "alert",
+      "type": "notification",
+      "section": "notifications",
+      "file": "actions/alert.png"
+    },
+    {
+      "name": "help",
+      "type": "notification",
+      "section": "notifications",
+      "file": "actions/help.png"
+    }
+  ]
+}

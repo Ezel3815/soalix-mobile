@@ -9,7 +9,12 @@ import 'package:upgrade/models/user_model.dart';
 class YearsController extends GetxController {
   final RxBool _loading = false.obs;
 
-  List<DeckEntity> decks = [];
+  // Must be reactive (RxList), not a plain List — Obx widgets elsewhere
+  // (progress card, learning path list) read this directly, and GetX
+  // throws "improper use of GetX" if there's no observable inside an
+  // Obx scope. RxList behaves like a normal List everywhere else it's
+  // read (Progress, Library, etc. all keep working unchanged).
+  final RxList<DeckEntity> decks = <DeckEntity>[].obs;
 
   final Rx<ProfileEntity?> profile = Rx<ProfileEntity?>(null);
 
@@ -28,7 +33,7 @@ class YearsController extends GetxController {
       ApiController.getMyDecks(),
     ]);
 
-    decks = [...results[0], ...results[1]];
+    decks.assignAll([...results[0], ...results[1]]);
     loading = false;
   }
 

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:upgrade/api.dart';
 import 'package:upgrade/controllers/profile_controller.dart';
+import 'package:upgrade/entity/profile_entity.dart';
 import 'package:upgrade/main.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
@@ -259,7 +260,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             _StatItem(
-                              imageAsset: "lib/assests/images/stats/streak.png",
+                              icon: PhosphorIcons.flame(
+                                  PhosphorIconsStyle.fill),
+                              iconColor: AppColor.warningColor,
                               value: "${profile.currentStreak}",
                               label: "Streak",
                             ),
@@ -377,6 +380,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ],
                       ),
+                      const SizedBox(height: 20),
+                      _LevelCard(profile: profile),
                       const SizedBox(height: 30),
                     ],
                   ),
@@ -390,18 +395,104 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
+class _LevelCard extends StatelessWidget {
+  final ProfileEntity profile;
+  const _LevelCard({required this.profile});
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = profile.xpForNextLevel == 0
+        ? 0.0
+        : profile.xpIntoLevel / profile.xpForNextLevel;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColor.surfaceColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: AppColor.lightGreenColor,
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Text(
+                "${profile.level}",
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: AppColor.darkGreenColor,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Level ${profile.level}",
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: AppColor.textPrimary,
+                      ),
+                    ),
+                    Text(
+                      "${profile.xpIntoLevel}/${profile.xpForNextLevel} XP",
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: AppColor.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: LinearProgressIndicator(
+                    value: progress.clamp(0.0, 1.0),
+                    minHeight: 7,
+                    backgroundColor: AppColor.scaffoldBackgroundColor,
+                    valueColor:
+                        const AlwaysStoppedAnimation(AppColor.greenColor),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _StatItem extends StatelessWidget {
   final String value;
   final String label;
   final IconData? icon;
   final Color? iconColor;
-  final String? imageAsset;
   const _StatItem({
     required this.value,
     required this.label,
     this.icon,
     this.iconColor,
-    this.imageAsset,
   });
 
   @override
@@ -411,10 +502,7 @@ class _StatItem extends StatelessWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (imageAsset != null) ...[
-              Image.asset(imageAsset!, width: 16, height: 16),
-              const SizedBox(width: 4),
-            ] else if (icon != null) ...[
+            if (icon != null) ...[
               Icon(icon, size: 16, color: iconColor ?? AppColor.textPrimary),
               const SizedBox(width: 4),
             ],

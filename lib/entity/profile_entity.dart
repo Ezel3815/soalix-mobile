@@ -14,6 +14,10 @@ class ProfileEntity {
   final bool isFollowing;
   final bool isFriend;
   final DateTime? createdAt;
+  final int xp;
+  final int level;
+  final int xpIntoLevel;
+  final int xpForNextLevel;
 
   ProfileEntity({
     required this.id,
@@ -31,6 +35,10 @@ class ProfileEntity {
     required this.isFollowing,
     required this.isFriend,
     this.createdAt,
+    this.xp = 0,
+    this.level = 1,
+    this.xpIntoLevel = 0,
+    this.xpForNextLevel = 100,
   });
 
   factory ProfileEntity.fromJson(Map<String, dynamic> json) {
@@ -52,6 +60,10 @@ class ProfileEntity {
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'])
           : null,
+      xp: json['xp'] ?? 0,
+      level: json['level'] ?? 1,
+      xpIntoLevel: json['xp_into_level'] ?? 0,
+      xpForNextLevel: json['xp_for_next_level'] ?? 100,
     );
   }
 

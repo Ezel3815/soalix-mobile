@@ -34,6 +34,23 @@ late SharedPreferences sharedPref;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // TEMPORARY DIAGNOSTIC: release builds normally hide widget-build
+  // errors behind a blank grey box. This makes the real error message
+  // visible on screen instead, so it can be screenshotted and fixed —
+  // safe to leave in, it only ever shows up when something is already
+  // broken. Remove once the grey-box bug is found and fixed.
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return Container(
+      color: const Color(0xFF7A1F1F),
+      padding: const EdgeInsets.all(10),
+      alignment: Alignment.center,
+      child: Text(
+        details.exceptionAsString(),
+        style: const TextStyle(color: Colors.white, fontSize: 11),
+      ),
+    );
+  };
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,

@@ -11,6 +11,7 @@ import 'package:upgrade/di.dart';
 import 'package:upgrade/entity/card_entity.dart';
 import 'package:upgrade/entity/deck_entity.dart';
 import 'package:upgrade/entity/document_entity.dart';
+import 'package:upgrade/entity/daily_mission.dart';
 import 'package:upgrade/entity/leaderboard_entry.dart';
 import 'package:upgrade/entity/profile_entity.dart';
 import 'package:upgrade/mapper/app_mapper.dart';
@@ -784,6 +785,25 @@ class ApiController {
       }
     }
     return false;
+  }
+
+    static Future<List<DailyMission>> getDailyMissions() async {
+    try {
+      final response = await dio.get(
+        Api.dailyMissions,
+        options: GetOptions.getOptions(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return (response.data['missions'] as List)
+            .map((e) => DailyMission.fromJson(e))
+            .toList();
+      }
+    } catch (e) {
+      if (ErrorHandler.handle(e).failure.code != -6) {
+        showSnackBarWidget(message: ErrorHandler.handle(e).failure.message ?? "");
+      }
+    }
+    return [];
   }
 
     static Future<List<LeaderboardEntry>> getLeaderboard() async {

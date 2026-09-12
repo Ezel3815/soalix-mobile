@@ -259,9 +259,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             _StatItem(
-                              icon: PhosphorIcons.flame(
-                                  PhosphorIconsStyle.fill),
-                              iconColor: AppColor.warningColor,
+                              imageAsset: "lib/assests/images/stats/streak.png",
                               value: "${profile.currentStreak}",
                               label: "Streak",
                             ),
@@ -397,11 +395,13 @@ class _StatItem extends StatelessWidget {
   final String label;
   final IconData? icon;
   final Color? iconColor;
+  final String? imageAsset;
   const _StatItem({
     required this.value,
     required this.label,
     this.icon,
     this.iconColor,
+    this.imageAsset,
   });
 
   @override
@@ -411,7 +411,10 @@ class _StatItem extends StatelessWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (icon != null) ...[
+            if (imageAsset != null) ...[
+              Image.asset(imageAsset!, width: 16, height: 16),
+              const SizedBox(width: 4),
+            ] else if (icon != null) ...[
               Icon(icon, size: 16, color: iconColor ?? AppColor.textPrimary),
               const SizedBox(width: 4),
             ],

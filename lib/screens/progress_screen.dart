@@ -81,7 +81,7 @@ class ProgressScreen extends StatelessWidget {
             const SizedBox(height: 20),
             Obx(() {
               if (controller.tab.value == ProgressTab.achievements) {
-                return _AchievementsComingSoon();
+                return _AchievementsBody(controller: controller);
               }
               if (controller.tab.value == ProgressTab.leaderboard) {
                 return _LeaderboardBody(controller: controller);
@@ -130,30 +130,107 @@ class _TabPill extends StatelessWidget {
   }
 }
 
-class _AchievementsComingSoon extends StatelessWidget {
+class _AchievementsBody extends StatelessWidget {
+  final ProgressController controller;
+  const _AchievementsBody({required this.controller});
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 60),
-      child: Column(
-        children: [
-          Icon(
-            Icons.emoji_events_outlined,
-            size: 46,
-            color: AppColor.textSecondary.withOpacity(0.5),
+    return Obx(() {
+      if (controller.achievementsLoading.value) {
+        return const Padding(
+          padding: EdgeInsets.symmetric(vertical: 60),
+          child: Center(
+            child: CircularProgressIndicator(color: AppColor.greenColor),
           ),
-          const SizedBox(height: 12),
-          const Text(
-            "Achievements coming soon",
-            style: TextStyle(
-              fontSize: 14,
+        );
+      }
+      final achievements = controller.achievements;
+      final unlockedCount = achievements.where((a) => a.unlocked).length;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "$unlockedCount/${achievements.length} unlocked",
+            style: const TextStyle(
+              fontSize: 12,
               fontWeight: FontWeight.w600,
               color: AppColor.textSecondary,
             ),
           ),
+          const SizedBox(height: 12),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 0.85,
+            ),
+            itemCount: achievements.length,
+            itemBuilder: (context, index) {
+              final a = achievements[index];
+              return Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColor.surfaceColor,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: a.unlocked
+                      ? [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: a.unlocked
+                            ? AppColor.lightGreenColor
+                            : AppColor.scaffoldBackgroundColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        a.unlocked
+                            ? Icons.emoji_events_rounded
+                            : Icons.lock_outline_rounded,
+                        color: a.unlocked
+                            ? AppColor.darkGreenColor
+                            : AppColor.textSecondary.withOpacity(0.4),
+                        size: 22,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      a.title,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: a.unlocked
+                            ? AppColor.textPrimary
+                            : AppColor.textSecondary.withOpacity(0.6),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         ],
-      ),
-    );
+      );
+    });
   }
 }
 

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:upgrade/controllers/progress_controller.dart';
+import 'package:upgrade/entity/leaderboard_entry.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
-import 'package:upgrade/utils/subject_icon.dart';
+import 'package:upgrade/widgets/app_image.dart';
 
 class ProgressScreen extends StatelessWidget {
   const ProgressScreen({super.key});
@@ -65,6 +66,15 @@ class ProgressScreen extends StatelessWidget {
                           controller.tab.value = ProgressTab.statistics,
                     ),
                   ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _TabPill(
+                      label: "Leaderboard",
+                      selected: controller.tab.value == ProgressTab.leaderboard,
+                      onTap: () =>
+                          controller.tab.value = ProgressTab.leaderboard,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -72,6 +82,9 @@ class ProgressScreen extends StatelessWidget {
             Obx(() {
               if (controller.tab.value == ProgressTab.achievements) {
                 return _AchievementsComingSoon();
+              }
+              if (controller.tab.value == ProgressTab.leaderboard) {
+                return _LeaderboardBody(controller: controller);
               }
               return _StatisticsBody(controller: controller);
             }),
@@ -144,6 +157,139 @@ class _AchievementsComingSoon extends StatelessWidget {
   }
 }
 
+class _LeaderboardBody extends StatelessWidget {
+  final ProgressController controller;
+  const _LeaderboardBody({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      if (controller.leaderboardLoading.value) {
+        return const Padding(
+          padding: EdgeInsets.symmetric(vertical: 60),
+          child: Center(
+            child: CircularProgressIndicator(color: AppColor.greenColor),
+          ),
+        );
+      }
+      final entries = controller.leaderboard;
+      if (entries.isEmpty) {
+        return const Padding(
+          padding: EdgeInsets.symmetric(vertical: 40),
+          child: Center(
+            child: Text(
+              "Follow some friends to see how you compare",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: AppColor.textSecondary),
+            ),
+          ),
+        );
+      }
+      return Column(
+        children: List.generate(entries.length, (index) {
+          final entry = entries[index];
+          return Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: entry.isMe
+                  ? AppColor.lightGreenColor.withOpacity(0.5)
+                  : AppColor.surfaceColor,
+              borderRadius: BorderRadius.circular(14),
+              border: entry.isMe
+                  ? Border.all(color: AppColor.greenColor, width: 1.2)
+                  : null,
+              boxShadow: entry.isMe
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+            ),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 24,
+                  child: Text(
+                    "${index + 1}",
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColor.textSecondary,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                ClipOval(
+                  child: (entry.avatarPhotoName != null &&
+                          entry.avatarPhotoName!.isNotEmpty)
+                      ? AppImage(
+                          image: entry.avatarPhotoName!,
+                          width: 36,
+                          height: 36,
+                          fit: BoxFit.cover,
+                        )
+                      : Container(
+                          width: 36,
+                          height: 36,
+                          color: AppColor.lightGreenColor,
+                          child: Center(
+                            child: Text(
+                              entry.name.isNotEmpty
+                                  ? entry.name[0].toUpperCase()
+                                  : "?",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: AppColor.darkGreenColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        entry.isMe ? "${entry.name} (You)" : entry.name,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: AppColor.textPrimary,
+                        ),
+                      ),
+                      Text(
+                        "Level ${entry.level}",
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: AppColor.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  "${entry.xp} XP",
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: AppColor.greenColor,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+      );
+    });
+  }
+}
+
 class _StatisticsBody extends StatelessWidget {
   final ProgressController controller;
   const _StatisticsBody({required this.controller});
@@ -172,7 +318,8 @@ class _StatisticsBody extends StatelessWidget {
               children: [
                 Expanded(
                   child: _SummaryStat(
-                    imageAsset: "lib/assests/images/stats/streak.png",
+                    icon: Icons.local_fire_department_rounded,
+                    color: AppColor.warningColor,
                     value: "${controller.streak}",
                     label: "Day streak",
                   ),
@@ -289,16 +436,16 @@ class _StatisticsBody extends StatelessWidget {
                     child: Row(
                       children: [
                         Container(
-                          width: 38,
-                          height: 38,
-                          padding: const EdgeInsets.all(4),
+                          width: 34,
+                          height: 34,
                           decoration: BoxDecoration(
-                            color: AppColor.lightGreenColor.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(10),
+                            color: AppColor.lightGreenColor,
+                            borderRadius: BorderRadius.circular(9),
                           ),
-                          child: Image.asset(
-                            subjectIconAsset(s.title),
-                            fit: BoxFit.contain,
+                          child: const Icon(
+                            Icons.style_rounded,
+                            size: 16,
+                            color: AppColor.darkGreenColor,
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -350,15 +497,13 @@ class _StatisticsBody extends StatelessWidget {
 }
 
 class _SummaryStat extends StatelessWidget {
-  final IconData? icon;
-  final Color? color;
-  final String? imageAsset;
+  final IconData icon;
+  final Color color;
   final String value;
   final String label;
   const _SummaryStat({
-    this.icon,
-    this.color,
-    this.imageAsset,
+    required this.icon,
+    required this.color,
     required this.value,
     required this.label,
   });
@@ -367,10 +512,7 @@ class _SummaryStat extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (imageAsset != null)
-          Image.asset(imageAsset!, width: 26, height: 26)
-        else
-          Icon(icon, color: color, size: 24),
+        Icon(icon, color: color, size: 24),
         const SizedBox(height: 6),
         Text(
           value,

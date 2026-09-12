@@ -35,9 +35,11 @@ class _YearsScreenState extends State<YearsScreen> {
                   )
                 : RefreshIndicator(
                     color: AppColor.greenColor,
-                    onRefresh: () => Future.wait(
-                      [controller.getAllDeck(), controller.getMyProfile()],
-                    ),
+                    onRefresh: () => Future.wait([
+                      controller.getAllDeck(),
+                      controller.getMyProfile(),
+                      controller.getDailyMissions(),
+                    ]),
                     child: ListView(
                       padding: const EdgeInsets.only(bottom: 20),
                       children: [
@@ -45,6 +47,8 @@ class _YearsScreenState extends State<YearsScreen> {
                         _Header(scaffoldKey: scaffoldKey),
                         const SizedBox(height: 20),
                         _GreetingBlock(),
+                        const SizedBox(height: 18),
+                        _TodaysMissions(),
                         const SizedBox(height: 18),
                         _ProgressCard(),
                         const SizedBox(height: 24),
@@ -113,10 +117,10 @@ class _Header extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Image.asset(
-                    "lib/assests/images/stats/streak.png",
-                    width: 16,
-                    height: 16,
+                  Icon(
+                    PhosphorIcons.flame(PhosphorIconsStyle.fill),
+                    size: 15,
+                    color: AppColor.warningColor,
                   ),
                   const SizedBox(width: 4),
                   Text(
@@ -259,6 +263,103 @@ class _ProgressCard extends StatelessWidget {
 }
 
 /// Vertical timeline of decks styled as lesson nodes (current / completed / locked).
+class _TodaysMissions extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.find<YearsController>();
+    return Obx(() {
+      final missions = controller.missions;
+      if (missions.isEmpty) return const SizedBox.shrink();
+
+      final completedCount = missions.where((m) => m.completed).length;
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColor.surfaceColor,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 12,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Today's Missions",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColor.textPrimary,
+                    ),
+                  ),
+                  Text(
+                    "$completedCount/${missions.length} completed",
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColor.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              ...missions.map((m) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      children: [
+                        Icon(
+                          m.completed
+                              ? Icons.check_circle_rounded
+                              : Icons.radio_button_unchecked_rounded,
+                          size: 20,
+                          color: m.completed
+                              ? AppColor.greenColor
+                              : AppColor.textSecondary.withOpacity(0.4),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            m.title,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: m.completed
+                                  ? AppColor.textSecondary
+                                  : AppColor.textPrimary,
+                              decoration: m.completed
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          "${m.progress}/${m.target}",
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColor.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+            ],
+          ),
+        ),
+      );
+    });
+  }
+}
+
 class _LearningPathList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

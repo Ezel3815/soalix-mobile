@@ -1,5 +1,5 @@
 /// Maps a subject/deck title to one of the real Mozaik subject icon
-/// assets (lib/assests/images/subjects/*.png) by keyword matching.
+/// assets (lib/assests/images/Mozaik_Expanded_Subject_Icon_Assets/subjects/*.png) by keyword matching.
 /// These are designed illustrations, not a generic icon font — per the
 /// asset pack's own guidance, the same asset should be used consistently
 /// for a given subject everywhere in the app, never recolored per-card.
@@ -108,9 +108,9 @@ String subjectIconAsset(String title) {
 
   for (final entry in mapping.entries) {
     if (t.contains(entry.key)) {
-      return 'lib/assests/images/subjects/${entry.value}.png';
+      return 'lib/assests/images/Mozaik_Expanded_Subject_Icon_Assets/subjects/${entry.value}.png';
     }
   }
 
-  return 'lib/assests/images/subjects/education.png';
+  return 'lib/assests/images/Mozaik_Expanded_Subject_Icon_Assets/subjects/education.png';
 }

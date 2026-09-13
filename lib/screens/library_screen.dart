@@ -259,12 +259,12 @@ class _SubjectCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  width: 42,
-                  height: 42,
-                  padding: const EdgeInsets.all(4),
+                  width: 60,
+                  height: 60,
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: AppColor.lightGreenColor.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Image.asset(
                     subjectIconAsset(subject.title),
@@ -272,6 +272,7 @@ class _SubjectCard extends StatelessWidget {
                     errorBuilder: (context, error, stackTrace) => const Icon(
                       Icons.menu_book_rounded,
                       color: AppColor.darkGreenColor,
+                      size: 28,
                     ),
                   ),
                 ),

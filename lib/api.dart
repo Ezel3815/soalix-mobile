@@ -3,6 +3,7 @@ class Api {
   static const String leaderboard = '$baseUrl/users/leaderboard';
   static const String dailyMissions = '$baseUrl/users/me/missions';
   static const String achievements = '$baseUrl/users/me/achievements';
+  static const String activityFeed = '$baseUrl/users/me/activity-feed';
   static String viewProfile(int id) => '$baseUrl/users/$id/profile';
   static const String baseUrl = 'https://soalix-backend.onrender.com';
   static const String imageUrl = '$baseUrl/public/';

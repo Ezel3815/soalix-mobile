@@ -12,6 +12,7 @@ import 'package:upgrade/main.dart';
 import 'package:upgrade/mapper/app_mapper.dart';
 import 'package:upgrade/models/shape_creator_model.dart';
 import 'package:upgrade/resources.dart';
+import 'package:upgrade/widgets/celebration.dart';
 
 class CardViewController extends GetxController {
   late bool isView;
@@ -256,7 +257,9 @@ class CardViewController extends GetxController {
         _goToSessionResult();
       }
     }
-    await ApiController.answerCard(cardID: cards[pageViewIndex].id, answer: answer);
+    final result = await ApiController.answerCard(
+        cardID: cards[pageViewIndex].id, answer: answer);
+    if (result != null) showCelebration(result);
     Get.find<CardController>().getCard();
     Get.find<YearsController>().getAllDeck();
   }

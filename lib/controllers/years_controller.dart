@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:upgrade/controllers/api_controller.dart';
+import 'package:upgrade/entity/activity_feed_item.dart';
 import 'package:upgrade/entity/daily_mission.dart';
 import 'package:upgrade/entity/deck_entity.dart';
 import 'package:upgrade/entity/profile_entity.dart';
@@ -18,6 +19,7 @@ class YearsController extends GetxController {
   final RxList<DeckEntity> decks = <DeckEntity>[].obs;
 
   final Rx<ProfileEntity?> profile = Rx<ProfileEntity?>(null);
+  final RxList<ActivityFeedItem> activityFeed = <ActivityFeedItem>[].obs;
   final RxList<DailyMission> missions = <DailyMission>[].obs;
 
   bool get loading => _loading.value;
@@ -51,6 +53,10 @@ class YearsController extends GetxController {
     profile.value = await ApiController.getProfile(id);
   }
 
+  Future<void> getActivityFeed() async {
+    activityFeed.assignAll(await ApiController.getActivityFeed());
+  }
+
   Future<void> getDailyMissions() async {
     missions.assignAll(await ApiController.getDailyMissions());
   }
@@ -60,6 +66,7 @@ class YearsController extends GetxController {
     await Future.wait([
       getAllDeck(),
       getMyProfile(),
+      getActivityFeed(),
       getDailyMissions(),
     ]);
     super.onInit();

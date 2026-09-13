@@ -4,6 +4,9 @@
 /// asset pack's own guidance, the same asset should be used consistently
 /// for a given subject everywhere in the app, never recolored per-card.
 ///
+/// Supports both English and Arabic subject titles, since real subjects
+/// in this app are entered in Arabic (e.g. "بيولوجيا الخلية").
+///
 /// Falls back to a generic "education" tile when nothing matches, so a
 /// subject with an unrecognized name never renders blank.
 String subjectIconAsset(String title) {
@@ -11,56 +14,96 @@ String subjectIconAsset(String title) {
 
   // Ordered by specificity — more specific keywords are checked first
   // so e.g. "biochemistry" doesn't just match generic "chemistry" logic
-  // in an unhelpful order.
+  // in an unhelpful order. Arabic and English keywords both map to the
+  // same underlying icon slug.
   const mapping = <String, String>{
     // Medical / pre-med — mapped to the closest available real subject art
     'pharmacology': 'medicine',
     'pharma': 'medicine',
+    'صيدل': 'medicine',
     'pathology': 'medicine',
+    'أمراض': 'medicine',
     'radiology': 'medicine',
+    'أشعة': 'medicine',
     'surgery': 'medicine',
+    'جراح': 'medicine',
     'clinical': 'medicine',
+    'سريري': 'medicine',
     'immunology': 'medicine',
+    'مناعة': 'medicine',
     'microbiology': 'biology',
+    'أحياء دقيقة': 'biology',
     'anatomy': 'biology',
+    'تشريح': 'biology',
     'physiology': 'biology',
+    'وظائف الأعضاء': 'biology',
+    'فيزيولوجيا': 'biology',
     'biochemistry': 'chemistry',
+    'كيمياء حيوية': 'chemistry',
     'genetics': 'genetics',
+    'وراثة': 'genetics',
+    'جينات': 'genetics',
     'psychiatry': 'psychology',
+    'نفسي': 'psychology',
     'psychology': 'psychology',
+    'علم النفس': 'psychology',
     'medicine': 'medicine',
     'medical': 'medicine',
+    'طب': 'medicine',
     'health': 'health',
+    'صحة': 'health',
 
     // Core sciences
     'biology': 'biology',
+    'بيولوجيا': 'biology',
+    'أحياء': 'biology',
     'chemistry': 'chemistry',
+    'كيمياء': 'chemistry',
     'physics': 'physics',
+    'فيزياء': 'physics',
     'science': 'science',
+    'علوم': 'science',
 
     // Languages
     'english': 'english',
+    'إنجليزي': 'english',
+    'انجليزي': 'english',
     'arabic': 'arabic_language',
+    'عربي': 'arabic_language',
     'language': 'languages',
+    'لغ': 'languages',
 
     // Math
     'mathematics': 'math',
     'math': 'math',
+    'رياضيات': 'math',
 
     // Other common subjects
     'business': 'business',
+    'أعمال': 'business',
     'history': 'history',
+    'تاريخ': 'history',
     'geography': 'geography',
+    'جغرافيا': 'geography',
     'economics': 'economics',
+    'اقتصاد': 'economics',
     'literature': 'literature',
+    'أدب': 'literature',
     'writing': 'writing',
+    'كتابة': 'writing',
     'general knowledge': 'general_knowledge',
+    'معرفة عامة': 'general_knowledge',
     'technology': 'technology',
+    'تقنية': 'technology',
     'computer': 'computer-science',
+    'حاسوب': 'computer-science',
     'coding': 'coding',
+    'برمجة': 'coding',
     'programming': 'coding',
     'engineering': 'engineering',
+    'هندسة': 'engineering',
     'art': 'arts',
+    'فن': 'arts',
   };
 
   for (final entry in mapping.entries) {

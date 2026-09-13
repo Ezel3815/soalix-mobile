@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:upgrade/utils/subject_icon.dart';
 import 'package:upgrade/widgets/app_image.dart';
 import 'package:upgrade/controllers/main_controller.dart';
 import 'package:upgrade/controllers/years_controller.dart';
@@ -583,6 +584,26 @@ class _PathNode extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        padding: const EdgeInsets.all(7),
+                        decoration: BoxDecoration(
+                          color: AppColor.lightGreenColor.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(11),
+                        ),
+                        child: Image.asset(
+                          subjectIconAsset(deck.title),
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(
+                            Icons.menu_book_rounded,
+                            color: AppColor.darkGreenColor,
+                            size: 18,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

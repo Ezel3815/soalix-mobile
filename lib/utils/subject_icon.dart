@@ -106,10 +106,24 @@ String subjectIconAsset(String title) {
     'فن': 'arts',
   };
 
+  // Match the longest (most specific) keyword found, not just the first
+  // one in list order. Short generic substrings like "طب" (appears
+  // inside both "الطبية" = medical/adjective and "الطب" = medicine)
+  // would otherwise win over a more specific keyword like "فيزياء"
+  // purely by accident of which entry happens to be listed first.
+  String? bestMatch;
+  String? bestSlug;
   for (final entry in mapping.entries) {
     if (t.contains(entry.key)) {
-      return 'lib/assests/images/Mozaik_Expanded_Subject_Icon_Assets/subjects/${entry.value}.png';
+      if (bestMatch == null || entry.key.length > bestMatch.length) {
+        bestMatch = entry.key;
+        bestSlug = entry.value;
+      }
     }
+  }
+
+  if (bestSlug != null) {
+    return 'lib/assests/images/Mozaik_Expanded_Subject_Icon_Assets/subjects/$bestSlug.png';
   }
 
   return 'lib/assests/images/Mozaik_Expanded_Subject_Icon_Assets/subjects/education.png';

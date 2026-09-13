@@ -12,6 +12,8 @@ import 'package:upgrade/entity/card_entity.dart';
 import 'package:upgrade/entity/deck_entity.dart';
 import 'package:upgrade/entity/document_entity.dart';
 import 'package:upgrade/entity/achievement.dart';
+import 'package:upgrade/entity/activity_feed_item.dart';
+import 'package:upgrade/entity/answer_result.dart';
 import 'package:upgrade/entity/daily_mission.dart';
 import 'package:upgrade/entity/leaderboard_entry.dart';
 import 'package:upgrade/entity/profile_entity.dart';
@@ -673,21 +675,44 @@ class ApiController {
     return [];
   }
 
-  static Future<void> answerCard(
+  static Future<List<ActivityFeedItem>> getActivityFeed() async {
+    try {
+      final response = await dio.get(
+        Api.activityFeed,
+        options: GetOptions.getOptions(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return (response.data as List)
+            .map((e) => ActivityFeedItem.fromJson(e))
+            .toList();
+      }
+    } catch (e) {
+      if (ErrorHandler.handle(e).failure.code != -6) {
+        showSnackBarWidget(message: ErrorHandler.handle(e).failure.message ?? "");
+      }
+    }
+    return [];
+  }
+
+  static Future<AnswerResult?> answerCard(
       {required int cardID, required String answer}) async {
     try {
-      await dio.put(
+      final response = await dio.put(
         Api.answerCard(cardID),
         data: {
           "answer": answer,
         },
         options: GetOptions.getOptions(),
       );
+      if (response.data is Map<String, dynamic>) {
+        return AnswerResult.fromJson(response.data);
+      }
     } catch (e) {
       if(ErrorHandler.handle(e).failure.code != -6) {
         showSnackBarWidget(message: ErrorHandler.handle(e).failure.message ?? "");
       }
     }
+    return null;
   }
 
   static Future<ProfileEntity?> getProfile(int id) async {

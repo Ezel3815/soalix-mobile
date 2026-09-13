@@ -87,6 +87,8 @@ flutter:
   uses-material-design: true
   assets:
     - lib/assests/images/
+    - lib/assests/images/subjects/
+    - lib/assests/images/stats/
     - lib/assests/svgs/
 
   # To add assets to your application, add an assets section, like this:

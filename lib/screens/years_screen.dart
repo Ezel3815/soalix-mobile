@@ -585,12 +585,12 @@ class _PathNode extends StatelessWidget {
                   child: Row(
                     children: [
                       Container(
-                        width: 40,
-                        height: 40,
-                        padding: const EdgeInsets.all(7),
+                        width: 52,
+                        height: 52,
+                        padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
                           color: AppColor.lightGreenColor.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(11),
+                          borderRadius: BorderRadius.circular(14),
                         ),
                         child: Image.asset(
                           subjectIconAsset(deck.title),
@@ -599,7 +599,7 @@ class _PathNode extends StatelessWidget {
                               const Icon(
                             Icons.menu_book_rounded,
                             color: AppColor.darkGreenColor,
-                            size: 18,
+                            size: 24,
                           ),
                         ),
                       ),

@@ -269,6 +269,10 @@ class _SubjectCard extends StatelessWidget {
                   child: Image.asset(
                     subjectIconAsset(subject.title),
                     fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) => const Icon(
+                      Icons.menu_book_rounded,
+                      color: AppColor.darkGreenColor,
+                    ),
                   ),
                 ),
                 Icon(

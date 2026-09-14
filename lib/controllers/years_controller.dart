@@ -26,6 +26,42 @@ class YearsController extends GetxController {
 
   set loading(value) => _loading.value = value;
 
+  /// A "subject" is a PACKAGE_DECK whose direct children are all leaf
+  /// CARDS_DECK (chapters) — same convention used by Library/Progress.
+  List<DeckEntity> _collectSubjects(List<DeckEntity> nodes) {
+    final result = <DeckEntity>[];
+    for (final node in nodes) {
+      if (node.type != "PACKAGE_DECK") continue;
+      final isSubjectLevel = node.children.isNotEmpty &&
+          node.children.every((c) => c.type == "CARDS_DECK");
+      if (isSubjectLevel) {
+        result.add(node);
+      } else {
+        result.addAll(_collectSubjects(node.children));
+      }
+    }
+    return result;
+  }
+
+  bool _isSubjectComplete(DeckEntity subject) {
+    final cards = subject.children.expand((c) => c.cards).toList();
+    if (cards.isEmpty) return false;
+    return cards.every((c) => c.answer.isNotEmpty && c.answer != "NONE");
+  }
+
+  /// The subject Home should show front-and-center: the first one with
+  /// unfinished chapters. Falls back to the first subject at all if
+  /// every subject is complete (or none has any cards yet), and to
+  /// null only when there are no subjects in the tree at all.
+  DeckEntity? get currentSubject {
+    final subjects = _collectSubjects(decks);
+    if (subjects.isEmpty) return null;
+    return subjects.firstWhere(
+      (s) => !_isSubjectComplete(s),
+      orElse: () => subjects.first,
+    );
+  }
+
   Future<void> getAllDeck() async {
     // Only show the full-screen spinner on the very first load.
     // On refreshes, keep showing the existing decks while new data loads.

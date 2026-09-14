@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:upgrade/controllers/add_card_controller.dart';
@@ -72,6 +73,14 @@ class MyApp extends StatelessWidget {
       title: "MOZAIK",
       debugShowCheckedModeBanner: false,
       getPages: AppRoutes.pages,
+      // Whole app is Arabic + right-to-left.
+      locale: const Locale("ar"),
+      supportedLocales: const [Locale("ar")],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       theme: ThemeData(
         fontFamily: "ELMESSIRI",
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(

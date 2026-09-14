@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:upgrade/utils/subject_icon.dart';
+import 'package:upgrade/strings.dart';
 import 'package:upgrade/widgets/app_image.dart';
+import 'package:upgrade/widgets/lesson_path_widget.dart';
 import 'package:upgrade/controllers/main_controller.dart';
 import 'package:upgrade/controllers/years_controller.dart';
-import 'package:upgrade/entity/deck_entity.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
-import 'package:upgrade/main.dart';
 
 class YearsScreen extends StatefulWidget {
   const YearsScreen({super.key});
@@ -53,12 +52,12 @@ class _YearsScreenState extends State<YearsScreen> {
                         const SizedBox(height: 18),
                         _TodaysMissions(),
                         const SizedBox(height: 18),
-                        _ProgressCard(),
+                        _CurrentSubjectProgressCard(),
                         const SizedBox(height: 24),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Text(
-                            "Learning Paths",
+                            AppStrings.yourLearningPath,
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
@@ -67,7 +66,7 @@ class _YearsScreenState extends State<YearsScreen> {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        _LearningPathList(),
+                        _CurrentSubjectLessons(),
                         const SizedBox(height: 24),
                         _FriendsActivity(),
                       ],
@@ -107,7 +106,6 @@ class _Header extends StatelessWidget {
             height: 26,
             width: 90,
             fit: BoxFit.contain,
-            alignment: Alignment.centerLeft,
             'lib/assests/images/logodeck.png',
           ),
           const Spacer(),
@@ -142,7 +140,7 @@ class _Header extends StatelessWidget {
           }),
           const SizedBox(width: 10),
           InkWell(
-            onTap: () => Get.find<MainController>().onChangePage(2),
+            onTap: () => Get.find<MainController>().onChangePage(3),
             child: Obx(() {
               final name = controller.profile.value?.name ?? "";
               final initial = name.isNotEmpty ? name[0].toUpperCase() : "?";
@@ -177,7 +175,9 @@ class _GreetingBlock extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              name.isNotEmpty ? "Welcome back, $name" : "Welcome back",
+              name.isNotEmpty
+                  ? "${AppStrings.welcomeBack}، $name"
+                  : AppStrings.welcomeBack,
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
@@ -185,9 +185,9 @@ class _GreetingBlock extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
-              "Let's continue your learning journey",
-              style: TextStyle(
+            Text(
+              AppStrings.continueJourney,
+              style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
                 color: AppColor.textSecondary,
@@ -200,18 +200,27 @@ class _GreetingBlock extends StatelessWidget {
   }
 }
 
-/// Summary card showing how many learning paths are unlocked/complete.
-class _ProgressCard extends StatelessWidget {
+/// Progress within the current subject (chapters completed / total) —
+/// matches "رحلتك الحالية: 3/12" in the reference design. Replaces the
+/// old top-level Years-unlocked metric now that Home shows a subject's
+/// lessons directly instead of the Years list.
+class _CurrentSubjectProgressCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<YearsController>();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Obx(() {
-        final decks = controller.decks;
-        final total = decks.length;
-        final unlocked = decks.where((d) => !d.locked).length;
-        final progress = total == 0 ? 0.0 : unlocked / total;
+        final subject = controller.currentSubject;
+        final chapters = subject?.children ?? [];
+        final total = chapters.length;
+        final completed = chapters.where((c) {
+          if (c.cards.isEmpty) return false;
+          return c.cards.every((card) =>
+              card.answer.isNotEmpty && card.answer != "NONE");
+        }).length;
+        final progress = total == 0 ? 0.0 : completed / total;
+
         return Container(
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
@@ -231,16 +240,16 @@ class _ProgressCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "Current Path",
-                    style: TextStyle(
+                  Text(
+                    AppStrings.currentPath,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: AppColor.textPrimary,
                     ),
                   ),
                   Text(
-                    "$unlocked/$total",
+                    "$completed/$total",
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
@@ -267,7 +276,6 @@ class _ProgressCard extends StatelessWidget {
   }
 }
 
-/// Vertical timeline of decks styled as lesson nodes (current / completed / locked).
 class _TodaysMissions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -299,16 +307,16 @@ class _TodaysMissions extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "Today's Missions",
-                    style: TextStyle(
+                  Text(
+                    AppStrings.todaysMissions,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                       color: AppColor.textPrimary,
                     ),
                   ),
                   Text(
-                    "$completedCount/${missions.length} completed",
+                    "$completedCount/${missions.length} ${AppStrings.completedCount}",
                     style: const TextStyle(
                       fontSize: 12,
                       color: AppColor.textSecondary,
@@ -367,10 +375,10 @@ class _TodaysMissions extends StatelessWidget {
 
 String _relativeTime(DateTime time) {
   final diff = DateTime.now().difference(time);
-  if (diff.inMinutes < 1) return "Just now";
-  if (diff.inMinutes < 60) return "${diff.inMinutes}m ago";
-  if (diff.inHours < 24) return "${diff.inHours}h ago";
-  return "${diff.inDays}d ago";
+  if (diff.inMinutes < 1) return "الآن";
+  if (diff.inMinutes < 60) return "قبل ${diff.inMinutes} د";
+  if (diff.inHours < 24) return "قبل ${diff.inHours} س";
+  return "قبل ${diff.inDays} ي";
 }
 
 /// The "I'm not studying alone" feed — recent real milestones from
@@ -390,9 +398,9 @@ class _FriendsActivity extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Friends Activity",
-              style: TextStyle(
+            Text(
+              AppStrings.friendsActivity,
+              style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
                 color: AppColor.textPrimary,
@@ -479,276 +487,32 @@ class _FriendsActivity extends StatelessWidget {
   }
 }
 
-class _LearningPathList extends StatelessWidget {
+/// Shows the current subject's chapters as a guided lesson path —
+/// reuses the exact same widget used when drilling into a subject from
+/// Library, so Home and Library behave identically once you're looking
+/// at a subject's lessons. No locking: every chapter is tappable.
+class _CurrentSubjectLessons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<YearsController>();
     return Obx(() {
-      final decks = controller.decks;
-      // The first unlocked deck that isn't fully reviewed is the "current" one.
-      final currentIndex = decks.indexWhere((d) => !d.locked && !_isComplete(d));
-
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: List.generate(decks.length, (index) {
-            final deck = decks[index];
-            final isLast = index == decks.length - 1;
-            final state = deck.locked
-                ? _NodeState.locked
-                : _isComplete(deck)
-                    ? _NodeState.completed
-                    : index == currentIndex
-                        ? _NodeState.current
-                        : _NodeState.completed;
-            return _PathNode(
-              deck: deck,
-              index: index,
-              state: state,
-              showLine: !isLast,
-            );
-          }),
-        ),
+      final subject = controller.currentSubject;
+      if (subject == null) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          child: Text(
+            AppStrings.noSubjectsYet,
+            style: const TextStyle(color: AppColor.textSecondary),
+          ),
+        );
+      }
+      return SizedBox(
+        // LessonPathWidget uses ListView.builder internally; give it a
+        // bounded height sized to its content so it can sit inside this
+        // screen's outer ListView without both fighting over scrolling.
+        height: subject.children.length * 108.0,
+        child: LessonPathWidget(chapters: subject.children),
       );
     });
-  }
-
-  bool _isComplete(DeckEntity deck) {
-    if (deck.cards.isEmpty) return false;
-    return deck.cards.every((c) => c.answer.isNotEmpty);
-  }
-}
-
-enum _NodeState { locked, current, completed }
-
-class _PathNode extends StatelessWidget {
-  final DeckEntity deck;
-  final int index;
-  final _NodeState state;
-  final bool showLine;
-
-  const _PathNode({
-    required this.deck,
-    required this.index,
-    required this.state,
-    required this.showLine,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final reviewed = deck.cards.where((c) => c.answer.isNotEmpty).length;
-    final total = deck.cards.length;
-
-    return InkWell(
-      onTap: () => _onTapDeck(deck),
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 4),
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                children: [
-                  _NodeCircle(index: index, state: state),
-                  if (showLine)
-                    Expanded(
-                      child: Container(
-                        width: 3,
-                        margin: const EdgeInsets.symmetric(vertical: 4),
-                        color: state == _NodeState.completed
-                            ? AppColor.greenColor.withOpacity(0.5)
-                            : AppColor.greyColor.withOpacity(0.5),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 14),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 14),
-                  decoration: BoxDecoration(
-                    color: AppColor.surfaceColor,
-                    borderRadius: BorderRadius.circular(14),
-                    border: state == _NodeState.current
-                        ? Border.all(color: AppColor.greenColor, width: 1.4)
-                        : null,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
-                        blurRadius: 8,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 52,
-                        height: 52,
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: AppColor.lightGreenColor.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: Image.asset(
-                          subjectIconAsset(deck.title),
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(
-                            Icons.menu_book_rounded,
-                            color: AppColor.darkGreenColor,
-                            size: 24,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              deck.title,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: AppColor.textPrimary,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              _statusLabel(total, reviewed),
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: _statusColor(),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Icon(
-                        Icons.chevron_right_rounded,
-                        color: AppColor.textSecondary,
-                        size: 22,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  String _statusLabel(int total, int reviewed) {
-    switch (state) {
-      case _NodeState.locked:
-        return "Locked";
-      case _NodeState.completed:
-        return "Completed";
-      case _NodeState.current:
-        return total == 0 ? "Not started" : "$reviewed/$total cards";
-    }
-  }
-
-  Color _statusColor() {
-    switch (state) {
-      case _NodeState.locked:
-        return AppColor.textSecondary;
-      case _NodeState.completed:
-        return AppColor.greenColor;
-      case _NodeState.current:
-        return AppColor.darkGreenColor;
-    }
-  }
-
-  void _onTapDeck(DeckEntity model) {
-    if (model.locked) {
-      Get.snackbar(
-        "Locked",
-        "This deck is locked, contact support to unlock it",
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
-    if (model.type == "PACKAGE_DECK") {
-      Get.toNamed(
-        AppRoutes.preparatoryYearRoute,
-        arguments: {
-          "id": model.id,
-          "decks": model.children,
-        },
-        preventDuplicates: false,
-      );
-    } else {
-      Get.toNamed(
-        AppRoutes.cardRoute,
-        arguments: model,
-      );
-    }
-  }
-}
-
-class _NodeCircle extends StatelessWidget {
-  final int index;
-  final _NodeState state;
-  const _NodeCircle({required this.index, required this.state});
-
-  @override
-  Widget build(BuildContext context) {
-    switch (state) {
-      case _NodeState.locked:
-        return Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: AppColor.greyColor.withOpacity(0.3),
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.lock_rounded,
-            color: AppColor.textSecondary,
-            size: 18,
-          ),
-        );
-      case _NodeState.completed:
-        return Container(
-          width: 40,
-          height: 40,
-          decoration: const BoxDecoration(
-            color: AppColor.greenColor,
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.check_rounded,
-            color: Colors.white,
-            size: 20,
-          ),
-        );
-      case _NodeState.current:
-        return Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: AppColor.surfaceColor,
-            shape: BoxShape.circle,
-            border: Border.all(color: AppColor.greenColor, width: 2),
-          ),
-          child: Center(
-            child: Text(
-              "${index + 1}",
-              style: const TextStyle(
-                fontWeight: FontWeight.w700,
-                color: AppColor.greenColor,
-              ),
-            ),
-          ),
-        );
-    }
   }
 }

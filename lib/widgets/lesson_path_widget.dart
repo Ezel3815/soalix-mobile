@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:upgrade/entity/deck_entity.dart';
 import 'package:upgrade/resources.dart';
+import 'package:upgrade/strings.dart';
 import 'package:upgrade/utils/chapter_navigation.dart';
 
 /// Renders a list of chapter decks as a guided lesson path.
@@ -149,7 +150,7 @@ class _LessonNode extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Lesson $index",
+                              "${AppStrings.lesson} $index",
                               style: const TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
@@ -171,18 +172,25 @@ class _LessonNode extends StatelessWidget {
                         ),
                       ),
                       if (status == _ChapterStatus.completed)
-                        const Text("✓ Completed",
-                            style: TextStyle(
+                        Text("✓ ${AppStrings.completed}",
+                            style: const TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
                               color: AppColor.greenColor,
                             ))
                       else if (status == _ChapterStatus.inProgress)
-                        const Text("In progress",
-                            style: TextStyle(
+                        Text(AppStrings.inProgress,
+                            style: const TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
                               color: AppColor.darkGreenColor,
+                            ))
+                      else
+                        Text(AppStrings.pending,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: AppColor.textSecondary.withOpacity(0.7),
                             )),
                     ],
                   ),

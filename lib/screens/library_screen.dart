@@ -261,7 +261,7 @@ class _SubjectCard extends StatelessWidget {
                 Container(
                   width: 72,
                   height: 72,
-                  padding: const EdgeInsets.all(6),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: AppColor.lightGreenColor.withOpacity(0.5),
                     borderRadius: BorderRadius.circular(18),

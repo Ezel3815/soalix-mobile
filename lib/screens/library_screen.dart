@@ -6,7 +6,7 @@ import 'package:upgrade/entity/deck_entity.dart';
 import 'package:upgrade/main.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
-import 'package:upgrade/utils/subject_icon.dart';
+import 'package:upgrade/widgets/mozaik_mark_icon.dart';
 
 /// A small set of accent colors used only to visually distinguish deck
 /// cards in the library grid (not tied to any real "subject category"
@@ -261,19 +261,12 @@ class _SubjectCard extends StatelessWidget {
                 Container(
                   width: 72,
                   height: 72,
-                  padding: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
-                    color: AppColor.lightGreenColor.withOpacity(0.5),
+                    color: accentColor.withOpacity(0.14),
                     borderRadius: BorderRadius.circular(18),
                   ),
-                  child: Image.asset(
-                    subjectIconAsset(subject.title),
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) => const Icon(
-                      Icons.menu_book_rounded,
-                      color: AppColor.darkGreenColor,
-                      size: 34,
-                    ),
+                  child: Center(
+                    child: MozaikMarkIcon(color: accentColor, size: 40),
                   ),
                 ),
                 Icon(

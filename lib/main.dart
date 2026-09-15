@@ -247,17 +247,17 @@ class AppRoutes {
         ),
       ),
     ),
-    GetPage(
-      name: preparatoryYearRoute,
-      page: () => const PreparatoryYear(),
-      binding: BindingsBuilder(
-        () => Get.lazyPut(
-          () => PreparatoryYearController(),
-          tag: Get.arguments['id'].toString(),
-          fenix: true,
-        ),
-      ),
+   GetPage(
+  name: preparatoryYearRoute,
+  page: () => PreparatoryYear(id: (Get.arguments['id']).toString()), // was: () => const PreparatoryYear()
+  binding: BindingsBuilder(
+    () => Get.lazyPut(
+      () => PreparatoryYearController(),
+      tag: Get.arguments['id'].toString(),
+      fenix: true,
     ),
+  ),
+),
     GetPage(
       name: cardViewRoute,
       page: () => const CardViewScreen(),

@@ -43,26 +43,44 @@ class OutBoordinagState extends State<OnBording> {
         ],
       ),
       bottomSheet: islastpage
-          ? Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: TextButton(
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.white,
+          ? Container(
+              color: const Color(0xE8F2F4E7),
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 20),
+              child: SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
                     backgroundColor: AppColor.greenColor,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shadowColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
                   ),
                   onPressed: () {
                     Get.offAllNamed(AppRoutes.loginRoute);
                     sharedPref.setBool("onBoarding", true);
-                    // Navigator.of(context).pushReplacement(
-                    //     MaterialPageRoute(builder: (context) => const Register()));
                   },
-                  child: const Text(
-                    'Get Started ',
-                    style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black,
-          ),
-                  )),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'ابدأ الآن',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Icon(Icons.arrow_back_rounded,
+                          size: 20, color: Colors.white),
+                    ],
+                  ),
+                ),
+              ),
             )
           : Container(
               color: const Color(0xE8F2F4E7),

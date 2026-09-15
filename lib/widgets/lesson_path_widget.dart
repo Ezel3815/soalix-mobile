@@ -4,6 +4,7 @@ import 'package:upgrade/entity/deck_entity.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/strings.dart';
 import 'package:upgrade/utils/chapter_navigation.dart';
+import 'package:upgrade/widgets/mozaik_mark_icon.dart';
 
 /// Renders a list of chapter decks as a guided lesson path.
 /// Every node is open — there is no progression lock. Progress
@@ -70,10 +71,12 @@ class _LessonNode extends StatelessWidget {
     }
   }
 
-  Widget get _nodeIcon {
+  /// Small badge shown centered on top of the mark — a check for
+  /// completed chapters, otherwise the lesson number.
+  Widget get _nodeBadge {
     switch (status) {
       case _ChapterStatus.completed:
-        return const Icon(Icons.check_rounded, color: Colors.white, size: 20);
+        return const Icon(Icons.check_rounded, color: Colors.white, size: 16);
       case _ChapterStatus.inProgress:
       case _ChapterStatus.notStarted:
         return Text(
@@ -81,7 +84,8 @@ class _LessonNode extends StatelessWidget {
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w700,
-            fontSize: 14,
+            fontSize: 13,
+            shadows: [Shadow(color: Colors.black26, blurRadius: 3)],
           ),
         );
     }
@@ -98,17 +102,16 @@ class _LessonNode extends StatelessWidget {
           children: [
             Column(
               children: [
-                Container(
+                SizedBox(
                   width: 36,
                   height: 36,
-                  decoration: BoxDecoration(
-                    color: _nodeColor,
-                    shape: BoxShape.circle,
-                    border: status == _ChapterStatus.notStarted
-                        ? Border.all(color: AppColor.greenColor, width: 1.5)
-                        : null,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      MozaikMarkIcon(color: _nodeColor, size: 36),
+                      _nodeBadge,
+                    ],
                   ),
-                  child: Center(child: _nodeIcon),
                 ),
                 if (showConnector)
                   Expanded(

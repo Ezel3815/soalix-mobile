@@ -7,12 +7,13 @@ import 'package:upgrade/widgets/deck_widget.dart';
 import 'package:upgrade/widgets/lesson_path_widget.dart';
 
 class PreparatoryYear extends StatelessWidget {
-  const PreparatoryYear({super.key});
+  final String id;
+  const PreparatoryYear({super.key, required this.id}); // was: const PreparatoryYear({super.key});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<PreparatoryYearController>(
-      tag: Get.arguments['id'].toString(),
+      tag: id, // was: tag: Get.arguments['id'].toString(),
       builder: (controller) {
         // If every child at this level is a leaf CARDS_DECK, we're at
         // chapter depth — render the guided lesson path. Otherwise this

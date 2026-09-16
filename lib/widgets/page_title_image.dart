@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:upgrade/controllers/add_card_controller.dart';
+import 'package:upgrade/resources.dart';
 import 'package:upgrade/widgets/app_image.dart';
 
 class PageTitleImage extends GetView<AddCardController> {
@@ -12,63 +13,79 @@ class PageTitleImage extends GetView<AddCardController> {
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => Row(
-        children: [
-          const SizedBox(
-            width: 10,
-          ),
-          Text(
-            controller.getTitle(type, type2),
-            style: const TextStyle(
-              fontSize: 20,
-              color: Colors.black,
+      () => Padding(
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
+        child: Row(
+          children: [
+            Text(
+              controller.getTitle(type, type2),
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: AppColor.textPrimary,
+              ),
             ),
-          ),
-          if (controller.commentImage.isEmpty&&type != CardTypes.occlusion ) ...[
-            const Spacer(),
-            if (controller.getImage(type2).isNotEmpty)
-              SizedBox(
-                width: 50,
-                height: 50,
-                child: Stack(
-                  children: [
-                    AppImage(
-                      image: controller.getImage(type2),
-                      fit: BoxFit.cover,
-                      radius: 5,
-                    ),
-                    InkWell(
-                      onTap: () => controller.onTapClearImage(type2),
-                      child: Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.close,
-                          color: Colors.white,
-                          size: 15,
+            if (controller.commentImage.isEmpty &&
+                type != CardTypes.occlusion) ...[
+              const Spacer(),
+              if (controller.getImage(type2).isNotEmpty)
+                SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: AppImage(
+                          image: controller.getImage(type2),
+                          fit: BoxFit.cover,
+                          radius: 10,
                         ),
                       ),
+                      Positioned(
+                        top: -4,
+                        right: -4,
+                        child: InkWell(
+                          onTap: () => controller.onTapClearImage(type2),
+                          child: Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: const BoxDecoration(
+                              color: Colors.redAccent,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.close,
+                              color: Colors.white,
+                              size: 11,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                InkWell(
+                  borderRadius: BorderRadius.circular(10),
+                  onTap: () => controller.pickImage(type2),
+                  child: Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: AppColor.lightGreenColor.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                  ],
+                    child: const Icon(
+                      Icons.attachment_rounded,
+                      color: AppColor.darkGreenColor,
+                      size: 18,
+                    ),
+                  ),
                 ),
-              )
-            else
-              IconButton(
-                onPressed: () {
-                  controller.pickImage(type2);
-                },
-                icon: const Icon(
-                  Icons.attachment,
-                ),
-              ),
-            const SizedBox(
-              width: 10,
-            ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

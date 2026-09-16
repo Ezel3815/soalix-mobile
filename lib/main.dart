@@ -105,27 +105,48 @@ class AnimatedLogos extends StatefulWidget {
 class AnimatedLogosState extends State<AnimatedLogos>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _fadeAnimation;
+  late Animation<double> _markScale;
+  late Animation<double> _markOpacity;
+  late Animation<double> _wordmarkOpacity;
+  late Animation<Offset> _wordmarkSlide;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(seconds: 2),
+      duration: const Duration(milliseconds: 1400),
       vsync: this,
     );
 
-    _fadeAnimation =
-        Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+    // Mark scales in with a slight overshoot ("pop"), fading in over the
+    // first half of the animation.
+    _markScale = Tween<double>(begin: 0.7, end: 1.0).animate(CurvedAnimation(
       parent: _controller,
-      curve: Curves.easeInOut,
+      curve: const Interval(0.0, 0.65, curve: Curves.easeOutBack),
+    ));
+    _markOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.0, 0.45, curve: Curves.easeOut),
     ));
 
-    _controller.forward().then((_) {
-      _controller.reverse();
-    });
+    // Wordmark fades and slides up slightly, starting once the mark has
+    // mostly settled.
+    _wordmarkOpacity =
+        Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.45, 1.0, curve: Curves.easeOut),
+    ));
+    _wordmarkSlide = Tween<Offset>(
+      begin: const Offset(0, 0.25),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.45, 1.0, curve: Curves.easeOutCubic),
+    ));
 
-    Future.delayed(const Duration(seconds: 3), () {
+    _controller.forward();
+
+    Future.delayed(const Duration(milliseconds: 2200), () {
       if (sharedPref.getString("token") != null) {
         Get.offNamed(AppRoutes.mainRoute);
       } else {
@@ -149,23 +170,28 @@ class AnimatedLogosState extends State<AnimatedLogos>
     return Scaffold(
       backgroundColor: AppColor.scaffoldBackgroundColor,
       body: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            FadeTransition(
-              opacity: _fadeAnimation,
-              child: Image.asset(
-                "lib/assests/images/logo1.png",
-                height: 200,
-                width: 100,
+            ScaleTransition(
+              scale: _markScale,
+              child: FadeTransition(
+                opacity: _markOpacity,
+                child: Image.asset(
+                  "lib/assests/images/splash_mark.png",
+                  height: 84,
+                ),
               ),
             ),
-            FadeTransition(
-              opacity: _fadeAnimation,
-              child: Image.asset(
-                "lib/assests/images/logo2.png",
-                height: 200,
-                width: 150,
+            const SizedBox(height: 18),
+            SlideTransition(
+              position: _wordmarkSlide,
+              child: FadeTransition(
+                opacity: _wordmarkOpacity,
+                child: Image.asset(
+                  "lib/assests/images/splash_wordmark.png",
+                  height: 34,
+                ),
               ),
             ),
           ],

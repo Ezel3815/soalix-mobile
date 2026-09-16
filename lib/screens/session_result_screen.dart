@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:upgrade/entity/card_entity.dart';
@@ -8,8 +10,48 @@ import 'package:upgrade/resources.dart';
 /// straight from the arguments CardViewController passes when the last
 /// card is answered — no new backend endpoint, purely a summary of
 /// what already happened client-side during the session.
-class SessionResultScreen extends StatelessWidget {
+class SessionResultScreen extends StatefulWidget {
   const SessionResultScreen({super.key});
+
+  @override
+  State<SessionResultScreen> createState() => _SessionResultScreenState();
+}
+
+class _SessionResultScreenState extends State<SessionResultScreen>
+    with TickerProviderStateMixin {
+  late final AnimationController _entrance;
+  late final Animation<double> _badgeScale;
+  late final Animation<double> _contentFade;
+  late final AnimationController _confettiController;
+
+  @override
+  void initState() {
+    super.initState();
+    _entrance = AnimationController(
+      duration: const Duration(milliseconds: 700),
+      vsync: this,
+    )..forward();
+    _badgeScale = CurvedAnimation(
+      parent: _entrance,
+      curve: const Interval(0.0, 0.7, curve: Curves.elasticOut),
+    );
+    _contentFade = CurvedAnimation(
+      parent: _entrance,
+      curve: const Interval(0.3, 1.0, curve: Curves.easeOut),
+    );
+
+    _confettiController = AnimationController(
+      duration: const Duration(milliseconds: 2600),
+      vsync: this,
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    _entrance.dispose();
+    _confettiController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,167 +64,299 @@ class SessionResultScreen extends StatelessWidget {
     final bool isView = args['isView'] ?? false;
     final total = correct + wrong;
     final accuracy = total == 0 ? 0 : ((correct / total) * 100).round();
+    final bool celebrate = total > 0 && accuracy >= 60;
 
     return Scaffold(
       backgroundColor: AppColor.scaffoldBackgroundColor,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            children: [
-              const Spacer(),
-              Container(
-                width: 88,
-                height: 88,
-                decoration: BoxDecoration(
-                  color: AppColor.lightGreenColor,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.check_rounded,
-                  color: AppColor.darkGreenColor,
-                  size: 46,
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "Well done!",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: AppColor.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 4),
-              const Text(
-                "You completed this session",
-                style: TextStyle(
-                  fontSize: 13,
-                  color: AppColor.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Stack(
-                alignment: Alignment.center,
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
                 children: [
-                  SizedBox(
-                    width: 120,
-                    height: 120,
-                    child: CircularProgressIndicator(
-                      value: accuracy / 100,
-                      strokeWidth: 9,
-                      backgroundColor: AppColor.lightGreenColor,
-                      valueColor: const AlwaysStoppedAnimation(
-                          AppColor.greenColor),
-                    ),
-                  ),
-                  Text(
-                    "$accuracy%",
-                    style: const TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w700,
-                      color: AppColor.textPrimary,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                "Accuracy",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColor.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 28),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _StatChip(
-                    icon: Icons.star_rounded,
-                    color: AppColor.warningColor,
-                    value: "$correct",
-                    label: "Correct",
-                  ),
-                  _StatChip(
-                    icon: Icons.close_rounded,
-                    color: AppColor.errorColor,
-                    value: "$wrong",
-                    label: "Missed",
-                  ),
-                  _StatChip(
-                    icon: Icons.schedule_rounded,
-                    color: AppColor.infoColor,
-                    value: "$minutes",
-                    label: "Minutes",
-                  ),
-                ],
-              ),
-              const Spacer(),
-              if (mistakes.isNotEmpty) ...[
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Get.offNamed(
-                        AppRoutes.cardViewRoute,
-                        arguments: {
-                          'cards': mistakes,
-                          'isView': isView,
-                          'initalIndex': 0,
-                        },
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: AppColor.greenColor),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                  const Spacer(),
+                  ScaleTransition(
+                    scale: _badgeScale,
+                    child: Container(
+                      width: 88,
+                      height: 88,
+                      decoration: BoxDecoration(
+                        color: AppColor.lightGreenColor,
+                        shape: BoxShape.circle,
                       ),
-                    ),
-                    child: Text(
-                      "Review ${mistakes.length} missed card${mistakes.length == 1 ? '' : 's'}",
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: AppColor.greenColor,
+                      child: const Icon(
+                        Icons.check_rounded,
+                        color: AppColor.darkGreenColor,
+                        size: 46,
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 12),
-              ],
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: () => Get.until(
-                    (route) => Get.currentRoute == AppRoutes.cardRoute,
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColor.greenColor,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                  const SizedBox(height: 20),
+                  FadeTransition(
+                    opacity: _contentFade,
+                    child: Column(
+                      children: [
+                        const Text(
+                          "Well done!",
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                            color: AppColor.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          "You completed this session",
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: AppColor.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SizedBox(
+                              width: 120,
+                              height: 120,
+                              child: TweenAnimationBuilder<double>(
+                                tween: Tween(begin: 0, end: accuracy / 100),
+                                duration: const Duration(milliseconds: 900),
+                                curve: Curves.easeOutCubic,
+                                builder: (context, value, _) =>
+                                    CircularProgressIndicator(
+                                  value: value,
+                                  strokeWidth: 9,
+                                  backgroundColor: AppColor.lightGreenColor,
+                                  valueColor: const AlwaysStoppedAnimation(
+                                      AppColor.greenColor),
+                                ),
+                              ),
+                            ),
+                            Text(
+                              "$accuracy%",
+                              style: const TextStyle(
+                                fontSize: 26,
+                                fontWeight: FontWeight.w700,
+                                color: AppColor.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          "Accuracy",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColor.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 28),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _StatChip(
+                              icon: Icons.star_rounded,
+                              color: AppColor.warningColor,
+                              value: "$correct",
+                              label: "Correct",
+                            ),
+                            _StatChip(
+                              icon: Icons.close_rounded,
+                              color: AppColor.errorColor,
+                              value: "$wrong",
+                              label: "Missed",
+                            ),
+                            _StatChip(
+                              icon: Icons.schedule_rounded,
+                              color: AppColor.infoColor,
+                              value: "$minutes",
+                              label: "Minutes",
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  child: const Text(
-                    "Continue",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                  const Spacer(),
+                  FadeTransition(
+                    opacity: _contentFade,
+                    child: Column(
+                      children: [
+                        if (mistakes.isNotEmpty) ...[
+                          SizedBox(
+                            width: double.infinity,
+                            height: 52,
+                            child: OutlinedButton(
+                              onPressed: () {
+                                Get.offNamed(
+                                  AppRoutes.cardViewRoute,
+                                  arguments: {
+                                    'cards': mistakes,
+                                    'isView': isView,
+                                    'initalIndex': 0,
+                                  },
+                                );
+                              },
+                              style: OutlinedButton.styleFrom(
+                                side:
+                                    const BorderSide(color: AppColor.greenColor),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              child: Text(
+                                "Review ${mistakes.length} missed card${mistakes.length == 1 ? '' : 's'}",
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColor.greenColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                        SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: ElevatedButton(
+                            onPressed: () => Get.until(
+                              (route) =>
+                                  Get.currentRoute == AppRoutes.cardRoute,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColor.greenColor,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            child: const Text(
+                              "Continue",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
+                  const SizedBox(height: 20),
+                ],
               ),
-              const SizedBox(height: 20),
-            ],
+            ),
           ),
-        ),
+          if (celebrate)
+            IgnorePointer(
+              child: AnimatedBuilder(
+                animation: _confettiController,
+                builder: (context, _) => CustomPaint(
+                  size: Size.infinite,
+                  painter: _ConfettiPainter(_confettiController.value),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
+}
+
+class _ConfettiParticle {
+  final double startX;
+  final double delay;
+  final double speed;
+  final double drift;
+  final double size;
+  final double rotationSpeed;
+  final Color color;
+  final bool isCircle;
+
+  _ConfettiParticle({
+    required this.startX,
+    required this.delay,
+    required this.speed,
+    required this.drift,
+    required this.size,
+    required this.rotationSpeed,
+    required this.color,
+    required this.isCircle,
+  });
+}
+
+/// Lightweight confetti burst — no external package. ~36 small shapes
+/// fall from just above the top edge, drifting sideways and rotating,
+/// fading out over the last quarter of the animation.
+class _ConfettiPainter extends CustomPainter {
+  final double progress;
+  static final List<_ConfettiParticle> _particles = _generateParticles();
+
+  _ConfettiPainter(this.progress);
+
+  static List<_ConfettiParticle> _generateParticles() {
+    final random = Random(7);
+    const colors = [
+      AppColor.greenColor,
+      AppColor.freshGreenColor,
+      AppColor.darkGreenColor,
+      AppColor.warningColor,
+      AppColor.infoColor,
+      Color(0xFF7C6FA8),
+    ];
+    return List.generate(36, (i) {
+      return _ConfettiParticle(
+        startX: random.nextDouble(),
+        delay: random.nextDouble() * 0.35,
+        speed: 0.7 + random.nextDouble() * 0.5,
+        drift: (random.nextDouble() - 0.5) * 0.4,
+        size: 5 + random.nextDouble() * 5,
+        rotationSpeed: (random.nextDouble() - 0.5) * 10,
+        color: colors[i % colors.length],
+        isCircle: i.isEven,
+      );
+    });
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    for (final p in _particles) {
+      final localT = ((progress - p.delay) / (1 - p.delay)).clamp(0.0, 1.0);
+      if (localT <= 0) continue;
+
+      final fallY = -20 + localT * p.speed * (size.height + 40);
+      if (fallY > size.height) continue;
+
+      final x = (p.startX * size.width) + (p.drift * size.height * localT);
+      final opacity = localT > 0.75 ? (1 - (localT - 0.75) / 0.25) : 1.0;
+
+      final paint = Paint()..color = p.color.withOpacity(opacity.clamp(0, 1));
+
+      canvas.save();
+      canvas.translate(x, fallY);
+      canvas.rotate(localT * p.rotationSpeed);
+      if (p.isCircle) {
+        canvas.drawCircle(Offset.zero, p.size / 2, paint);
+      } else {
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromCenter(center: Offset.zero, width: p.size, height: p.size * 0.6),
+            const Radius.circular(1.5),
+          ),
+          paint,
+        );
+      }
+      canvas.restore();
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _ConfettiPainter oldDelegate) =>
+      oldDelegate.progress != progress;
 }
 
 class _StatChip extends StatelessWidget {

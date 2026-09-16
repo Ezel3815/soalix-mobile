@@ -93,13 +93,7 @@ class _RegisterState extends State<Login> {
         Container(
           width: double.infinity,
           height: screenHeight,
-          decoration: const BoxDecoration(
-            color: AppColor.scaffoldBackgroundColor,
-            image: DecorationImage(
-              image: AssetImage('lib/assests/images/background_5.jpg'),
-              fit: BoxFit.fill,
-            ),
-          ),
+          color: AppColor.scaffoldBackgroundColor,
         ),
         Scaffold(
           backgroundColor: Colors.transparent,
@@ -113,8 +107,14 @@ class _RegisterState extends State<Login> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: 40),
-                  Image.asset(
-                    "lib/assests/images/ddd.png",
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.asset(
+                      "lib/assests/images/login_illustration.png",
+                      height: 200,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   const Text(

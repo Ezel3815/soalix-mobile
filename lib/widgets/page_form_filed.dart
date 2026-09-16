@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:upgrade/controllers/add_card_controller.dart';
+import 'package:upgrade/resources.dart';
 
 class PageFormFiled extends StatefulWidget {
   final FrontBackType type;
@@ -44,26 +45,45 @@ class _PageFormFiledState extends State<PageFormFiled> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => TextField(
-        style: TextStyle(
-          fontSize: widget.type == FrontBackType.front
-              ? controller.selectedFontSizeFront
-              : widget.type == FrontBackType.back
-                  ? controller.selectedFontSizeBack
-                  : controller.selectedFontSizeComment,
-          fontWeight: FontWeight.w400,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColor.surfaceColor,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        controller: widget.type == FrontBackType.front
-            ? controller.controllerFront
-            : widget.type == FrontBackType.back
-                ? controller.controllerBack
-                : controller.controllerComments,
-        minLines: 1,
-        maxLines: 4,
-        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-        decoration: const InputDecoration(
-          contentPadding: EdgeInsets.symmetric(horizontal: 16),
+        child: Obx(
+          () => TextField(
+            style: TextStyle(
+              fontSize: widget.type == FrontBackType.front
+                  ? controller.selectedFontSizeFront
+                  : widget.type == FrontBackType.back
+                      ? controller.selectedFontSizeBack
+                      : controller.selectedFontSizeComment,
+              fontWeight: FontWeight.w400,
+              color: AppColor.textPrimary,
+            ),
+            controller: widget.type == FrontBackType.front
+                ? controller.controllerFront
+                : widget.type == FrontBackType.back
+                    ? controller.controllerBack
+                    : controller.controllerComments,
+            minLines: 1,
+            maxLines: 4,
+            cursorColor: AppColor.greenColor,
+            textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            ),
+          ),
         ),
       ),
     );

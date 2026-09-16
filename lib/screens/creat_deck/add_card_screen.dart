@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:upgrade/controllers/add_card_controller.dart';
 import 'package:upgrade/entity/card_entity.dart';
 import 'package:upgrade/main.dart';
@@ -15,6 +14,30 @@ import 'package:upgrade/widgets/tools_status_bar.dart';
 class AddCardScreen extends GetView<AddCardController> {
   const AddCardScreen({super.key});
 
+  Widget _appBarIcon({
+    required IconData icon,
+    required VoidCallback onPressed,
+    Color? color,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onPressed,
+        child: Container(
+          width: 38,
+          height: 38,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppColor.surfaceColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, size: 19, color: color ?? AppColor.textPrimary),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -24,24 +47,18 @@ class AddCardScreen extends GetView<AddCardController> {
       backgroundColor: AppColor.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: AppColor.scaffoldBackgroundColor,
+        elevation: 0,
         title: const Text(
           'Add Card',
           style: TextStyle(
-            fontSize: 20,
-            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: AppColor.textPrimary,
           ),
         ),
         actions: [
-          IconButton(
-            onPressed: controller.addCard,
-            icon: Image.asset(
-              'lib/assests/images/Done.png',
-              color: Colors.black,
-              width: 20,
-              height: 30,
-            ),
-          ),
-          IconButton(
+          _appBarIcon(
+            icon: Icons.visibility_outlined,
             onPressed: () {
               final CardEntity card = CardEntity(
                 type: controller.selectedTypes,
@@ -63,17 +80,15 @@ class AddCardScreen extends GetView<AddCardController> {
                 arguments: {
                   "cards": [card],
                   "isView": true,
-                  'initalIndex' : 0,
+                  'initalIndex': 0,
                 },
               );
             },
-            icon: const Icon(
-              Icons.remove_red_eye,
-              color: Colors.black,
-            ),
           ),
           if (controller.isEdit)
-            IconButton(
+            _appBarIcon(
+              icon: Icons.delete_outline_rounded,
+              color: Colors.redAccent,
               onPressed: () {
                 Get.dialog(
                   DeleteDialog(
@@ -82,77 +97,89 @@ class AddCardScreen extends GetView<AddCardController> {
                   ),
                 );
               },
-              icon: const Icon(
-                Icons.delete_forever,
-                color: Colors.red,
+            ),
+          Padding(
+            padding: const EdgeInsets.only(right: 12, left: 4),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: controller.addCard,
+              child: Container(
+                width: 38,
+                height: 38,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColor.greenColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.check_rounded,
+                    size: 20, color: Colors.white),
               ),
             ),
+          ),
         ],
       ),
       body: Obx(
         () => Container(
           width: double.infinity,
           height: screenHeight,
-          decoration: const BoxDecoration(
-            color: AppColor.scaffoldBackgroundColor,
-          ),
+          color: AppColor.scaffoldBackgroundColor,
           child: SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    const Text(
-                      'Type:',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 30,
-                    ),
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                        height: 25,
-                        child: DropdownButtonFormField<String>(
-                          decoration:
-                              const InputDecoration.collapsed(hintText: ''),
-                          iconSize: 40,
-                          iconEnabledColor: Colors.black,
-                          value: controller.selectedTypes,
-                          items: controller.types
-                              .map<DropdownMenuItem<String>>(
-                                (String level) => DropdownMenuItem<String>(
-                                  value: level,
-                                  child: Text(
-                                    level,
-                                    style: const TextStyle(
-                                        fontSize: 20, color: Colors.black),
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: controller.onChangeTypeValue,
+                const SizedBox(height: 6),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      const Text(
+                        'Type',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColor.textSecondary,
                         ),
                       ),
-                    )
-                  ],
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14),
+                          decoration: BoxDecoration(
+                            color: AppColor.surfaceColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButtonFormField<String>(
+                              decoration:
+                                  const InputDecoration.collapsed(hintText: ''),
+                              icon: const Icon(Icons.keyboard_arrow_down_rounded,
+                                  color: AppColor.textSecondary),
+                              value: controller.selectedTypes,
+                              items: controller.types
+                                  .map<DropdownMenuItem<String>>(
+                                    (String level) => DropdownMenuItem<String>(
+                                      value: level,
+                                      child: Text(
+                                        level,
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColor.textPrimary,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: controller.onChangeTypeValue,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 8),
                 if (controller.selectedTypes == "BASIC")
-                   const Column(
+                  const Column(
                     children: [
                       PageTitleImage(CardTypes.basic, FrontBackType.front),
                       PageFormFiled(FrontBackType.front),
@@ -191,93 +218,109 @@ class AddCardScreen extends GetView<AddCardController> {
                       const PageFormFiled(FrontBackType.comments),
                       const ToolsStatusBar(
                           CardTypes.occlusion, FrontBackType.comments),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      InkWell(
-                        onTap: controller.goToShapeCreator,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(25),
-                              border: Border.all(
-                                color: Colors.grey,
-                                width: 1.0,
+                      const SizedBox(height: 6),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: controller.goToShapeCreator,
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColor.greenColor,
+                              side: const BorderSide(
+                                  color: AppColor.greenColor, width: 1.2),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
                               ),
-                              color: const Color(0xCFCFCFCF)),
-                          width: 300,
-                          child: const Center(
-                              child: Text(
-                            'Select Image',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.black,
                             ),
-                          )),
+                            icon: const Icon(Icons.image_outlined, size: 18),
+                            label: const Text(
+                              'Select Image',
+                              style: TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.w600),
+                            ),
+                          ),
                         ),
-                      )
+                      ),
                     ],
                   ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 if (controller.user.role == 'ADMIN') ...[
                   if (controller.file.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        children: [
-                          Flexible(
-                            fit: FlexFit.tight,
-                            child: Text(
-                              controller.fileName,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: AppColor.surfaceColor,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.picture_as_pdf_outlined,
+                                size: 18, color: AppColor.greenColor),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                controller.fileName,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColor.textPrimary,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 10),
-                          InkWell(
-                            onTap: controller.clearFile,
-                            child: Container(
-                              padding: const EdgeInsets.all(5),
-                              decoration: const BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.close,
-                                color: Colors.white,
+                            const SizedBox(width: 10),
+                            InkWell(
+                              onTap: controller.clearFile,
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: Colors.redAccent,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                  size: 13,
+                                ),
                               ),
                             ),
-                          )
-                        ],
+                          ],
+                        ),
                       ),
                     )
                   else
-                    InkWell(
-                      onTap: controller.pickFile,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25),
-                            border: Border.all(
-                              color: Colors.grey,
-                              width: 1.0,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: controller.pickFile,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColor.greenColor,
+                            side: const BorderSide(
+                                color: AppColor.greenColor, width: 1.2),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
                             ),
-                            color: const Color(0xCFCFCFCF)),
-                        width: 300,
-                        child: const Center(
-                            child: Text(
-                          'Add PDF File',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.black,
                           ),
-                        )),
+                          icon: const Icon(Icons.attach_file_rounded, size: 18),
+                          label: const Text(
+                            'Add PDF File',
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.w600),
+                          ),
+                        ),
                       ),
                     ),
                 ],
+                const SizedBox(height: 24),
               ],
             ),
           ),

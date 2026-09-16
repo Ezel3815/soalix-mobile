@@ -111,9 +111,9 @@ class _RegisterState extends State<Login> {
                     borderRadius: BorderRadius.circular(20),
                     child: Image.asset(
                       "lib/assests/images/login_illustration.png",
-                      height: 200,
+                      height: 220,
                       width: double.infinity,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.contain,
                     ),
                   ),
                   const SizedBox(height: 8),

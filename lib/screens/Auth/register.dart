@@ -20,16 +20,17 @@ class _RegisterState extends State<Register> {
   bool isPasswordValid = false;
   bool isLoading = false;
 
-  InputDecoration _fieldDecoration(String hint) {
+  InputDecoration _fieldDecoration(IconData icon, String hint) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(
-        fontSize: 15,
-        color: AppColor.textSecondary,
+      hintStyle: TextStyle(
+        fontSize: 14,
+        color: AppColor.textSecondary.withOpacity(0.8),
         fontWeight: FontWeight.w400,
       ),
+      prefixIcon: Icon(icon, size: 19, color: AppColor.greenColor),
       filled: true,
-      fillColor: AppColor.surfaceColor,
+      fillColor: Colors.white.withOpacity(0.55),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide.none,
@@ -51,23 +52,7 @@ class _RegisterState extends State<Register> {
         borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
       ),
       contentPadding:
-          const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-    );
-  }
-
-  Widget _fieldWrapper({required Widget child}) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: child,
+          const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
     );
   }
 
@@ -92,179 +77,238 @@ class _RegisterState extends State<Register> {
             key: _formKey1,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(height: 24),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.asset(
-                      "lib/assests/images/login_illustration.png",
-                      height: 220,
-                      width: double.infinity,
-                      fit: BoxFit.contain,
-                    ),
+                  Image.asset(
+                    "lib/assests/images/login_hero.png",
+                    height: 140,
+                    fit: BoxFit.contain,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 2),
                   const Text(
-                    'Create Account',
+                    "MOZAIK",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 26,
-                      fontWeight: FontWeight.w700,
-                      color: AppColor.textPrimary,
-                      letterSpacing: -0.3,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 5,
+                      color: AppColor.darkGreenColor,
                     ),
                   ),
-                  const SizedBox(height: 28),
-                  _fieldWrapper(
-                    child: TextFormField(
-                      controller: usernameController,
-                      cursorColor: AppColor.greenColor,
-                      keyboardType: TextInputType.name,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: AppColor.textPrimary,
-                      ),
-                      validator: AppValidation.validateEmpty,
-                      decoration: _fieldDecoration('Username'),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  _fieldWrapper(
-                    child: TextFormField(
-                      keyboardType: TextInputType.emailAddress,
-                      cursorColor: AppColor.greenColor,
-                      controller: emailController,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: AppColor.textPrimary,
-                      ),
-                      validator: AppValidation.validateEmail,
-                      decoration: _fieldDecoration('Email'),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  _fieldWrapper(
-                    child: TextFormField(
-                      keyboardType: TextInputType.emailAddress,
-                      cursorColor: AppColor.greenColor,
-                      controller: confirmEmailController,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: AppColor.textPrimary,
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Filed Required";
-                        }
-                        if (value.trim().toLowerCase() !=
-                            emailController.text.trim().toLowerCase()) {
-                          return "Emails do not match";
-                        }
-                        return null;
-                      },
-                      decoration: _fieldDecoration('Confirm Email'),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  _fieldWrapper(
-                    child: TextFormField(
-                      obscureText: true,
-                      controller: passwordController,
-                      cursorColor: AppColor.greenColor,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: AppColor.textPrimary,
-                      ),
-                      validator: AppValidation.validatePassword,
-                      onChanged: (value) {
-                        isPasswordValid =
-                            AppValidation.validatePassword(value) == null;
-                        setState(() {});
-                      },
-                      decoration: _fieldDecoration('Password'),
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-                  SizedBox(
-                    height: 52,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isPasswordValid
-                            ? AppColor.greenColor
-                            : AppColor.disabledColor,
-                        foregroundColor: Colors.white,
-                        elevation: isPasswordValid ? 3 : 0,
-                        shadowColor: AppColor.greenColor.withOpacity(0.4),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      onPressed: isLoading
-                          ? null
-                          : () async {
-                              if (_formKey1.currentState!.validate()) {
-                                setState(() {
-                                  isLoading = true;
-                                });
-                                await ApiController.register(
-                                    usernameController.text,
-                                    emailController.text,
-                                    passwordController.text,
-                                    context);
-                                if (mounted) {
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                }
-                              }
-                            },
-                      child: isLoading
-                          ? const SizedBox(
-                              width: 22,
-                              height: 22,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Text(
-                              'Register',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "أنشئ حسابك وابدأ رحلتك",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColor.textSecondary.withOpacity(0.9),
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Already have an account? ',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColor.textSecondary,
-                        ),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.35),
+                      borderRadius: BorderRadius.circular(26),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.6),
+                        width: 1,
                       ),
-                      InkWell(
-                        onTap: () {
-                          Get.back();
-                        },
-                        child: const Text(
-                          'Sign in',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: AppColor.greenColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        TextFormField(
+                          controller: usernameController,
+                          cursorColor: AppColor.greenColor,
+                          keyboardType: TextInputType.name,
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            color: AppColor.textPrimary,
+                          ),
+                          validator: AppValidation.validateEmpty,
+                          decoration: _fieldDecoration(
+                              Icons.person_outline_rounded, 'اسم المستخدم'),
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          keyboardType: TextInputType.emailAddress,
+                          cursorColor: AppColor.greenColor,
+                          controller: emailController,
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            color: AppColor.textPrimary,
+                          ),
+                          validator: AppValidation.validateEmail,
+                          decoration: _fieldDecoration(
+                              Icons.mail_outline_rounded, 'البريد الإلكتروني'),
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          keyboardType: TextInputType.emailAddress,
+                          cursorColor: AppColor.greenColor,
+                          controller: confirmEmailController,
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            color: AppColor.textPrimary,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Filed Required";
+                            }
+                            if (value.trim().toLowerCase() !=
+                                emailController.text.trim().toLowerCase()) {
+                              return "Emails do not match";
+                            }
+                            return null;
+                          },
+                          decoration: _fieldDecoration(
+                              Icons.mail_outline_rounded,
+                              'تأكيد البريد الإلكتروني'),
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          obscureText: true,
+                          controller: passwordController,
+                          cursorColor: AppColor.greenColor,
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            color: AppColor.textPrimary,
+                          ),
+                          validator: AppValidation.validatePassword,
+                          onChanged: (value) {
+                            isPasswordValid =
+                                AppValidation.validatePassword(value) == null;
+                            setState(() {});
+                          },
+                          decoration: _fieldDecoration(
+                              Icons.lock_outline_rounded, 'كلمة المرور'),
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          height: 54,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isPasswordValid
+                                  ? AppColor.darkGreenColor
+                                  : AppColor.disabledColor,
+                              foregroundColor: Colors.white,
+                              elevation: isPasswordValid ? 3 : 0,
+                              shadowColor:
+                                  AppColor.darkGreenColor.withOpacity(0.4),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(28),
+                              ),
+                            ),
+                            onPressed: isLoading
+                                ? null
+                                : () async {
+                                    if (_formKey1.currentState!.validate()) {
+                                      setState(() {
+                                        isLoading = true;
+                                      });
+                                      await ApiController.register(
+                                          usernameController.text,
+                                          emailController.text,
+                                          passwordController.text,
+                                          context);
+                                      if (mounted) {
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                      }
+                                    }
+                                  },
+                            child: isLoading
+                                ? const SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.5,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'إنشاء حساب',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                      SizedBox(width: 8),
+                                      Icon(Icons.arrow_back_rounded,
+                                          size: 18, color: Colors.white),
+                                    ],
+                                  ),
                           ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 18),
+                        Row(
+                          children: [
+                            Expanded(
+                                child: Divider(
+                                    color: AppColor.textSecondary
+                                        .withOpacity(0.3))),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: Text(
+                                "أو",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color:
+                                      AppColor.textSecondary.withOpacity(0.8),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                                child: Divider(
+                                    color: AppColor.textSecondary
+                                        .withOpacity(0.3))),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          height: 52,
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColor.darkGreenColor,
+                              side: const BorderSide(
+                                  color: AppColor.greenColor, width: 1.2),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(28),
+                              ),
+                            ),
+                            onPressed: () => Get.back(),
+                            child: const Text(
+                              'تسجيل الدخول',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 24),
                 ],

@@ -147,6 +147,18 @@ class AppDrawer extends StatelessWidget {
                   Get.dialog(const InterCodeDialog());
                 },
               ),
+              ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                leading:
+                    iconBadge(PhosphorIcons.bell(PhosphorIconsStyle.bold)),
+                title: Text("Notifications", style: itemStyle()),
+                onTap: () {
+                  Get.back();
+                  Get.toNamed(AppRoutes.notificationSettingsRoute);
+                },
+              ),
               Divider(
                 color: Colors.black.withOpacity(0.08),
                 thickness: 1,

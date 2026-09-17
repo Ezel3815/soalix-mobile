@@ -13,6 +13,7 @@ import 'package:upgrade/mapper/app_mapper.dart';
 import 'package:upgrade/models/shape_creator_model.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/widgets/celebration.dart';
+import 'package:upgrade/services/notification_service.dart';
 
 class CardViewController extends GetxController {
   late bool isView;
@@ -36,6 +37,7 @@ class CardViewController extends GetxController {
   }
 
   void _goToSessionResult() {
+    NotificationService.instance.markStudiedToday();
     Get.offNamed(
       AppRoutes.sessionResultRoute,
       arguments: {

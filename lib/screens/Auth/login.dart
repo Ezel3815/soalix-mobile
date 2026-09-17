@@ -1,24 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:upgrade/app_validation.dart';
-import 'package:upgrade/controllers/api_controller.dart';
+import 'package:upgrade/main.dart';
 import 'package:upgrade/resources.dart';
 
-class Register extends StatefulWidget {
-  const Register({super.key});
+import '../../controllers/api_controller.dart';
+
+class Login extends StatefulWidget {
+  const Login({super.key});
 
   @override
-  State<Register> createState() => _RegisterState();
+  State<Login> createState() => _RegisterState();
 }
 
-class _RegisterState extends State<Register> {
-  TextEditingController usernameController = TextEditingController();
+class _RegisterState extends State<Login> {
   TextEditingController emailController = TextEditingController();
-  TextEditingController confirmEmailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey1 = GlobalKey<FormState>();
+  bool loading = false;
   bool isPasswordValid = false;
-  bool isLoading = false;
+
+  onTapLogin() async {
+    setState(() {
+      loading = true;
+    });
+    await ApiController.login(
+        emailController.text, passwordController.text, context);
+    if (mounted) {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
 
   InputDecoration _fieldDecoration(String hint) {
     return InputDecoration(
@@ -84,10 +97,6 @@ class _RegisterState extends State<Register> {
         ),
         Scaffold(
           backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-          ),
           body: Form(
             key: _formKey1,
             autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -97,7 +106,7 @@ class _RegisterState extends State<Register> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 40),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: Image.asset(
@@ -109,7 +118,7 @@ class _RegisterState extends State<Register> {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'Create Account',
+                    'Login',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 26,
@@ -118,25 +127,20 @@ class _RegisterState extends State<Register> {
                       letterSpacing: -0.3,
                     ),
                   ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Sign in to continue',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: AppColor.textSecondary,
+                    ),
+                  ),
                   const SizedBox(height: 28),
                   _fieldWrapper(
                     child: TextFormField(
-                      controller: usernameController,
                       cursorColor: AppColor.greenColor,
-                      keyboardType: TextInputType.name,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: AppColor.textPrimary,
-                      ),
-                      validator: AppValidation.validateEmpty,
-                      decoration: _fieldDecoration('Username'),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  _fieldWrapper(
-                    child: TextFormField(
                       keyboardType: TextInputType.emailAddress,
-                      cursorColor: AppColor.greenColor,
                       controller: emailController,
                       style: const TextStyle(
                         fontSize: 16,
@@ -149,42 +153,19 @@ class _RegisterState extends State<Register> {
                   const SizedBox(height: 14),
                   _fieldWrapper(
                     child: TextFormField(
-                      keyboardType: TextInputType.emailAddress,
-                      cursorColor: AppColor.greenColor,
-                      controller: confirmEmailController,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: AppColor.textPrimary,
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Filed Required";
-                        }
-                        if (value.trim().toLowerCase() !=
-                            emailController.text.trim().toLowerCase()) {
-                          return "Emails do not match";
-                        }
-                        return null;
-                      },
-                      decoration: _fieldDecoration('Confirm Email'),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  _fieldWrapper(
-                    child: TextFormField(
-                      obscureText: true,
                       controller: passwordController,
+                      obscureText: true,
                       cursorColor: AppColor.greenColor,
                       style: const TextStyle(
                         fontSize: 16,
                         color: AppColor.textPrimary,
                       ),
-                      validator: AppValidation.validatePassword,
                       onChanged: (value) {
                         isPasswordValid =
-                            AppValidation.validatePassword(value) == null;
+                            value.isNotEmpty && value.length >= 6;
                         setState(() {});
                       },
+                      validator: AppValidation.validatePassword,
                       decoration: _fieldDecoration('Password'),
                     ),
                   ),
@@ -203,26 +184,14 @@ class _RegisterState extends State<Register> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      onPressed: isLoading
+                      onPressed: loading
                           ? null
-                          : () async {
+                          : () {
                               if (_formKey1.currentState!.validate()) {
-                                setState(() {
-                                  isLoading = true;
-                                });
-                                await ApiController.register(
-                                    usernameController.text,
-                                    emailController.text,
-                                    passwordController.text,
-                                    context);
-                                if (mounted) {
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                }
+                                onTapLogin();
                               }
                             },
-                      child: isLoading
+                      child: loading
                           ? const SizedBox(
                               width: 22,
                               height: 22,
@@ -232,7 +201,7 @@ class _RegisterState extends State<Register> {
                               ),
                             )
                           : const Text(
-                              'Register',
+                              'Login',
                               style: TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.w600,
@@ -240,12 +209,28 @@ class _RegisterState extends State<Register> {
                             ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 18),
+                  Center(
+                    child: InkWell(
+                      onTap: () {
+                        Get.toNamed(AppRoutes.forgetPassowrdRoute);
+                      },
+                      child: const Text(
+                        'Forgot Password',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColor.greenColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text(
-                        'Already have an account? ',
+                        "Don't have an account? ",
                         style: TextStyle(
                           fontSize: 14,
                           color: AppColor.textSecondary,
@@ -253,10 +238,10 @@ class _RegisterState extends State<Register> {
                       ),
                       InkWell(
                         onTap: () {
-                          Get.back();
+                          Get.toNamed(AppRoutes.registerRoute);
                         },
                         child: const Text(
-                          'Sign in',
+                          'Register',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,

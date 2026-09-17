@@ -5,9 +5,18 @@ import 'package:upgrade/entity/leaderboard_entry.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
 import 'package:upgrade/widgets/app_image.dart';
+import 'package:upgrade/widgets/mozaik_mark_icon.dart';
 
 class ProgressScreen extends StatelessWidget {
   const ProgressScreen({super.key});
+
+  static const List<Color> _subjectAccentColors = [
+    AppColor.greenColor,
+    AppColor.infoColor,
+    AppColor.warningColor,
+    Color(0xFF7C6FA8),
+    AppColor.freshGreenColor,
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -495,7 +504,11 @@ class _StatisticsBody extends StatelessWidget {
               ),
             )
           else
-            ...subjects.map((s) => Padding(
+            ...subjects.asMap().entries.map((entry) {
+              final s = entry.value;
+              final accentColor = _subjectAccentColors[
+                  entry.key % _subjectAccentColors.length];
+              return Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: Container(
                     padding: const EdgeInsets.all(14),
@@ -516,13 +529,11 @@ class _StatisticsBody extends StatelessWidget {
                           width: 34,
                           height: 34,
                           decoration: BoxDecoration(
-                            color: AppColor.lightGreenColor,
+                            color: accentColor.withOpacity(0.14),
                             borderRadius: BorderRadius.circular(9),
                           ),
-                          child: const Icon(
-                            Icons.style_rounded,
-                            size: 16,
-                            color: AppColor.darkGreenColor,
+                          child: Center(
+                            child: MozaikMarkIcon(color: accentColor, size: 20),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -566,7 +577,8 @@ class _StatisticsBody extends StatelessWidget {
                       ],
                     ),
                   ),
-                )),
+                );
+            }),
         ],
       );
     });

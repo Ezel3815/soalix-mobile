@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -10,6 +9,7 @@ import 'package:upgrade/controllers/main_controller.dart';
 import 'package:upgrade/main.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/widgets/inter_code_dialog.dart';
+import 'package:upgrade/widgets/mozaik_mark_icon.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -60,12 +60,32 @@ class AppDrawer extends StatelessWidget {
               const SizedBox(height: 12),
               Padding(
                 padding: const EdgeInsets.only(left: 6),
-                child: Image.asset(
-                  "lib/assests/images/drawer_logo.png",
-                  width: 150,
-                  height: 102,
-                  fit: BoxFit.contain,
-                  alignment: Alignment.centerLeft,
+                child: Row(
+                  children: [
+                    const MozaikMarkIcon(color: AppColor.greenColor, size: 36),
+                    const SizedBox(width: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "MOZAIK",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1.5,
+                            color: AppColor.darkGreenColor,
+                          ),
+                        ),
+                        Text(
+                          "Flashcards",
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: AppColor.textSecondary.withOpacity(0.9),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 16),

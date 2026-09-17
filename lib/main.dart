@@ -30,6 +30,8 @@ import 'package:upgrade/screens/main_screen.dart';
 import 'package:upgrade/screens/profile_screen.dart';
 import 'package:upgrade/screens/search_users_screen.dart';
 import 'package:upgrade/screens/session_result_screen.dart';
+import 'package:upgrade/screens/notification_settings_screen.dart';
+import 'package:upgrade/services/notification_service.dart';
 
 late SharedPreferences sharedPref;
 
@@ -59,6 +61,7 @@ void main() async {
   sharedPref = await SharedPreferences.getInstance();
   await initAppModule();
   await ApiController.initDio();
+  await NotificationService.instance.init();
   runApp(
     const MyApp(),
   );
@@ -218,6 +221,7 @@ class AppRoutes {
   static const String mainRoute = "/mainRoute";
   static const String createDeckRoute = "/createDeckRoute";
   static const String sessionResultRoute = "/sessionResultRoute";
+  static const String notificationSettingsRoute = "/notificationSettingsRoute";
 
   static final List<GetPage> pages = [
     GetPage(name: searchUsersRoute, page: () => const SearchUsersScreen()),
@@ -306,6 +310,10 @@ class AppRoutes {
     GetPage(
       name: sessionResultRoute,
       page: () => const SessionResultScreen(),
+    ),
+    GetPage(
+      name: notificationSettingsRoute,
+      page: () => const NotificationSettingsScreen(),
     ),
     GetPage(
       name: mainRoute,

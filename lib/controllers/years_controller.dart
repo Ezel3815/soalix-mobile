@@ -7,6 +7,7 @@ import 'package:upgrade/entity/deck_entity.dart';
 import 'package:upgrade/entity/profile_entity.dart';
 import 'package:upgrade/main.dart';
 import 'package:upgrade/models/user_model.dart';
+import 'package:upgrade/services/notification_service.dart';
 
 class YearsController extends GetxController {
   final RxBool _loading = false.obs;
@@ -105,6 +106,9 @@ class YearsController extends GetxController {
       getActivityFeed(),
       getDailyMissions(),
     ]);
+    // Fire-and-forget: don't block Home from loading on this.
+    NotificationService.instance.requestPermission().then(
+        (_) => NotificationService.instance.scheduleNextReminders());
     super.onInit();
   }
 }

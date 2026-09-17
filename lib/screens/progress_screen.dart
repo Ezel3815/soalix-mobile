@@ -7,16 +7,16 @@ import 'package:upgrade/screens/app_drawer.dart';
 import 'package:upgrade/widgets/app_image.dart';
 import 'package:upgrade/widgets/mozaik_mark_icon.dart';
 
+const List<Color> _subjectAccentColors = [
+  AppColor.greenColor,
+  AppColor.infoColor,
+  AppColor.warningColor,
+  Color(0xFF7C6FA8),
+  AppColor.freshGreenColor,
+];
+
 class ProgressScreen extends StatelessWidget {
   const ProgressScreen({super.key});
-
-  static const List<Color> _subjectAccentColors = [
-    AppColor.greenColor,
-    AppColor.infoColor,
-    AppColor.warningColor,
-    Color(0xFF7C6FA8),
-    AppColor.freshGreenColor,
-  ];
 
   @override
   Widget build(BuildContext context) {

@@ -77,12 +77,17 @@ class _RegisterState extends State<Register> {
           body: Form(
             key: _formKey1,
             autovalidateMode: AutovalidateMode.onUserInteraction,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+            child: LayoutBuilder(
+              builder: (context, constraints) => SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
                   const Center(
                     child: MozaikMarkIcon(
                       color: AppColor.greenColor,
@@ -313,7 +318,10 @@ class _RegisterState extends State<Register> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                ],
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

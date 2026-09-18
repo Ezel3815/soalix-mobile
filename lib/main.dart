@@ -31,7 +31,6 @@ import 'package:upgrade/screens/profile_screen.dart';
 import 'package:upgrade/screens/search_users_screen.dart';
 import 'package:upgrade/screens/session_result_screen.dart';
 import 'package:upgrade/screens/notification_settings_screen.dart';
-import 'package:upgrade/controllers/locale_controller.dart';
 import 'package:upgrade/services/notification_service.dart';
 
 late SharedPreferences sharedPref;
@@ -60,7 +59,6 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   sharedPref = await SharedPreferences.getInstance();
-  Get.put(LocaleController());
   await initAppModule();
   await ApiController.initDio();
   await NotificationService.instance.init();
@@ -78,10 +76,9 @@ class MyApp extends StatelessWidget {
       title: "MOZAIK",
       debugShowCheckedModeBanner: false,
       getPages: AppRoutes.pages,
-      // Arabic by default; toggled from the drawer, persisted via
-      // LocaleController.
-      locale: Locale(sharedPref.getString("app_locale") ?? "ar"),
-      supportedLocales: const [Locale("ar"), Locale("en")],
+      // Whole app is Arabic + right-to-left.
+      locale: const Locale("ar"),
+      supportedLocales: const [Locale("ar")],
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

@@ -98,7 +98,7 @@ class _SessionResultScreenState extends State<SessionResultScreen>
                     child: Column(
                       children: [
                         const Text(
-                          "Well done!",
+                          "أحسنت!",
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w700,
@@ -107,7 +107,7 @@ class _SessionResultScreenState extends State<SessionResultScreen>
                         ),
                         const SizedBox(height: 4),
                         const Text(
-                          "You completed this session",
+                          "لقد أكملت هذه الجلسة",
                           style: TextStyle(
                             fontSize: 13,
                             color: AppColor.textSecondary,
@@ -146,7 +146,7 @@ class _SessionResultScreenState extends State<SessionResultScreen>
                         ),
                         const SizedBox(height: 8),
                         const Text(
-                          "Accuracy",
+                          "الدقة",
                           style: TextStyle(
                             fontSize: 12,
                             color: AppColor.textSecondary,
@@ -160,19 +160,19 @@ class _SessionResultScreenState extends State<SessionResultScreen>
                               icon: Icons.star_rounded,
                               color: AppColor.warningColor,
                               value: "$correct",
-                              label: "Correct",
+                              label: "صحيح",
                             ),
                             _StatChip(
                               icon: Icons.close_rounded,
                               color: AppColor.errorColor,
                               value: "$wrong",
-                              label: "Missed",
+                              label: "خاطئ",
                             ),
                             _StatChip(
                               icon: Icons.schedule_rounded,
                               color: AppColor.infoColor,
                               value: "$minutes",
-                              label: "Minutes",
+                              label: "دقيقة",
                             ),
                           ],
                         ),
@@ -207,7 +207,7 @@ class _SessionResultScreenState extends State<SessionResultScreen>
                                 ),
                               ),
                               child: Text(
-                                "Review ${mistakes.length} missed card${mistakes.length == 1 ? '' : 's'}",
+                                "مراجعة ${mistakes.length} بطاقة فائتة",
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
@@ -234,7 +234,7 @@ class _SessionResultScreenState extends State<SessionResultScreen>
                               ),
                             ),
                             child: const Text(
-                              "Continue",
+                              "متابعة",
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,

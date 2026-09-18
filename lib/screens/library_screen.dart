@@ -55,7 +55,7 @@ class LibraryScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 14),
                   const Text(
-                    "Flashcards",
+                    "البطاقات",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
@@ -96,7 +96,7 @@ class LibraryScreen extends StatelessWidget {
                           border: InputBorder.none,
                           isDense: true,
                           contentPadding: EdgeInsets.symmetric(vertical: 14),
-                          hintText: "Search subjects",
+                          hintText: "ابحث عن مادة",
                           hintStyle: TextStyle(
                             fontSize: 13,
                             color: AppColor.textSecondary,
@@ -110,6 +110,31 @@ class LibraryScreen extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             SizedBox(
+              height: 34,
+              child: Obx(
+                () => ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  children: [
+                    _YearChip(
+                      label: "كل السنوات",
+                      selected: controller.selectedYearId.value == null,
+                      onTap: () => controller.selectedYearId.value = null,
+                    ),
+                    for (final year in controller.availableYears) ...[
+                      const SizedBox(width: 8),
+                      _YearChip(
+                        label: year.title,
+                        selected: controller.selectedYearId.value == year.id,
+                        onTap: () => controller.selectedYearId.value = year.id,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
               height: 36,
               child: Obx(
                 () => ListView(
@@ -117,20 +142,20 @@ class LibraryScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   children: [
                     _FilterPill(
-                      label: "All",
+                      label: "الكل",
                       selected: controller.filter.value == LibraryFilter.all,
                       onTap: () => controller.filter.value = LibraryFilter.all,
                     ),
                     const SizedBox(width: 8),
                     _FilterPill(
-                      label: "My Decks",
+                      label: "بطاقاتي",
                       selected: controller.filter.value == LibraryFilter.mine,
                       onTap: () =>
                           controller.filter.value = LibraryFilter.mine,
                     ),
                     const SizedBox(width: 8),
                     _FilterPill(
-                      label: "Public",
+                      label: "عامة",
                       selected:
                           controller.filter.value == LibraryFilter.public,
                       onTap: () =>
@@ -147,7 +172,7 @@ class LibraryScreen extends StatelessWidget {
                 if (subjects.isEmpty) {
                   return const Center(
                     child: Text(
-                      "No subjects found",
+                      "لا توجد مواد",
                       style: TextStyle(color: AppColor.textSecondary),
                     ),
                   );
@@ -171,6 +196,49 @@ class LibraryScreen extends StatelessWidget {
               }),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _YearChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  const _YearChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(18),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        decoration: BoxDecoration(
+          color: selected
+              ? AppColor.darkGreenColor.withOpacity(0.1)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: selected
+                ? AppColor.darkGreenColor
+                : Colors.black.withOpacity(0.12),
+            width: 1,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+            color:
+                selected ? AppColor.darkGreenColor : AppColor.textSecondary,
+          ),
         ),
       ),
     );
@@ -289,7 +357,7 @@ class _SubjectCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              "$total cards",
+              "$total بطاقة",
               style: const TextStyle(
                 fontSize: 11,
                 color: AppColor.textSecondary,

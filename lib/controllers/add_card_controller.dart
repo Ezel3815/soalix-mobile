@@ -332,23 +332,23 @@ class AddCardController extends GetxController {
 
   String getTitle(CardTypes type, FrontBackType type2) {
     if (type == CardTypes.basic && type2 == FrontBackType.front) {
-      return "Front";
+      return "الوجه الأمامي";
     }
     if (type == CardTypes.cloze && type2 == FrontBackType.front) {
-      return "Text";
+      return "النص";
     }
     if (type == CardTypes.occlusion && type2 == FrontBackType.front) {
-      return "Header";
+      return "العنوان";
     }
     if (type == CardTypes.basic && type2 == FrontBackType.back) {
-      return "Back";
+      return "الوجه الخلفي";
     }
     if ((type == CardTypes.cloze || type == CardTypes.occlusion) &&
         type2 == FrontBackType.back) {
-      return "Back Extra";
+      return "معلومات إضافية";
     }
     if (type == CardTypes.occlusion && type2 == FrontBackType.comments) {
-      return "Comments";
+      return "ملاحظات";
     }
     return "";
   }

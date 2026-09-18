@@ -49,7 +49,7 @@ class AddCardScreen extends GetView<AddCardController> {
         backgroundColor: AppColor.scaffoldBackgroundColor,
         elevation: 0,
         title: const Text(
-          'Add Card',
+          'إضافة بطاقة',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -92,7 +92,7 @@ class AddCardScreen extends GetView<AddCardController> {
               onPressed: () {
                 Get.dialog(
                   DeleteDialog(
-                    title: "Are you sure to delete this card ?",
+                    title: "هل أنت متأكد من حذف هذه البطاقة؟",
                     onTapDelete: controller.deleteCard,
                   ),
                 );
@@ -132,7 +132,7 @@ class AddCardScreen extends GetView<AddCardController> {
                   child: Row(
                     children: [
                       const Text(
-                        'Type',
+                        'النوع',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -237,7 +237,7 @@ class AddCardScreen extends GetView<AddCardController> {
                             ),
                             icon: const Icon(Icons.image_outlined, size: 18),
                             label: const Text(
-                              'Select Image',
+                              'اختيار صورة',
                               style: TextStyle(
                                   fontSize: 15, fontWeight: FontWeight.w600),
                             ),
@@ -312,7 +312,7 @@ class AddCardScreen extends GetView<AddCardController> {
                           ),
                           icon: const Icon(Icons.attach_file_rounded, size: 18),
                           label: const Text(
-                            'Add PDF File',
+                            'إضافة ملف PDF',
                             style: TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.w600),
                           ),

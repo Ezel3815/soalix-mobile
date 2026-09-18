@@ -86,12 +86,17 @@ class _LoginState extends State<Login> {
           body: Form(
             key: _formKey1,
             autovalidateMode: AutovalidateMode.onUserInteraction,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+            child: LayoutBuilder(
+              builder: (context, constraints) => SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
                   const SizedBox(height: 40),
                   const Center(
                     child: MozaikMarkIcon(
@@ -291,7 +296,10 @@ class _LoginState extends State<Login> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                ],
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

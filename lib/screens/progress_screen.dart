@@ -44,7 +44,7 @@ class ProgressScreen extends StatelessWidget {
                 ),
                 const SizedBox(width: 14),
                 const Text(
-                  "Progress",
+                  "التقدم",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
@@ -59,7 +59,7 @@ class ProgressScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _TabPill(
-                      label: "Achievements",
+                      label: "الإنجازات",
                       selected:
                           controller.tab.value == ProgressTab.achievements,
                       onTap: () =>
@@ -69,7 +69,7 @@ class ProgressScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: _TabPill(
-                      label: "Statistics",
+                      label: "الإحصائيات",
                       selected: controller.tab.value == ProgressTab.statistics,
                       onTap: () =>
                           controller.tab.value = ProgressTab.statistics,
@@ -78,7 +78,7 @@ class ProgressScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: _TabPill(
-                      label: "Leaderboard",
+                      label: "المتصدرون",
                       selected: controller.tab.value == ProgressTab.leaderboard,
                       onTap: () =>
                           controller.tab.value = ProgressTab.leaderboard,
@@ -264,7 +264,7 @@ class _LeaderboardBody extends StatelessWidget {
           padding: EdgeInsets.symmetric(vertical: 40),
           child: Center(
             child: Text(
-              "Follow some friends to see how you compare",
+              "تابع بعض الأصدقاء لمعرفة ترتيبك بينهم",
               textAlign: TextAlign.center,
               style: TextStyle(color: AppColor.textSecondary),
             ),
@@ -407,7 +407,7 @@ class _StatisticsBody extends StatelessWidget {
                     icon: Icons.local_fire_department_rounded,
                     color: AppColor.warningColor,
                     value: "${controller.streak}",
-                    label: "Day streak",
+                    label: "أيام متتالية",
                   ),
                 ),
                 Container(
@@ -419,7 +419,7 @@ class _StatisticsBody extends StatelessWidget {
                     icon: Icons.menu_book_rounded,
                     color: AppColor.greenColor,
                     value: "${controller.totalCardsReviewed}",
-                    label: "Cards reviewed",
+                    label: "بطاقات تمت مراجعتها",
                   ),
                 ),
               ],
@@ -446,7 +446,7 @@ class _StatisticsBody extends StatelessWidget {
                 const Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "Mastery Rate",
+                    "نسبة الإتقان",
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
@@ -486,7 +486,7 @@ class _StatisticsBody extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              "Performance by Subject",
+              "الأداء حسب المادة",
               style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
@@ -499,7 +499,7 @@ class _StatisticsBody extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 20),
               child: Text(
-                "No subject data yet",
+                "لا توجد بيانات بعد",
                 style: TextStyle(color: AppColor.textSecondary),
               ),
             )

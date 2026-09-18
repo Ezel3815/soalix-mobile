@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/services/notification_service.dart';
@@ -55,7 +56,7 @@ class _NotificationSettingsScreenState
         backgroundColor: AppColor.scaffoldBackgroundColor,
         elevation: 0,
         title: const Text(
-          "Notifications",
+          "الإشعارات",
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -69,8 +70,8 @@ class _NotificationSettingsScreenState
           _ReminderCard(
             icon: Icons.schedule_rounded,
             iconColor: AppColor.greenColor,
-            title: "Study time reminder",
-            subtitle: "A gentle nudge at your usual study time.",
+            title: "تذكير وقت المراجعة",
+            subtitle: "تذكير لطيف في وقت مراجعتك المعتاد.",
             enabled: _studyOn,
             time: _fmt(_studyTime),
             onToggle: (v) async {
@@ -83,8 +84,8 @@ class _NotificationSettingsScreenState
           _ReminderCard(
             icon: Icons.local_fire_department_rounded,
             iconColor: AppColor.warningColor,
-            title: "Streak protection",
-            subtitle: "Warns you later in the day if you still haven't reviewed.",
+            title: "حماية السلسلة",
+            subtitle: "ينبّهك لاحقاً في اليوم إذا لم تكن قد راجعت بعد.",
             enabled: _streakOn,
             time: _fmt(_streakTime),
             onToggle: (v) async {
@@ -97,13 +98,73 @@ class _NotificationSettingsScreenState
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Text(
-              "Reminders are cancelled automatically for any day you've already studied.",
+              "يتم إلغاء التذكيرات تلقائياً في أي يوم تكون قد راجعت فيه بالفعل.",
               style: TextStyle(
                 fontSize: 12,
                 color: AppColor.textSecondary.withOpacity(0.8),
                 height: 1.5,
               ),
             ),
+          ),
+          const SizedBox(height: 28),
+          const Divider(),
+          const SizedBox(height: 12),
+          const Text(
+            "اختبار",
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppColor.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 10),
+          OutlinedButton.icon(
+            onPressed: () async {
+              await _service.showTestNotification();
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text("تم إرسال إشعار تجريبي — تحقق من الإشعارات."),
+                ));
+              }
+            },
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColor.greenColor,
+              side: const BorderSide(color: AppColor.greenColor),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            icon: const Icon(Icons.notifications_active_outlined, size: 18),
+            label: const Text("إرسال إشعار تجريبي الآن"),
+          ),
+          const SizedBox(height: 10),
+          FutureBuilder<List<PendingNotificationRequest>>(
+            future: _service.pendingNotifications(),
+            builder: (context, snapshot) {
+              final pending = snapshot.data ?? [];
+              if (pending.isEmpty) {
+                return const Text(
+                  "لا يوجد شيء مجدول حالياً.",
+                  style: TextStyle(fontSize: 12, color: AppColor.textSecondary),
+                );
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: pending
+                    .map((p) => Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Text(
+                            "• ${p.title} (id ${p.id})",
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColor.textSecondary,
+                            ),
+                          ),
+                        ))
+                    .toList(),
+              );
+            },
           ),
         ],
       ),
@@ -206,7 +267,7 @@ class _ReminderCard extends StatelessWidget {
                         size: 16, color: AppColor.textSecondary),
                     const SizedBox(width: 8),
                     const Text(
-                      "Reminder time",
+                      "وقت التذكير",
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,

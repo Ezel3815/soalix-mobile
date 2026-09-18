@@ -153,7 +153,7 @@ class AppDrawer extends StatelessWidget {
                 ),
                 leading:
                     iconBadge(PhosphorIcons.bell(PhosphorIconsStyle.bold)),
-                title: Text("Notifications", style: itemStyle()),
+                title: Text("الإشعارات", style: itemStyle()),
                 onTap: () {
                   Get.back();
                   Get.toNamed(AppRoutes.notificationSettingsRoute);

@@ -61,13 +61,14 @@ class ApiController {
     }
   }
 
-     static Future<void> register(String username, String email, String password,
-      BuildContext context) async {
+     static Future<void> register(String name, String username, String email,
+      String password, BuildContext context) async {
     try {
       final response = await dio.post(
         Api.register,
         data: {
-          'name': username,
+          'name': name,
+          'username': username.trim().toLowerCase(),
           'email': email,
           'password': password,
         },

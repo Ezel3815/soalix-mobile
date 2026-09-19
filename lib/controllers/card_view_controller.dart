@@ -201,22 +201,29 @@ class CardViewController extends GetxController {
     return "center";
   }
 
-  getOCCData() {
-    if (getData()['shapes'] != null) {
-      data = ShapeCreatorModel.fromJson(jsonDecode(getData()['shapes']))
-          .toDomain();
-    } else {
+  getOCCData({bool resetIndex = true}) {
+    if (resetIndex) currentIndex = 0;
+    try {
+      final shapes = getData()['shapes'];
+      if (shapes != null) {
+        data = ShapeCreatorModel.fromJson(jsonDecode(shapes)).toDomain();
+      } else {
+        data = ShapeCreatorModel().toDomain();
+      }
+    } catch (_) {
+      // Corrupt/legacy data (e.g. missing image) must not freeze the card.
       data = ShapeCreatorModel().toDomain();
     }
   }
 
   onTapOnStatusButton(String answer) async {
     _recordAnswer(answer, cards[pageViewIndex]);
+    Get.find<YearsController>().rememberSubjectForDeck(cards[pageViewIndex].deckId);
 
     if (cards[pageViewIndex].type == "OCCLUSION") {
       if(answer == "AGAIN") {
         showAnswer = false;
-        getOCCData();
+        getOCCData(resetIndex: false);
         return;
       }
       for (var element in data.shapes) {
@@ -277,6 +284,7 @@ class CardViewController extends GetxController {
   }
 
   onTapOnShowAnswer() {
+    if (currentIndex < 0 || currentIndex >= data.shapes.length) return;
     data.shapes[currentIndex].isShow = false;
     _data.refresh();
   }

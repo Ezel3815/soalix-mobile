@@ -10,9 +10,9 @@ class CardModel {
   int? deckId;
   int? id;
   dynamic data;
-  @JsonKey(name: "front_image_name")
+  @JsonKey(name: "front_image_url")
   String? frontImageUrl;
-  @JsonKey(name: "back_image_name")
+  @JsonKey(name: "back_image_url")
   String? backImageUrl;
   @JsonKey(name: "document_name")
   String? documentUrl;

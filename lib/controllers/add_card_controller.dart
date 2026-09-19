@@ -1,3 +1,4 @@
+import 'package:upgrade/widgets/formatted_text_controller.dart';
 import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
@@ -23,9 +24,12 @@ class AddCardController extends GetxController {
   late UserEntity user;
   CardEntity? cardEntity;
   ShapeCreatorModel? shapeCreatorModel;
-  final TextEditingController controllerFront = TextEditingController();
-  final TextEditingController controllerBack = TextEditingController();
-  final TextEditingController controllerComments = TextEditingController();
+  final TextEditingController controllerFront =
+      FormattedTextEditingController();
+  final TextEditingController controllerBack =
+      FormattedTextEditingController();
+  final TextEditingController controllerComments =
+      FormattedTextEditingController();
   final List<String> types = [
     "BASIC",
     "CLOZE",

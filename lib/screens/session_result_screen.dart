@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:upgrade/entity/card_entity.dart';
 import 'package:upgrade/main.dart';
 import 'package:upgrade/resources.dart';
+import 'package:upgrade/widgets/tablet_bounded.dart';
 
 /// Shown after finishing every card in a study session. Reads its data
 /// straight from the arguments CardViewController passes when the last
@@ -71,7 +72,9 @@ class _SessionResultScreenState extends State<SessionResultScreen>
       body: Stack(
         children: [
           SafeArea(
-            child: Padding(
+            child: TabletBounded(
+              maxWidth: 460,
+              child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 children: [
@@ -253,6 +256,7 @@ class _SessionResultScreenState extends State<SessionResultScreen>
                   ),
                   const SizedBox(height: 20),
                 ],
+              ),
               ),
             ),
           ),

@@ -90,6 +90,9 @@ class ApiController {
       if (body.contains('username') && body.contains('taken')) {
         return 'username_taken';
       }
+      if (e is DioException && (e.response?.statusCode ?? 0) >= 500) {
+        return 'server_error';
+      }
       if(ErrorHandler.handle(e).failure.code != -6) {
         showSnackBarWidget(message: ErrorHandler
             .handle(e)
@@ -697,7 +700,7 @@ class ApiController {
       }
     } catch (e) {
       if (ErrorHandler.handle(e).failure.code != -6) {
-        showSnackBarWidget(message: ErrorHandler.handle(e).failure.message ?? "");
+        log(e.toString());
       }
     }
     return [];
@@ -742,12 +745,13 @@ class ApiController {
 
   /// True when the username is free (or the check itself failed —
   /// the server still rejects duplicates on register).
-  static Future<bool> isUsernameAvailable(String username) async {
+  static Future<bool?> isUsernameAvailable(String username) async {
     try {
       final response = await dio.get(Api.usernameAvailable(username));
-      return response.data['available'] != false;
+      final v = response.data['available'];
+      return v is bool ? v : null;
     } catch (_) {
-      return true;
+      return null; // unknown (server unreachable / route missing)
     }
   }
 
@@ -862,7 +866,7 @@ class ApiController {
       }
     } catch (e) {
       if (ErrorHandler.handle(e).failure.code != -6) {
-        showSnackBarWidget(message: ErrorHandler.handle(e).failure.message ?? "");
+        log(e.toString());
       }
     }
     return [];
@@ -879,8 +883,7 @@ class ApiController {
       }
     } catch (e) {
       if (ErrorHandler.handle(e).failure.code != -6) {
-        showSnackBarWidget(
-            message: ErrorHandler.handle(e).failure.message ?? "");
+        log(e.toString());
       }
     }
     return null;
@@ -920,7 +923,7 @@ class ApiController {
       }
     } catch (e) {
       if (ErrorHandler.handle(e).failure.code != -6) {
-        showSnackBarWidget(message: ErrorHandler.handle(e).failure.message ?? "");
+        log(e.toString());
       }
     }
     return [];
@@ -939,7 +942,7 @@ class ApiController {
       }
     } catch (e) {
       if (ErrorHandler.handle(e).failure.code != -6) {
-        showSnackBarWidget(message: ErrorHandler.handle(e).failure.message ?? "");
+        log(e.toString());
       }
     }
     return [];

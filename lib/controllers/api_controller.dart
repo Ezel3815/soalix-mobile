@@ -1,3 +1,4 @@
+import 'package:upgrade/entity/feed_entity.dart';
 import 'package:upgrade/entity/quests_entity.dart';
 import 'dart:convert';
 import 'dart:developer';
@@ -870,6 +871,76 @@ class ApiController {
       }
     }
     return [];
+  }
+
+  static Future<List<FeedPost>?> getFeed() async {
+    try {
+      final response = await dio.get(
+        Api.feed,
+        options: GetOptions.getOptions(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return (response.data as List).map((e) => FeedPost.fromJson(e)).toList();
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+    return null;
+  }
+
+  /// Toggles "celebrate". Returns {celebrated, count} or null on failure.
+  static Future<Map<String, dynamic>?> celebratePost(int id) async {
+    try {
+      final response = await dio.post(
+        Api.feedCelebrate(id),
+        options: GetOptions.getOptions(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return Map<String, dynamic>.from(response.data as Map);
+      }
+    } catch (e) {
+      if (ErrorHandler.handle(e).failure.code != -6) {
+        showSnackBarWidget(
+            message: ErrorHandler.handle(e).failure.message ?? "");
+      }
+    }
+    return null;
+  }
+
+  static Future<List<FeedComment>?> getFeedComments(int id) async {
+    try {
+      final response = await dio.get(
+        Api.feedComments(id),
+        options: GetOptions.getOptions(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return (response.data as List)
+            .map((e) => FeedComment.fromJson(e))
+            .toList();
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+    return null;
+  }
+
+  static Future<FeedComment?> addFeedComment(int id, String text) async {
+    try {
+      final response = await dio.post(
+        Api.feedComments(id),
+        data: {'text': text},
+        options: GetOptions.getOptions(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return FeedComment.fromJson(response.data);
+      }
+    } catch (e) {
+      if (ErrorHandler.handle(e).failure.code != -6) {
+        showSnackBarWidget(
+            message: ErrorHandler.handle(e).failure.message ?? "");
+      }
+    }
+    return null;
   }
 
   static Future<QuestsData?> getQuests() async {

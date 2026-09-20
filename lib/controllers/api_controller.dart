@@ -26,6 +26,7 @@ import 'package:upgrade/models/deck_model.dart';
 import 'package:upgrade/models/document_model.dart';
 import 'package:upgrade/models/user_model.dart';
 import 'package:upgrade/network_info.dart';
+import 'package:upgrade/services/push_service.dart';
 import 'package:upgrade/widgets/app_snack_bar.dart';
 
 import '../api.dart';
@@ -84,6 +85,7 @@ class ApiController {
         sharedPref.setString('token', json['token']);
         sharedPref.setString(
             "user", jsonEncode(UserModel.fromJson(json['user'])));
+        PushService.instance.syncToken();
       } else {
         showSnackBarWidget(message: response.data['message'] ?? "");
       }
@@ -151,6 +153,7 @@ class ApiController {
         sharedPref.setString('token', json['token']);
         sharedPref.setString(
             "user", jsonEncode(UserModel.fromJson(json['user'])));
+        PushService.instance.syncToken();
       } else {
         showSnackBarWidget(message: json['message'] ?? "");
       }
@@ -862,6 +865,22 @@ class ApiController {
     return false;
   }
 
+  /// Registers this device's push token with the backend (or clears it
+  /// on logout). Silent by design — a failed sync here should never
+  /// interrupt the user; NotificationService retries on next app open.
+  static Future<bool> registerFcmToken(String? token) async {
+    try {
+      final response = await dio.put(
+        Api.fcmToken,
+        data: {'token': token ?? ''},
+        options: GetOptions.getOptions(),
+      );
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (_) {
+      return false;
+    }
+  }
+
   static Future<bool> updateProfile({
     String? username,
     String? avatarHair,
@@ -1085,6 +1104,10 @@ class ApiController {
     return [];
   }
   static logout() async {
+    // Best-effort: clear the push token server-side before dropping the
+    // auth token that makes the request possible. If it fails (offline),
+    // it's harmless — the token gets overwritten next login anyway.
+    await registerFcmToken(null);
     await sharedPref.remove("token");
     Get.offAllNamed(AppRoutes.loginRoute);
   }

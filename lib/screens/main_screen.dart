@@ -62,6 +62,15 @@ class MainScreen extends GetView<MainController> {
                   : AppColor.textSecondary,
               size: 26,
             ),
+            Icon(
+              controller.page == 4
+                  ? Icons.notifications_rounded
+                  : Icons.notifications_none_rounded,
+              color: controller.page == 4
+                  ? Colors.white
+                  : AppColor.textSecondary,
+              size: 26,
+            ),
           ],
           index: controller.page,
           onTap: controller.onChangePage,

@@ -1,3 +1,4 @@
+import 'package:upgrade/screens/follow_list_screen.dart';
 import 'package:upgrade/utils/deep_link_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -209,6 +210,7 @@ class AnimatedLogosState extends State<AnimatedLogos>
 class AppRoutes {
   static const String searchUsersRoute = "/searchUsersRoute";
   static const String viewProfileRoute = "/viewProfileRoute";
+  static const String followListRoute = "/followListRoute";
   static const String splashRoute = "/";
   static const String onboardingRoute = "/onbordingRoute";
   static const String cardRoute = "/cardRoute";
@@ -228,6 +230,7 @@ class AppRoutes {
   static final List<GetPage> pages = [
     GetPage(name: searchUsersRoute, page: () => const SearchUsersScreen()),
     GetPage(name: viewProfileRoute, page: () => ProfileScreen(userId: Get.arguments)),
+    GetPage(name: followListRoute, page: () => const FollowListScreen()),
     GetPage(
       name: splashRoute,
       page: () => const AnimatedLogos(),

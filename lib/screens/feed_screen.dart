@@ -271,6 +271,7 @@ class _PostCard extends StatelessWidget {
               ],
             ),
           ),
+          if (post.type != 'followed') ...[
           Divider(height: 1, thickness: 1, color: _cardBorder),
           InkWell(
             onTap: _openComments,
@@ -302,6 +303,7 @@ class _PostCard extends StatelessWidget {
               ),
             ),
           ),
+          ],
         ],
       ),
     );
@@ -312,6 +314,16 @@ class _PostCard extends StatelessWidget {
   /// shapes reads calmer and more deliberate.
   Widget _actionRow() {
     final celebrated = post.celebrated;
+    if (post.type == 'followed') {
+      // "X followed you": open their profile (where you can follow back).
+      return _Pill(
+        onTap: _openProfile,
+        icon: Icons.person_rounded,
+        label: 'عرض الملف الشخصي',
+        filled: false,
+        fullWidth: true,
+      );
+    }
     if (post.mine) {
       return Row(
         children: [
@@ -451,6 +463,10 @@ class _PostBadge extends StatelessWidget {
     late final List<Color> colors;
     late final IconData icon;
     switch (type) {
+      case 'followed':
+        colors = const [Color(0xFF6CC3D5), Color(0xFF3C9DB8)];
+        icon = Icons.person_add_alt_1_rounded;
+        break;
       case 'achievement_unlocked':
         colors = const [Color(0xFFFFD25A), Color(0xFFF0A020)];
         icon = Icons.emoji_events_rounded;

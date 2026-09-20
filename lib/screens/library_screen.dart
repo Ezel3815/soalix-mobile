@@ -1,286 +1,427 @@
+import 'package:upgrade/widgets/app_snack_bar.dart';
+import 'package:upgrade/utils/chapter_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:upgrade/controllers/create_deck_controller.dart';
+import 'package:upgrade/controllers/library_controller.dart';
+import 'package:upgrade/entity/deck_entity.dart';
+import 'package:upgrade/main.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
-import 'package:upgrade/strings.dart';
+import 'package:upgrade/widgets/mozaik_mark_icon.dart';
 
-class CreateDeckScreen extends GetView<CreateDeckController> {
-  const CreateDeckScreen({super.key});
+/// A small set of accent colors used only to visually distinguish deck
+/// cards in the library grid (not tied to any real "subject category"
+/// data, since that doesn't exist in the backend yet). Cycled by index.
+const List<Color> _deckAccentColors = [
+  AppColor.greenColor,
+  AppColor.infoColor,
+  AppColor.warningColor,
+  Color(0xFF7C6FA8), // muted plum, for visual variety only
+  AppColor.freshGreenColor,
+];
+
+class LibraryScreen extends StatelessWidget {
+  const LibraryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(
-            color: AppColor.scaffoldBackgroundColor,
-            image: DecorationImage(
-              image: AssetImage('lib/assests/images/background_5.jpg'),
-              fit: BoxFit.fill,
-            ),
-          ),
-        ),
-        Scaffold(
-          drawer: const AppDrawer(),
-          backgroundColor: Colors.transparent,
-          key: controller.scaffoldKey,
-          body: SafeArea(
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    children: [
-                      InkWell(
-                        onTap: () => controller.scaffoldKey.currentState
-                            ?.openDrawer(),
-                        child: const Icon(
-                          Icons.dehaze,
-                          size: 28,
-                          color: AppColor.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Image.asset(
-                            height: 28,
-                            width: 100,
-                            fit: BoxFit.contain,
-                            alignment: Alignment.centerLeft,
-                            'lib/assests/images/logodeck.png',
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            AppStrings.createDeck,
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: AppColor.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 88,
-                          height: 88,
-                          decoration: BoxDecoration(
-                            color: AppColor.greenColor.withOpacity(0.12),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            PhosphorIcons.folderPlus(PhosphorIconsStyle.bold),
-                            size: 40,
-                            color: AppColor.greenColor,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        Text(
-                          AppStrings.startNewDeck,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                            color: AppColor.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 40),
-                          child: Text(
-                            AppStrings.startNewDeckHint,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColor.textSecondary,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-                        SizedBox(
-                          width: 240,
-                          height: 52,
-                          child: ElevatedButton(
-                            onPressed: () => _showMyDialog(context),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColor.greenColor,
-                              foregroundColor: Colors.white,
-                              elevation: 3,
-                              shadowColor:
-                                  AppColor.greenColor.withOpacity(0.4),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                            ),
-                            child: Text(
-                              AppStrings.createDeck,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+    final controller = Get.put(LibraryController());
+    final scaffoldKey = GlobalKey<ScaffoldState>();
+
+    return Scaffold(
+      key: scaffoldKey,
+      backgroundColor: AppColor.scaffoldBackgroundColor,
+      drawer: const AppDrawer(),
+      drawerEnableOpenDragGesture: false,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColor.greenColor,
+        onPressed: () => Get.toNamed(AppRoutes.createDeckRoute),
+        child: const Icon(Icons.add_rounded, color: Colors.white),
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            const SizedBox(height: 4),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  InkWell(
+                    onTap: () => scaffoldKey.currentState?.openDrawer(),
+                    child: const Icon(
+                      Icons.dehaze,
+                      size: 26,
+                      color: AppColor.textPrimary,
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _showMyDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: AppColor.scaffoldBackgroundColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Form(
-              key: controller.formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    AppStrings.newDeck,
+                  const SizedBox(width: 14),
+                  const Text(
+                    "البطاقات",
                     style: TextStyle(
-                      fontSize: 19,
+                      fontSize: 20,
                       fontWeight: FontWeight.w700,
                       color: AppColor.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.06),
-                          blurRadius: 10,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: TextFormField(
-                      controller: controller.deckController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return AppStrings.fieldRequired;
-                        }
-                        return null;
-                      },
-                      cursorColor: AppColor.greenColor,
-                      decoration: InputDecoration(
-                        hintText: AppStrings.deckName,
-                        hintStyle: const TextStyle(
-                          color: AppColor.textSecondary,
-                          fontSize: 15,
-                        ),
-                        filled: true,
-                        fillColor: AppColor.surfaceColor,
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 18, vertical: 14),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: const BorderSide(
-                              color: AppColor.greenColor, width: 1.5),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide:
-                              const BorderSide(color: Colors.redAccent),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: const BorderSide(
-                              color: Colors.redAccent, width: 1.5),
-                        ),
-                      ),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: AppColor.textPrimary,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextButton(
-                          onPressed: () => Get.back(),
-                          style: TextButton.styleFrom(
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 14),
-                          ),
-                          child: Text(
-                            AppStrings.cancel,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: AppColor.textSecondary,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: controller.createDeck,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColor.greenColor,
-                            foregroundColor: Colors.white,
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: Text(
-                            AppStrings.create,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                decoration: BoxDecoration(
+                  color: AppColor.surfaceColor,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      PhosphorIcons.magnifyingGlass(PhosphorIconsStyle.bold),
+                      size: 18,
+                      color: AppColor.textSecondary,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: TextField(
+                        onChanged: (v) => controller.query.value = v,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(vertical: 14),
+                          hintText: "ابحث عن مادة",
+                          hintStyle: TextStyle(
+                            fontSize: 13,
+                            color: AppColor.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
+            SizedBox(
+              height: 34,
+              child: Obx(
+                () => ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  children: [
+                    _YearChip(
+                      label: "كل السنوات",
+                      selected: controller.selectedYearId.value == null,
+                      onTap: () => controller.selectedYearId.value = null,
+                    ),
+                    for (final year in controller.availableYears) ...[
+                      const SizedBox(width: 8),
+                      _YearChip(
+                        label: year.title,
+                        selected: controller.selectedYearId.value == year.id,
+                        onTap: () => controller.selectedYearId.value = year.id,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 36,
+              child: Obx(
+                () => ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  children: [
+                    _FilterPill(
+                      label: "الكل",
+                      selected: controller.filter.value == LibraryFilter.all,
+                      onTap: () => controller.filter.value = LibraryFilter.all,
+                    ),
+                    const SizedBox(width: 8),
+                    _FilterPill(
+                      label: "بطاقاتي",
+                      selected: controller.filter.value == LibraryFilter.mine,
+                      onTap: () =>
+                          controller.filter.value = LibraryFilter.mine,
+                    ),
+                    const SizedBox(width: 8),
+                    _FilterPill(
+                      label: "أنشأتها",
+                      selected:
+                          controller.filter.value == LibraryFilter.created,
+                      onTap: () =>
+                          controller.filter.value = LibraryFilter.created,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
+            Expanded(
+              child: Obx(() {
+                final subjects = controller.filteredSubjects;
+                if (subjects.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      "لا توجد مواد",
+                      style: TextStyle(color: AppColor.textSecondary),
+                    ),
+                  );
+                }
+                return GridView.builder(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 90),
+                  gridDelegate:
+                      const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 14,
+                    crossAxisSpacing: 14,
+                    childAspectRatio: 0.92,
+                  ),
+                  itemCount: subjects.length,
+                  itemBuilder: (context, index) => _SubjectCard(
+                    subject: subjects[index],
+                    accentColor:
+                        _deckAccentColors[index % _deckAccentColors.length],
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _YearChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  const _YearChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(18),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        decoration: BoxDecoration(
+          color: selected
+              ? AppColor.darkGreenColor.withOpacity(0.1)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: selected
+                ? AppColor.darkGreenColor
+                : Colors.black.withOpacity(0.12),
+            width: 1,
           ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+            color:
+                selected ? AppColor.darkGreenColor : AppColor.textSecondary,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FilterPill extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  const _FilterPill({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected ? AppColor.greenColor : AppColor.surfaceColor,
+          borderRadius: BorderRadius.circular(20),
+          border: selected
+              ? null
+              : Border.all(color: Colors.black.withOpacity(0.06)),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: selected ? Colors.white : AppColor.textSecondary,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SubjectCard extends StatelessWidget {
+  final DeckEntity subject;
+  final Color accentColor;
+  const _SubjectCard({required this.subject, required this.accentColor});
+
+  @override
+  Widget build(BuildContext context) {
+    // Subjects are folders (PACKAGE_DECK) — their cards live on their
+    // chapter children, not on the subject node itself.
+    final isCardsDeck = subject.type == "CARDS_DECK";
+    final allCards = isCardsDeck
+        ? subject.cards
+        : subject.children.expand((c) => c.cards).toList();
+    final total = allCards.length;
+    final answered =
+        allCards.where((c) => c.answer.isNotEmpty && c.answer != "NONE").length;
+    final progress = total == 0 ? 0.0 : answered / total;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(18),
+      onTap: () {
+        if (subject.locked) {
+          showSnackBarWidget(
+              message: "هذه المادة مقفلة، أدخل الكود لفتحها من القائمة");
+          return;
+        }
+        if (isCardsDeck) {
+          openChapter(subject);
+          return;
+        }
+        Get.toNamed(
+          AppRoutes.preparatoryYearRoute,
+          arguments: {
+            "id": subject.id,
+            "decks": subject.children,
+          },
+          preventDuplicates: false,
         );
       },
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColor.surfaceColor,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: accentColor.withOpacity(0.14),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Center(
+                    child: MozaikMarkIcon(color: accentColor, size: 40),
+                  ),
+                ),
+                subject.locked
+                    ? Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColor.scaffoldBackgroundColor,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.lock,
+                                size: 12, color: AppColor.textSecondary),
+                            SizedBox(width: 3),
+                            Text("مقفل",
+                                style: TextStyle(
+                                    fontSize: 10,
+                                    color: AppColor.textSecondary)),
+                          ],
+                        ),
+                      )
+                    : Icon(
+                        Icons.chevron_right_rounded,
+                        color: AppColor.textSecondary,
+                        size: 20,
+                      ),
+              ],
+            ),
+            const Spacer(),
+            Text(
+              subject.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: AppColor.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              "$total بطاقة",
+              style: const TextStyle(
+                fontSize: 11,
+                color: AppColor.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: LinearProgressIndicator(
+                value: progress,
+                minHeight: 5,
+                backgroundColor: AppColor.scaffoldBackgroundColor,
+                valueColor: AlwaysStoppedAnimation(accentColor),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              "${(progress * 100).round()}%",
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: accentColor,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

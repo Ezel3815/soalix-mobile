@@ -5,6 +5,7 @@ import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
 import 'package:upgrade/widgets/deck_widget.dart';
 import 'package:upgrade/widgets/lesson_path_widget.dart';
+import 'package:upgrade/widgets/tablet_bounded.dart';
 
 class PreparatoryYear extends StatelessWidget {
   final String id;
@@ -27,7 +28,8 @@ class PreparatoryYear extends StatelessWidget {
           drawer: const AppDrawer(),
           backgroundColor: AppColor.scaffoldBackgroundColor,
           body: SafeArea(
-            child: Column(
+            child: TabletBounded(
+              child: Column(
               children: [
                 const SizedBox(height: 10),
                 Row(
@@ -76,6 +78,7 @@ class PreparatoryYear extends StatelessWidget {
                             ),
                 ),
               ],
+              ),
             ),
           ),
         );

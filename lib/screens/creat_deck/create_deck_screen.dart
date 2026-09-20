@@ -4,6 +4,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:upgrade/controllers/create_deck_controller.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
+import 'package:upgrade/strings.dart';
 
 class CreateDeckScreen extends GetView<CreateDeckController> {
   const CreateDeckScreen({super.key});
@@ -56,8 +57,8 @@ class CreateDeckScreen extends GetView<CreateDeckController> {
                             'lib/assests/images/logodeck.png',
                           ),
                           const SizedBox(height: 2),
-                          const Text(
-                            "Create Deck",
+                          Text(
+                            AppStrings.createDeck,
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -88,8 +89,8 @@ class CreateDeckScreen extends GetView<CreateDeckController> {
                           ),
                         ),
                         const SizedBox(height: 24),
-                        const Text(
-                          "Start a new deck",
+                        Text(
+                          AppStrings.startNewDeck,
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
@@ -97,10 +98,10 @@ class CreateDeckScreen extends GetView<CreateDeckController> {
                           ),
                         ),
                         const SizedBox(height: 6),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 40),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 40),
                           child: Text(
-                            "Organize your flashcards into a deck to start studying",
+                            AppStrings.startNewDeckHint,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 14,
@@ -124,8 +125,8 @@ class CreateDeckScreen extends GetView<CreateDeckController> {
                                 borderRadius: BorderRadius.circular(16),
                               ),
                             ),
-                            child: const Text(
-                              'Create Deck',
+                            child: Text(
+                              AppStrings.createDeck,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -161,8 +162,8 @@ class CreateDeckScreen extends GetView<CreateDeckController> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'New Deck',
+                  Text(
+                    AppStrings.newDeck,
                     style: TextStyle(
                       fontSize: 19,
                       fontWeight: FontWeight.w700,
@@ -185,13 +186,13 @@ class CreateDeckScreen extends GetView<CreateDeckController> {
                       controller: controller.deckController,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return "This field is required.";
+                          return AppStrings.fieldRequired;
                         }
                         return null;
                       },
                       cursorColor: AppColor.greenColor,
                       decoration: InputDecoration(
-                        hintText: "Deck name",
+                        hintText: AppStrings.deckName,
                         hintStyle: const TextStyle(
                           color: AppColor.textSecondary,
                           fontSize: 15,
@@ -240,8 +241,8 @@ class CreateDeckScreen extends GetView<CreateDeckController> {
                             padding:
                                 const EdgeInsets.symmetric(vertical: 14),
                           ),
-                          child: const Text(
-                            'Cancel',
+                          child: Text(
+                            AppStrings.cancel,
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
@@ -263,8 +264,8 @@ class CreateDeckScreen extends GetView<CreateDeckController> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: const Text(
-                            'Create',
+                          child: Text(
+                            AppStrings.create,
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,

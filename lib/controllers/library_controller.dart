@@ -46,16 +46,16 @@ class LibraryController extends GetxController {
     final result = <DeckEntity>[];
     for (final deck in decks) {
       if (deck.type != "PACKAGE_DECK") continue;
-      final isSubjectLevel = deck.children.isNotEmpty &&
-          deck.children.every((c) => c.type == "CARDS_DECK");
+      // A subject is any package holding chapters (card decks) directly —
+      // even if it also holds sub-packages (previously such mixed
+      // subjects, and their chapters, were dropped).
+      final hasChapters = deck.children.any((c) => c.type == "CARDS_DECK");
       // Locked subjects come back from the server with no children;
       // still list them (marked locked) instead of hiding them.
       final isLockedSubject = deck.locked && deck.children.isEmpty;
-      if (isSubjectLevel || isLockedSubject) {
-        result.add(deck);
-      } else {
-        result.addAll(_collectSubjects(deck.children));
-      }
+      if (hasChapters || isLockedSubject) result.add(deck);
+      result.addAll(_collectSubjects(
+          deck.children.where((c) => c.type == "PACKAGE_DECK").toList()));
     }
     return result;
   }

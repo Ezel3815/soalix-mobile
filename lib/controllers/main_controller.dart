@@ -1,3 +1,4 @@
+import 'package:upgrade/controllers/feed_controller.dart';
 import 'package:upgrade/screens/feed_screen.dart';
 import 'package:upgrade/utils/deep_link_service.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,10 @@ class MainController extends GetxController {
   @override
   void onReady() {
     DeepLinkService.markReady();
+    // Loaded here (not lazily inside FeedScreen) so the unread red dot
+    // on the bottom nav can be correct even before the feed tab is
+    // ever opened.
+    Get.put(FeedController(), permanent: true).load();
     super.onReady();
   }
 

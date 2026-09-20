@@ -1,3 +1,4 @@
+import 'package:upgrade/strings.dart';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -128,7 +129,7 @@ class AppDrawer extends StatelessWidget {
                 ),
                 leading: iconBadge(
                     PhosphorIcons.cloudArrowUp(PhosphorIconsStyle.bold)),
-                title: Text("Create Deck", style: itemStyle()),
+                title: Text(AppStrings.createDeck, style: itemStyle()),
                 onTap: () {
                   Get.back();
                   Get.until((route) => Get.currentRoute == AppRoutes.mainRoute);
@@ -140,7 +141,7 @@ class AppDrawer extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 leading:
-                    iconBadge(PhosphorIcons.camera(PhosphorIconsStyle.bold)),
+                    iconBadge(PhosphorIcons.keyboard(PhosphorIconsStyle.bold)),
                 title: Text("Enter Code", style: itemStyle()),
                 onTap: () {
                   Get.back();

@@ -12,7 +12,12 @@ import 'package:upgrade/widgets/mozaik_mark_icon.dart';
 /// card's existing `answer` field, no new backend data required.
 class LessonPathWidget extends StatelessWidget {
   final List<DeckEntity> chapters;
-  const LessonPathWidget({super.key, required this.chapters});
+
+  /// When true the list sizes itself to its content and leaves scrolling
+  /// to the parent (used on Home, inside the page's own ListView).
+  final bool embedded;
+  const LessonPathWidget(
+      {super.key, required this.chapters, this.embedded = false});
 
   _ChapterStatus _statusFor(DeckEntity chapter) {
     final total = chapter.cards.length;
@@ -28,6 +33,8 @@ class LessonPathWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      shrinkWrap: embedded,
+      physics: embedded ? const NeverScrollableScrollPhysics() : null,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       itemCount: chapters.length,
       itemBuilder: (context, index) {

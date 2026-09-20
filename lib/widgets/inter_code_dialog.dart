@@ -59,7 +59,7 @@ class InterCodeDialog extends GetView<InterCodeController> {
               TextFormField(
                 controller: controller.codeController,
                 textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
+                keyboardType: TextInputType.text,
                 style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w700,

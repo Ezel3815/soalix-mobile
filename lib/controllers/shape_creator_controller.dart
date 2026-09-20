@@ -29,6 +29,12 @@ class ShapeCreatorController extends GetxController {
     _shapes.refresh();
   }
 
+  void removeShape(int index) {
+    if (index < 0 || index >= shapes.length) return;
+    shapes.removeAt(index);
+    if (index < pos.length) pos.removeAt(index);
+  }
+
   void clearShapes() {
     shapes.clear();
     pos.clear();

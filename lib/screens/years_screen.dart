@@ -8,6 +8,7 @@ import 'package:upgrade/controllers/main_controller.dart';
 import 'package:upgrade/controllers/years_controller.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
+import 'package:upgrade/widgets/tablet_bounded.dart';
 
 class YearsScreen extends StatefulWidget {
   const YearsScreen({super.key});
@@ -42,34 +43,37 @@ class _YearsScreenState extends State<YearsScreen> {
                       controller.getActivityFeed(),
                       controller.getDailyMissions(),
                     ]),
-                    child: ListView(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      children: [
-                        const SizedBox(height: 4),
-                        _Header(scaffoldKey: scaffoldKey),
-                        const SizedBox(height: 20),
-                        _GreetingBlock(),
-                        const SizedBox(height: 18),
-                        _TodaysMissions(),
-                        const SizedBox(height: 18),
-                        _CurrentSubjectProgressCard(),
-                        const SizedBox(height: 24),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(
-                            AppStrings.yourLearningPath,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: AppColor.textPrimary,
+                    child: TabletBounded(
+                      child: ListView(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        children: [
+                          const SizedBox(height: 4),
+                          _Header(scaffoldKey: scaffoldKey),
+                          const SizedBox(height: 20),
+                          _GreetingBlock(),
+                          const SizedBox(height: 18),
+                          _TodaysMissions(),
+                          const SizedBox(height: 18),
+                          _CurrentSubjectProgressCard(),
+                          const SizedBox(height: 24),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 20),
+                            child: Text(
+                              AppStrings.yourLearningPath,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: AppColor.textPrimary,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        _CurrentSubjectLessons(),
-                        const SizedBox(height: 24),
-                        _FriendsActivity(),
-                      ],
+                          const SizedBox(height: 12),
+                          _CurrentSubjectLessons(),
+                          const SizedBox(height: 24),
+                          _FriendsActivity(),
+                        ],
+                      ),
                     ),
                   ),
           ),

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:upgrade/app_validation.dart';
@@ -21,6 +22,27 @@ class _RegisterState extends State<Register> {
   final GlobalKey<FormState> _formKey1 = GlobalKey<FormState>();
   bool isPasswordValid = false;
   bool isLoading = false;
+  Timer? _usernameDebounce;
+  bool? usernameAvailable;
+
+  @override
+  void dispose() {
+    _usernameDebounce?.cancel();
+    super.dispose();
+  }
+
+  void _onUsernameChanged(String v) {
+    usernameAvailable = null;
+    _usernameDebounce?.cancel();
+    final t = v.trim();
+    if (!RegExp(r'^[a-zA-Z0-9_.]{3,20}$').hasMatch(t)) return;
+    _usernameDebounce = Timer(const Duration(milliseconds: 500), () async {
+      final ok = await ApiController.isUsernameAvailable(t);
+      if (!mounted || usernameController.text.trim() != t) return;
+      setState(() => usernameAvailable = ok);
+      _formKey1.currentState?.validate();
+    });
+  }
 
   InputDecoration _fieldDecoration(IconData icon, String hint) {
     return InputDecoration(
@@ -152,6 +174,8 @@ class _RegisterState extends State<Register> {
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: usernameController,
+                          onChanged: _onUsernameChanged,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           cursorColor: AppColor.greenColor,
                           keyboardType: TextInputType.text,
                           textDirection: TextDirection.ltr,
@@ -167,6 +191,9 @@ class _RegisterState extends State<Register> {
                             }
                             if (!RegExp(r'^[a-zA-Z0-9_.]+$').hasMatch(t)) {
                               return 'أحرف إنجليزية وأرقام و _ . فقط';
+                            }
+                            if (usernameAvailable == false) {
+                              return 'معرّف المستخدم مستخدم بالفعل';
                             }
                             return null;
                           },

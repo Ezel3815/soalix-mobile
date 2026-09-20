@@ -57,10 +57,31 @@ class YearsController extends GetxController {
   DeckEntity? get currentSubject {
     final subjects = _collectSubjects(decks);
     if (subjects.isEmpty) return null;
+    // Prefer the subject the user last studied.
+    final lastId = sharedPref.getInt('last_subject_id');
+    if (lastId != null) {
+      for (final s in subjects) {
+        if (s.id == lastId) return s;
+      }
+    }
     return subjects.firstWhere(
       (s) => !_isSubjectComplete(s),
       orElse: () => subjects.first,
     );
+  }
+
+  /// Remember which subject a studied chapter belongs to, so Home follows
+  /// what the user is actually studying.
+  void rememberSubjectForDeck(int deckId) {
+    for (final s in _collectSubjects(decks)) {
+      if (s.children.any((c) => c.id == deckId)) {
+        if (sharedPref.getInt('last_subject_id') != s.id) {
+          sharedPref.setInt('last_subject_id', s.id);
+          decks.refresh();
+        }
+        return;
+      }
+    }
   }
 
   Future<void> getAllDeck() async {

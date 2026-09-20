@@ -24,6 +24,7 @@ class _RegisterState extends State<Register> {
   bool isLoading = false;
   Timer? _usernameDebounce;
   bool? usernameAvailable;
+  bool checkingUsername = false;
 
   @override
   void dispose() {
@@ -32,21 +33,57 @@ class _RegisterState extends State<Register> {
   }
 
   void _onUsernameChanged(String v) {
-    usernameAvailable = null;
     _usernameDebounce?.cancel();
     final t = v.trim();
-    if (!RegExp(r'^[a-zA-Z0-9_.]{3,20}$').hasMatch(t)) return;
+    final valid = RegExp(r'^[a-zA-Z0-9_.]{3,20}$').hasMatch(t);
+    setState(() {
+      usernameAvailable = null;
+      checkingUsername = valid;
+    });
+    if (!valid) return;
+    // Debounced availability check; stale answers are ignored.
     _usernameDebounce = Timer(const Duration(milliseconds: 500), () async {
       final ok = await ApiController.isUsernameAvailable(t);
       if (!mounted || usernameController.text.trim() != t) return;
-      setState(() => usernameAvailable = ok);
+      setState(() {
+        usernameAvailable = ok;
+        checkingUsername = false;
+      });
       _formKey1.currentState?.validate();
     });
   }
 
-  InputDecoration _fieldDecoration(IconData icon, String hint) {
+  Widget? _usernameSuffix() {
+    if (checkingUsername) {
+      return const Padding(
+        padding: EdgeInsets.all(14),
+        child: SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(
+              strokeWidth: 2, color: AppColor.greenColor),
+        ),
+      );
+    }
+    if (usernameAvailable == true) {
+      return const Icon(Icons.check_circle_rounded,
+          size: 20, color: AppColor.greenColor);
+    }
+    if (usernameAvailable == false) {
+      return const Icon(Icons.error_rounded,
+          size: 20, color: Colors.redAccent);
+    }
+    return null;
+  }
+
+  InputDecoration _fieldDecoration(IconData icon, String hint,
+      {Widget? suffix, String? helper}) {
     return InputDecoration(
       hintText: hint,
+      suffixIcon: suffix,
+      helperText: helper,
+      helperStyle: const TextStyle(fontSize: 11.5, color: AppColor.greenColor),
+      errorStyle: const TextStyle(fontSize: 11.5, color: Colors.redAccent),
       hintStyle: TextStyle(
         fontSize: 14,
         color: AppColor.textSecondary.withOpacity(0.8),
@@ -193,13 +230,17 @@ class _RegisterState extends State<Register> {
                               return 'أحرف إنجليزية وأرقام و _ . فقط';
                             }
                             if (usernameAvailable == false) {
-                              return 'معرّف المستخدم مستخدم بالفعل';
+                              return 'اسم المستخدم مستخدم بالفعل، جرّب اسماً آخر';
                             }
                             return null;
                           },
                           decoration: _fieldDecoration(
                               Icons.alternate_email_rounded,
-                              'معرّف المستخدم (فريد)'),
+                              'معرّف المستخدم (فريد)',
+                              suffix: _usernameSuffix(),
+                              helper: usernameAvailable == true
+                                  ? 'اسم المستخدم متاح'
+                                  : null),
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
@@ -281,7 +322,22 @@ class _RegisterState extends State<Register> {
                                       setState(() {
                                         isLoading = true;
                                       });
-                                      await ApiController.register(
+                                      // Final check if the live one hasn't answered yet.
+                                      if (usernameAvailable == null &&
+                                          !await ApiController
+                                              .isUsernameAvailable(
+                                                  usernameController.text
+                                                      .trim())) {
+                                        if (mounted) {
+                                          setState(() {
+                                            usernameAvailable = false;
+                                            isLoading = false;
+                                          });
+                                          _formKey1.currentState?.validate();
+                                        }
+                                        return;
+                                      }
+                                      final error = await ApiController.register(
                                           nameController.text,
                                           usernameController.text,
                                           emailController.text,
@@ -290,7 +346,13 @@ class _RegisterState extends State<Register> {
                                       if (mounted) {
                                         setState(() {
                                           isLoading = false;
+                                          if (error == 'username_taken') {
+                                            usernameAvailable = false;
+                                          }
                                         });
+                                        if (error == 'username_taken') {
+                                          _formKey1.currentState?.validate();
+                                        }
                                       }
                                     }
                                   },

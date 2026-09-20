@@ -716,6 +716,33 @@ class ApiController {
     return null;
   }
 
+  static Future<int?> getUserIdByUsername(String username) async {
+    try {
+      final response = await dio.get(
+        Api.userByUsername(username),
+        options: GetOptions.getOptions(),
+      );
+      return response.data['id'] as int?;
+    } catch (e) {
+      if (ErrorHandler.handle(e).failure.code != -6) {
+        showSnackBarWidget(
+            message: ErrorHandler.handle(e).failure.message ?? "");
+      }
+    }
+    return null;
+  }
+
+  /// True when the username is free (or the check itself failed —
+  /// the server still rejects duplicates on register).
+  static Future<bool> isUsernameAvailable(String username) async {
+    try {
+      final response = await dio.get(Api.usernameAvailable(username));
+      return response.data['available'] != false;
+    } catch (_) {
+      return true;
+    }
+  }
+
   static Future<ProfileEntity?> getProfile(int id) async {
     try {
       final response = await dio.get(

@@ -1,3 +1,4 @@
+import 'package:upgrade/entity/follow_person.dart';
 import 'package:upgrade/entity/feed_entity.dart';
 import 'package:upgrade/entity/quests_entity.dart';
 import 'dart:convert';
@@ -799,6 +800,24 @@ class ApiController {
         showSnackBarWidget(
             message: ErrorHandler.handle(e).failure.message ?? "");
       }
+    }
+    return null;
+  }
+
+  /// kind: 'followers' or 'following'. Null when the request failed.
+  static Future<List<FollowPerson>?> getFollowList(int id, String kind) async {
+    try {
+      final response = await dio.get(
+        kind == 'followers' ? Api.followers(id) : Api.following(id),
+        options: GetOptions.getOptions(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return (response.data as List)
+            .map((e) => FollowPerson.fromJson(e))
+            .toList();
+      }
+    } catch (e) {
+      log(e.toString());
     }
     return null;
   }

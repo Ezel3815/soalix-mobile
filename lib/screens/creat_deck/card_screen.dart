@@ -14,6 +14,11 @@ class CardScreen extends GetView<CardController> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final screenHeight = screenSize.height;
+    final screenWidth = screenSize.width;
+
+    // Phones keep the single list. Tablets get 2 (or 3) cards side by side
+    // so the screen is used instead of one thin strip of cards.
+    final int columns = screenWidth >= 1000 ? 3 : (screenWidth >= 600 ? 2 : 1);
 
     return Scaffold(
       drawer: const AppDrawer(),
@@ -133,29 +138,65 @@ class CardScreen extends GetView<CardController> {
                               ),
                             )
                           : Obx(
-                              () => ListView.separated(
-                                padding: const EdgeInsets.only(bottom: 20),
-                                itemBuilder: (context, index) => InkWell(
-                                  borderRadius: BorderRadius.circular(16),
-                                  onTap: () {
-                                    Get.toNamed(
-                                      AppRoutes.cardViewRoute,
-                                      arguments: {
-                                        "cards": controller.cards,
-                                        "isView": false,
-                                        'initalIndex': index,
+                              () {
+                                // One tappable card (same as before).
+                                Widget cardAt(int index) => InkWell(
+                                      borderRadius: BorderRadius.circular(16),
+                                      onTap: () {
+                                        Get.toNamed(
+                                          AppRoutes.cardViewRoute,
+                                          arguments: {
+                                            "cards": controller.cards,
+                                            "isView": false,
+                                            'initalIndex': index,
+                                          },
+                                        );
                                       },
+                                      child: CardWidget(
+                                        model: controller.cards[index],
+                                        isEdit: controller.deck.editable,
+                                      ),
+                                    );
+
+                                final count = controller.cards.length;
+
+                                if (columns == 1) {
+                                  return ListView.separated(
+                                    padding: const EdgeInsets.only(bottom: 20),
+                                    itemBuilder: (context, index) =>
+                                        cardAt(index),
+                                    separatorBuilder: (context, index) =>
+                                        const SizedBox(height: 10),
+                                    itemCount: count,
+                                  );
+                                }
+
+                                // Tablet: rows of 2 or 3 cards.
+                                final rows = (count + columns - 1) ~/ columns;
+                                return ListView.separated(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(20, 0, 20, 90),
+                                  itemCount: rows,
+                                  separatorBuilder: (context, index) =>
+                                      const SizedBox(height: 10),
+                                  itemBuilder: (context, row) {
+                                    return Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        for (int c = 0; c < columns; c++) ...[
+                                          if (c > 0) const SizedBox(width: 10),
+                                          Expanded(
+                                            child: (row * columns + c) < count
+                                                ? cardAt(row * columns + c)
+                                                : const SizedBox.shrink(),
+                                          ),
+                                        ],
+                                      ],
                                     );
                                   },
-                                  child: CardWidget(
-                                    model: controller.cards[index],
-                                    isEdit: controller.deck.editable,
-                                  ),
-                                ),
-                                separatorBuilder: (context, index) =>
-                                    const SizedBox(height: 10),
-                                itemCount: controller.cards.length,
-                              ),
+                                );
+                              },
                             ),
                 ),
               ),

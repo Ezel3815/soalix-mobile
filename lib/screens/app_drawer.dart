@@ -49,8 +49,13 @@ class AppDrawer extends StatelessWidget {
       mainController.onChangePage(index);
     }
 
+    // On tablets, `width * .78` would make the drawer absurdly wide (and
+    // stretch every ListTile with it) — cap it at a sensible phone-like
+    // width instead.
+    final drawerWidth = width >= 600 ? 320.0 : width * .78;
+
     return Container(
-      width: width * .78,
+      width: drawerWidth,
       color: AppColor.scaffoldBackgroundColor,
       child: SafeArea(
         child: Padding(

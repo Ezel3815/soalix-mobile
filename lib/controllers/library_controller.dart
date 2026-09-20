@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:upgrade/controllers/years_controller.dart';
 import 'package:upgrade/entity/deck_entity.dart';
 
-enum LibraryFilter { all, mine, public }
+enum LibraryFilter { all, mine, created }
 
 class LibraryController extends GetxController {
   final yearsController = Get.find<YearsController>();
@@ -48,7 +48,10 @@ class LibraryController extends GetxController {
       if (deck.type != "PACKAGE_DECK") continue;
       final isSubjectLevel = deck.children.isNotEmpty &&
           deck.children.every((c) => c.type == "CARDS_DECK");
-      if (isSubjectLevel) {
+      // Locked subjects come back from the server with no children;
+      // still list them (marked locked) instead of hiding them.
+      final isLockedSubject = deck.locked && deck.children.isEmpty;
+      if (isSubjectLevel || isLockedSubject) {
         result.add(deck);
       } else {
         result.addAll(_collectSubjects(deck.children));
@@ -56,6 +59,10 @@ class LibraryController extends GetxController {
     }
     return result;
   }
+
+  List<DeckEntity> get _createdDecks => yearsController.decks
+      .where((d) => !d.byAdmin && d.editable && d.type == "CARDS_DECK")
+      .toList();
 
   List<DeckEntity> get filteredSubjects {
     final roots = selectedYearId.value == null
@@ -67,16 +74,17 @@ class LibraryController extends GetxController {
 
     switch (filter.value) {
       case LibraryFilter.mine:
-        // Decks this user created/owns.
-        subjects = subjects.where((d) => d.editable).toList();
+        // Subjects that are unlocked for this user.
+        subjects = subjects.where((d) => !d.locked).toList();
         break;
-      case LibraryFilter.public:
-        // Decks marked public by their owner — was incorrectly using
-        // "!editable" before, which meant "anything I didn't create"
-        // rather than the deck's own public flag.
-        subjects = subjects.where((d) => d.public).toList();
+      case LibraryFilter.created:
+        // Decks this user created themselves.
+        subjects = _createdDecks;
         break;
       case LibraryFilter.all:
+        if (selectedYearId.value == null) {
+          subjects = [...subjects, ..._createdDecks];
+        }
         break;
     }
 

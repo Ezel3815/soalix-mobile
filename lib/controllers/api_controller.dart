@@ -61,7 +61,9 @@ class ApiController {
     }
   }
 
-     static Future<void> register(String name, String username, String email,
+     /// Returns null on success (or after showing an error), or
+  /// 'username_taken' so the form can flag the username field itself.
+  static Future<String?> register(String name, String username, String email,
       String password, BuildContext context) async {
     try {
       final response = await dio.post(
@@ -83,6 +85,10 @@ class ApiController {
         showSnackBarWidget(message: response.data['message'] ?? "");
       }
     } catch (e) {
+      final body = e is DioException ? '${e.response?.data}'.toLowerCase() : '';
+      if (body.contains('username') && body.contains('taken')) {
+        return 'username_taken';
+      }
       if(ErrorHandler.handle(e).failure.code != -6) {
         showSnackBarWidget(message: ErrorHandler
             .handle(e)
@@ -90,6 +96,7 @@ class ApiController {
             .message ?? "");
       }
     }
+    return null;
   }
   static Future<void> activate(
       String code, String email, BuildContext context) async {

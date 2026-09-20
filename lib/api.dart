@@ -39,4 +39,5 @@ class Api {
   static const String updateProfile = '$baseUrl/users/me/profile';
   static String userByUsername(String u) => '$baseUrl/users/by-username/$u';
   static String usernameAvailable(String u) => '$baseUrl/auth/username-available/$u';
+  static const String fcmToken = '$baseUrl/users/me/fcm-token';
 }

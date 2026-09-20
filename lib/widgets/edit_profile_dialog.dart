@@ -4,11 +4,11 @@ import 'package:upgrade/controllers/profile_controller.dart';
 import 'package:upgrade/resources.dart';
 
 class EditProfileDialog extends StatelessWidget {
-  const EditProfileDialog({super.key});
+  final ProfileController controller;
+  const EditProfileDialog({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<ProfileController>();
     final usernameController = TextEditingController(
       text: controller.profile.value?.username ?? '',
     );

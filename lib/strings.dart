@@ -42,6 +42,18 @@ class AppStrings {
   static String get reachedLevel => _t("وصل إلى المستوى", "reached level");
   static String get dayStreak => _t("يوم متتالي", "day streak");
 
+  // ===== Create deck =====
+  static String get createDeck => _t("إنشاء مجموعة", "Create Deck");
+  static String get startNewDeck => _t("ابدأ مجموعة جديدة", "Start a new deck");
+  static String get startNewDeckHint => _t(
+      "نظّم بطاقاتك في مجموعة لتبدأ الدراسة",
+      "Organize your flashcards into a deck to start studying");
+  static String get newDeck => _t("مجموعة جديدة", "New Deck");
+  static String get deckName => _t("اسم المجموعة", "Deck name");
+  static String get fieldRequired => _t("هذا الحقل مطلوب.", "This field is required.");
+  static String get cancel => _t("إلغاء", "Cancel");
+  static String get create => _t("إنشاء", "Create");
+
   // ===== Language toggle (drawer) =====
   static String get language => _t("اللغة", "Language");
   static String get arabic => _t("العربية", "Arabic");

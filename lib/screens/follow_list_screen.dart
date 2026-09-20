@@ -5,6 +5,7 @@ import 'package:upgrade/entity/follow_person.dart';
 import 'package:upgrade/main.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/widgets/app_image.dart';
+import 'package:upgrade/widgets/tablet_bounded.dart';
 
 /// Who follows a user ("followers") or whom they follow ("following").
 /// Opened by tapping the counts on a profile. Arguments:
@@ -67,7 +68,8 @@ class _FollowListScreenState extends State<FollowListScreen> {
     return Scaffold(
       backgroundColor: AppColor.scaffoldBackgroundColor,
       body: SafeArea(
-        child: Column(
+        child: TabletBounded(
+          child: Column(
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 4, 20, 8),
@@ -106,6 +108,7 @@ class _FollowListScreenState extends State<FollowListScreen> {
             ),
             Expanded(child: _body()),
           ],
+          ),
         ),
       ),
     );

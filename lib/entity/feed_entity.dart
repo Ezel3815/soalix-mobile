@@ -61,6 +61,8 @@ class FeedPost {
   /// Arabic post text built from the real event data.
   String get message {
     switch (type) {
+      case 'followed':
+        return 'بدأ بمتابعتك 👋';
       case 'chapter_completed':
         return 'أنهى فصل «$title» 🎯';
       case 'achievement_unlocked':

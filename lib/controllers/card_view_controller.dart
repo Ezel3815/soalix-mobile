@@ -269,7 +269,9 @@ class CardViewController extends GetxController {
     final result = await ApiController.answerCard(
         cardID: cards[pageViewIndex].id, answer: answer);
     if (result != null) showCelebration(result);
-    Get.find<CardController>().getCard();
+    if (Get.isRegistered<CardController>()) {
+      Get.find<CardController>().getCard();
+    }
     Get.find<YearsController>().getAllDeck();
   }
 

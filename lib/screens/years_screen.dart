@@ -506,13 +506,8 @@ class _CurrentSubjectLessons extends StatelessWidget {
           ),
         );
       }
-      return SizedBox(
-        // LessonPathWidget uses ListView.builder internally; give it a
-        // bounded height sized to its content so it can sit inside this
-        // screen's outer ListView without both fighting over scrolling.
-        height: subject.children.length * 108.0,
-        child: LessonPathWidget(chapters: subject.children),
-      );
+      // Embedded: sizes to its content, the page's outer ListView scrolls.
+      return LessonPathWidget(chapters: subject.children, embedded: true);
     });
   }
 }

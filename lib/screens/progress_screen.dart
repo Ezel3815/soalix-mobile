@@ -1,3 +1,4 @@
+import 'package:upgrade/widgets/quests_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:upgrade/controllers/progress_controller.dart';
@@ -59,7 +60,7 @@ class ProgressScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _TabPill(
-                      label: "الإنجازات",
+                      label: "المهام",
                       selected:
                           controller.tab.value == ProgressTab.achievements,
                       onTap: () =>
@@ -90,7 +91,23 @@ class ProgressScreen extends StatelessWidget {
             const SizedBox(height: 20),
             Obx(() {
               if (controller.tab.value == ProgressTab.achievements) {
-                return _AchievementsBody(controller: controller);
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    QuestsBody(controller: controller),
+                    const SizedBox(height: 28),
+                    const Text(
+                      "الإنجازات",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: AppColor.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _AchievementsBody(controller: controller),
+                  ],
+                );
               }
               if (controller.tab.value == ProgressTab.leaderboard) {
                 return _LeaderboardBody(controller: controller);
@@ -161,7 +178,7 @@ class _AchievementsBody extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "$unlockedCount/${achievements.length} unlocked",
+            "$unlockedCount/${achievements.length} مفتوح",
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,

@@ -306,6 +306,12 @@ class AppRoutes {
       // extra binding is needed here.
       name: createDeckRoute,
       page: () => const CreateDeckScreen(),
+      binding: BindingsBuilder(() {
+        // Safe no-ops if already registered by mainRoute; recreates
+        // them if the main shell was disposed (fixes "not found" crash).
+        Get.lazyPut(() => YearsController(), fenix: true);
+        Get.lazyPut(() => CreateDeckController(), fenix: true);
+      }),
     ),
     GetPage(
       name: sessionResultRoute,

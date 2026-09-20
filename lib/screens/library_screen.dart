@@ -9,6 +9,7 @@ import 'package:upgrade/main.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
 import 'package:upgrade/widgets/mozaik_mark_icon.dart';
+import 'package:upgrade/widgets/tablet_bounded.dart';
 
 /// A small set of accent colors used only to visually distinguish deck
 /// cards in the library grid (not tied to any real "subject category"
@@ -40,7 +41,8 @@ class LibraryScreen extends StatelessWidget {
         child: const Icon(Icons.add_rounded, color: Colors.white),
       ),
       body: SafeArea(
-        child: Column(
+        child: TabletBounded(
+          child: Column(
           children: [
             const SizedBox(height: 4),
             Padding(
@@ -181,9 +183,8 @@ class LibraryScreen extends StatelessWidget {
                 }
                 return GridView.builder(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 90),
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: isTabletWidth(context) ? 3 : 2,
                     mainAxisSpacing: 14,
                     crossAxisSpacing: 14,
                     childAspectRatio: 0.92,
@@ -198,6 +199,7 @@ class LibraryScreen extends StatelessWidget {
               }),
             ),
           ],
+          ),
         ),
       ),
     );

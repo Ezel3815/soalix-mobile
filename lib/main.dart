@@ -34,6 +34,8 @@ import 'package:upgrade/screens/search_users_screen.dart';
 import 'package:upgrade/screens/session_result_screen.dart';
 import 'package:upgrade/screens/notification_settings_screen.dart';
 import 'package:upgrade/services/notification_service.dart';
+import 'package:upgrade/services/push_service.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 late SharedPreferences sharedPref;
 
@@ -64,6 +66,13 @@ void main() async {
   await initAppModule();
   await ApiController.initDio();
   await NotificationService.instance.init();
+  try {
+    await Firebase.initializeApp();
+    await PushService.instance.init();
+  } catch (e) {
+    // Missing google-services.json / no Play services on this device —
+    // push notifications are unavailable, everything else still runs.
+  }
   DeepLinkService.init();
   runApp(
     const MyApp(),

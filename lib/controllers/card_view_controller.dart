@@ -1,3 +1,4 @@
+import 'package:upgrade/controllers/progress_controller.dart';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -273,6 +274,9 @@ class CardViewController extends GetxController {
       Get.find<CardController>().getCard();
     }
     Get.find<YearsController>().getAllDeck();
+    if (Get.isRegistered<ProgressController>()) {
+      Get.find<ProgressController>().loadQuests();
+    }
   }
 
   bool isArabic(String text) {

@@ -13,6 +13,7 @@ import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
 import 'package:upgrade/widgets/app_snack_bar.dart';
 import 'package:upgrade/widgets/download_dialog.dart';
+import 'package:upgrade/widgets/tablet_bounded.dart';
 
 class DocumentScreen extends GetView<DocumentController> {
   const DocumentScreen({super.key});
@@ -36,7 +37,8 @@ class DocumentScreen extends GetView<DocumentController> {
           key: controller.scaffoldKey,
           backgroundColor: Colors.transparent,
           body: SafeArea(
-            child: Column(
+            child: TabletBounded(
+              child: Column(
               children: [
                 const SizedBox(
                   height: 10,
@@ -271,6 +273,7 @@ class DocumentScreen extends GetView<DocumentController> {
                   ),
                 )
               ],
+              ),
             ),
           ),
           drawer: const AppDrawer(),

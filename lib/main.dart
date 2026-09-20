@@ -1,3 +1,4 @@
+import 'package:upgrade/utils/deep_link_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -62,6 +63,7 @@ void main() async {
   await initAppModule();
   await ApiController.initDio();
   await NotificationService.instance.init();
+  DeepLinkService.init();
   runApp(
     const MyApp(),
   );

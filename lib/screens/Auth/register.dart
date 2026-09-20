@@ -23,8 +23,9 @@ class _RegisterState extends State<Register> {
   bool isPasswordValid = false;
   bool isLoading = false;
   Timer? _usernameDebounce;
-  bool? usernameAvailable;
+  bool? usernameAvailable; // null = unknown
   bool checkingUsername = false;
+  bool serverRejected = false;
 
   @override
   void dispose() {
@@ -38,6 +39,7 @@ class _RegisterState extends State<Register> {
     final valid = RegExp(r'^[a-zA-Z0-9_.]{3,20}$').hasMatch(t);
     setState(() {
       usernameAvailable = null;
+      serverRejected = false;
       checkingUsername = valid;
     });
     if (!valid) return;
@@ -232,6 +234,9 @@ class _RegisterState extends State<Register> {
                             if (usernameAvailable == false) {
                               return 'اسم المستخدم مستخدم بالفعل، جرّب اسماً آخر';
                             }
+                            if (serverRejected) {
+                              return 'تعذّر التسجيل، ربما اسم المستخدم مستخدم. جرّب اسماً آخر';
+                            }
                             return null;
                           },
                           decoration: _fieldDecoration(
@@ -324,10 +329,11 @@ class _RegisterState extends State<Register> {
                                       });
                                       // Final check if the live one hasn't answered yet.
                                       if (usernameAvailable == null &&
-                                          !await ApiController
-                                              .isUsernameAvailable(
-                                                  usernameController.text
-                                                      .trim())) {
+                                          await ApiController
+                                                  .isUsernameAvailable(
+                                                      usernameController.text
+                                                          .trim()) ==
+                                              false) {
                                         if (mounted) {
                                           setState(() {
                                             usernameAvailable = false;
@@ -349,8 +355,11 @@ class _RegisterState extends State<Register> {
                                           if (error == 'username_taken') {
                                             usernameAvailable = false;
                                           }
+                                          if (error == 'server_error') {
+                                            serverRejected = true;
+                                          }
                                         });
-                                        if (error == 'username_taken') {
+                                        if (error != null) {
                                           _formKey1.currentState?.validate();
                                         }
                                       }

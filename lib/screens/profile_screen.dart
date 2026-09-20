@@ -1,3 +1,5 @@
+import 'package:upgrade/widgets/edit_profile_dialog.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -231,15 +233,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Text(
                         profile.username != null
                             ? "@${profile.username} · ${_formatJoined(profile.createdAt)}"
-                            : "Set a username · ${_formatJoined(profile.createdAt)}",
-                        style: TextStyle(
+                            : _formatJoined(profile.createdAt),
+                        style: const TextStyle(
                           fontSize: 13,
-                          color: profile.username != null
-                              ? AppColor.textSecondary
-                              : AppColor.greenColor,
-                          fontWeight: profile.username != null
-                              ? FontWeight.w400
-                              : FontWeight.w600,
+                          color: AppColor.textSecondary,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -293,9 +291,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               height: 52,
                               child: controller.isOwnProfile
                                   ? OutlinedButton(
-                                      onPressed: () {
-                                        // Edit profile — future step
-                                      },
+                                      onPressed: () => Get.dialog(
+                                          EditProfileDialog(
+                                              controller: controller)),
                                       style: OutlinedButton.styleFrom(
                                         side: const BorderSide(
                                             color: AppColor.greenColor),
@@ -363,19 +361,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           const SizedBox(width: 10),
-                          Container(
-                            width: 52,
-                            height: 52,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: AppColor.greenColor.withOpacity(0.4)),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Icon(
-                              PhosphorIcons.shareNetwork(
-                                  PhosphorIconsStyle.bold),
-                              size: 18,
-                              color: AppColor.greenColor,
+                          InkWell(
+                            borderRadius: BorderRadius.circular(16),
+                            onTap: () {
+                              final u = profile.username;
+                              if (u == null || u.isEmpty) {
+                                // No username yet: let the owner pick one first.
+                                if (controller.isOwnProfile) {
+                                  Get.dialog(EditProfileDialog(
+                                      controller: controller));
+                                }
+                                return;
+                              }
+                              Share.share(
+                                  "تابعني على MOZAIK: @$u\n${Api.baseUrl}/users/share/$u");
+                            },
+                            child: Container(
+                              width: 52,
+                              height: 52,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color:
+                                        AppColor.greenColor.withOpacity(0.4)),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Icon(
+                                PhosphorIcons.shareNetwork(
+                                    PhosphorIconsStyle.bold),
+                                size: 18,
+                                color: AppColor.greenColor,
+                              ),
                             ),
                           ),
                         ],

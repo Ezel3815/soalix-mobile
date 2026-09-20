@@ -222,10 +222,15 @@ class _SessionResultScreenState extends State<SessionResultScreen>
                           width: double.infinity,
                           height: 52,
                           child: ElevatedButton(
-                            onPressed: () => Get.until(
-                              (route) =>
-                                  Get.currentRoute == AppRoutes.cardRoute,
-                            ),
+                            // Pop only this screen (and any celebration dialog):
+                            // back to the deck list for owners, or to wherever
+                            // the study started for regular users. The old
+                            // "until cardRoute" popped everything (black screen)
+                            // when no card list was in the stack.
+                            onPressed: () => Get.until((route) =>
+                                route is! PopupRoute &&
+                                route.settings.name !=
+                                    AppRoutes.sessionResultRoute),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColor.greenColor,
                               elevation: 0,

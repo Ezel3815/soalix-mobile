@@ -7,6 +7,7 @@ import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
 import 'package:upgrade/widgets/app_image.dart';
 import 'package:upgrade/widgets/mozaik_mark_icon.dart';
+import 'package:upgrade/widgets/tablet_bounded.dart';
 
 const List<Color> _subjectAccentColors = [
   AppColor.greenColor,
@@ -30,7 +31,8 @@ class ProgressScreen extends StatelessWidget {
       drawer: const AppDrawer(),
       drawerEnableOpenDragGesture: false,
       body: SafeArea(
-        child: ListView(
+        child: TabletBounded(
+          child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 4, 20, 30),
           children: [
             Row(
@@ -115,6 +117,7 @@ class ProgressScreen extends StatelessWidget {
               return _StatisticsBody(controller: controller);
             }),
           ],
+          ),
         ),
       ),
     );
@@ -189,8 +192,8 @@ class _AchievementsBody extends StatelessWidget {
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: isTabletWidth(context) ? 5 : 3,
               mainAxisSpacing: 12,
               crossAxisSpacing: 12,
               childAspectRatio: 0.85,

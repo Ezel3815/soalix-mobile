@@ -602,6 +602,33 @@ class ApiController {
     return false;
   }
 
+  /// Reason the last [fetchCards] call failed (shown to the user so a real
+  /// error is never mistaken for "this deck has no cards").
+  static String? lastCardsError;
+
+  /// Like [getCards] but distinguishes failure (null) from a deck that is
+  /// really empty ([]).
+  static Future<List<CardEntity>?> fetchCards(int id) async {
+    lastCardsError = null;
+    try {
+      final response = await dio.get(
+        Api.getCards(id),
+        options: GetOptions.getOptions(),
+      );
+      final List<dynamic> json = response.data;
+      final data = json.map((e) => CardModel.fromJson(e).toDomain()).toList();
+      await _appLocalDataSource.setCardEntityToLocal(data, id);
+      return data;
+    } catch (e) {
+      lastCardsError = e is DioException
+          ? (ErrorHandler.handle(e).failure.message ?? 'خطأ في الاتصال')
+          : e.toString();
+      log('fetchCards($id) failed: $e');
+      final local = await _appLocalDataSource.getCardEntityFromLocal(id);
+      return local.isNotEmpty ? local : null;
+    }
+  }
+
   static Future<List<CardEntity>> getCards(int id) async {
     if (await _networkInfo.isConnected) {
       try {

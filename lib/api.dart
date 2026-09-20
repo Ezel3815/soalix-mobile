@@ -33,6 +33,8 @@ class Api {
   static  String answerCard(int id) => '$baseUrl/cards/answer/$id';
   static String getProfile(int id) => '$baseUrl/users/$id/profile';
   static String followUser(int id) => '$baseUrl/users/$id/follow';
+  static String followers(int id) => '$baseUrl/users/$id/followers';
+  static String following(int id) => '$baseUrl/users/$id/following';
   static String unfollowUser(int id) => '$baseUrl/users/$id/follow';
   static const String updateProfile = '$baseUrl/users/me/profile';
   static String userByUsername(String u) => '$baseUrl/users/by-username/$u';

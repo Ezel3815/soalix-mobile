@@ -9,7 +9,12 @@ import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
 import 'package:upgrade/widgets/app_image.dart';
 
-const Color _cardBorder = Color(0xFFDDE4CC);
+// Premium redesign: a barely-visible hairline plus a soft shadow reads as
+// "elevated surface" — the old 2px solid outline read as a wireframe.
+const Color _cardBorder = Color(0xFFEAEFE0);
+const List<BoxShadow> _cardShadow = [
+  BoxShadow(color: Color(0x14243D2E), blurRadius: 22, offset: Offset(0, 8)),
+];
 
 /// Duolingo-style social feed: your activity + the people you follow.
 class FeedScreen extends StatefulWidget {
@@ -21,12 +26,12 @@ class FeedScreen extends StatefulWidget {
 
 class _FeedScreenState extends State<FeedScreen> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  late final FeedController c = Get.put(FeedController());
+  late final FeedController c = Get.find<FeedController>();
 
   @override
   void initState() {
     super.initState();
-    c.load();
+    c.load().then((_) => c.markSeen());
   }
 
   @override
@@ -189,8 +194,9 @@ class _PostCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColor.surfaceColor,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: _cardBorder, width: 2),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: _cardBorder, width: 1),
+        boxShadow: _cardShadow,
       ),
       child: Column(
         children: [
@@ -261,23 +267,17 @@ class _PostCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(child: _actionButton()),
-                    const SizedBox(width: 12),
-                    _CountBubble(count: post.celebrations),
-                  ],
-                ),
+                _actionRow(),
               ],
             ),
           ),
-          const Divider(height: 2, thickness: 2, color: _cardBorder),
+          Divider(height: 1, thickness: 1, color: _cardBorder),
           InkWell(
             onTap: _openComments,
             borderRadius:
-                const BorderRadius.vertical(bottom: Radius.circular(20)),
+                const BorderRadius.vertical(bottom: Radius.circular(22)),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
               child: Row(
                 children: [
                   Expanded(
@@ -286,18 +286,18 @@ class _PostCard extends StatelessWidget {
                           ? 'عرض ${post.comments} ${post.comments == 1 ? 'تعليق' : 'تعليقات'}'
                           : 'أضف تعليقاً...',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 13.5,
                         color: post.comments > 0
                             ? AppColor.greenColor
                             : AppColor.disabledColor,
                         fontWeight: post.comments > 0
                             ? FontWeight.w700
-                            : FontWeight.w400,
+                            : FontWeight.w500,
                       ),
                     ),
                   ),
-                  const Icon(Icons.chat_bubble_outline_rounded,
-                      size: 18, color: AppColor.disabledColor),
+                  Icon(Icons.chat_bubble_outline_rounded,
+                      size: 17, color: AppColor.disabledColor.withOpacity(0.7)),
                 ],
               ),
             ),
@@ -307,80 +307,136 @@ class _PostCard extends StatelessWidget {
     );
   }
 
-  Widget _actionButton() {
+  /// One merged pill: icon + label + count together, instead of a separate
+  /// outlined button next to a detached bordered circle — fewer competing
+  /// shapes reads calmer and more deliberate.
+  Widget _actionRow() {
     final celebrated = post.celebrated;
-    final String label;
     if (post.mine) {
-      label = 'مشاركة';
-    } else {
-      label = celebrated ? '🎉  احتفلت' : '🎉  احتفل';
-    }
-    return SizedBox(
-      height: 46,
-      child: OutlinedButton(
-        onPressed: post.mine
-            ? () => Share.share(
-                '${post.message}\nتابعني على MOZAIK: https://soalix-backend.onrender.com')
-            : () => controller.toggleCelebrate(post),
-        style: OutlinedButton.styleFrom(
-          foregroundColor:
-              celebrated ? AppColor.greenColor : AppColor.textPrimary,
-          backgroundColor: celebrated
-              ? AppColor.greenColor.withOpacity(0.12)
-              : Colors.transparent,
-          side: BorderSide(
-            color: celebrated ? AppColor.greenColor : _cardBorder,
-            width: 2,
-          ),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (post.mine) ...[
-              const Icon(Icons.ios_share_rounded, size: 18),
-              const SizedBox(width: 8),
-            ],
-            Text(
-              label,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+      return Row(
+        children: [
+          Expanded(
+            child: _Pill(
+              onTap: () => Share.share(
+                  '${post.message}\nتابعني على MOZAIK: https://soalix-backend.onrender.com'),
+              icon: Icons.ios_share_rounded,
+              label: 'مشاركة',
+              filled: false,
             ),
+          ),
+          if (post.celebrations > 0) ...[
+            const SizedBox(width: 10),
+            _CelebrationCount(count: post.celebrations),
           ],
+        ],
+      );
+    }
+    return _Pill(
+      onTap: () => controller.toggleCelebrate(post),
+      icon: null,
+      emoji: '🎉',
+      label: celebrated
+          ? (post.celebrations > 0
+              ? 'احتفلت · ${post.celebrations}'
+              : 'احتفلت')
+          : (post.celebrations > 0
+              ? 'احتفل · ${post.celebrations}'
+              : 'احتفل'),
+      filled: celebrated,
+      fullWidth: true,
+    );
+  }
+}
+
+/// A single flat pill — the one recurring control shape for this card,
+/// used for both "celebrate" and "share" so the card reads as one
+/// consistent system rather than a mix of button styles.
+class _Pill extends StatelessWidget {
+  final VoidCallback onTap;
+  final IconData? icon;
+  final String? emoji;
+  final String label;
+  final bool filled;
+  final bool fullWidth;
+  const _Pill({
+    required this.onTap,
+    this.icon,
+    this.emoji,
+    required this.label,
+    required this.filled,
+    this.fullWidth = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final fg = filled ? Colors.white : AppColor.textPrimary;
+    return SizedBox(
+      width: fullWidth ? double.infinity : null,
+      height: 46,
+      child: Material(
+        color: filled ? AppColor.greenColor : AppColor.lightGreenColor.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (emoji != null) ...[
+                  Text(emoji!, style: const TextStyle(fontSize: 16)),
+                  const SizedBox(width: 8),
+                ],
+                if (icon != null) ...[
+                  Icon(icon, size: 17, color: fg),
+                  const SizedBox(width: 8),
+                ],
+                Text(
+                  label,
+                  style: TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w800, color: fg),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-class _CountBubble extends StatelessWidget {
+/// Small celebration-count readout for the owner's own post — a quiet
+/// number, not another bordered shape competing with the share pill.
+class _CelebrationCount extends StatelessWidget {
   final int count;
-  const _CountBubble({required this.count});
+  const _CelebrationCount({required this.count});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: _cardBorder, width: 2),
+    return Container(
+      height: 46,
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: AppColor.lightGreenColor.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('🎉', style: TextStyle(fontSize: 15)),
+          const SizedBox(width: 6),
+          Text(
+            '$count',
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+              color: AppColor.darkGreenColor,
+            ),
           ),
-          child: const Text('🎉', style: TextStyle(fontSize: 18)),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          '$count',
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w800,
-            color: AppColor.disabledColor,
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -408,10 +464,11 @@ class _PostBadge extends StatelessWidget {
         icon = Icons.menu_book_rounded;
     }
     return Container(
-      width: 84,
-      height: 84,
+      width: 56,
+      height: 56,
+      alignment: Alignment.center,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(18),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -419,30 +476,13 @@ class _PostBadge extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: colors.last.withOpacity(0.35),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
+            color: colors.last.withOpacity(0.28),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          PositionedDirectional(
-            top: 8,
-            start: 10,
-            child: Container(
-              width: 26,
-              height: 12,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.28),
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-          Icon(icon, size: 42, color: Colors.white),
-        ],
-      ),
+      child: Icon(icon, size: 26, color: Colors.white),
     );
   }
 }
@@ -570,9 +610,9 @@ class _CommentsSheetState extends State<_CommentsSheet> {
                 ),
               ),
             ),
-            const Divider(height: 2, thickness: 2, color: _cardBorder),
+            const Divider(height: 1, thickness: 1, color: _cardBorder),
             Expanded(child: _list()),
-            const Divider(height: 2, thickness: 2, color: _cardBorder),
+            const Divider(height: 1, thickness: 1, color: _cardBorder),
             SafeArea(
               top: false,
               child: Padding(
@@ -597,7 +637,7 @@ class _CommentsSheetState extends State<_CommentsSheet> {
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(18),
                             borderSide:
-                                const BorderSide(color: _cardBorder, width: 2),
+                                const BorderSide(color: _cardBorder, width: 1.4),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(18),

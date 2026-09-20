@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:get/get.dart';
@@ -12,6 +14,11 @@ import 'package:upgrade/widgets/download_dialog.dart';
 
 import 'document_screen.dart';
 
+/// On tablets the card stays a readable column of this width, with larger
+/// text, instead of tiny text floating in a huge empty screen.
+const double _tabletContentWidth = 760;
+const double _tabletTextScale = 1.3;
+
 class CardViewScreen extends GetView<CardViewController> {
   const CardViewScreen({super.key});
 
@@ -19,6 +26,17 @@ class CardViewScreen extends GetView<CardViewController> {
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
     final height = MediaQuery.sizeOf(context).height;
+
+    final bool isTablet = width >= 600;
+    // Width of the area the card content really lives in.
+    final double areaWidth =
+        isTablet ? math.min(width, _tabletContentWidth) : width;
+    // Sideways padding that centres the content on wide screens while the
+    // whole width still scrolls.
+    final double hPad =
+        20.0 + (isTablet ? math.max(0.0, (width - _tabletContentWidth) / 2) : 0.0);
+    final double textScale = isTablet ? _tabletTextScale : 1.0;
+
     return Stack(
       children: [
         Container(
@@ -34,13 +52,24 @@ class CardViewScreen extends GetView<CardViewController> {
             backgroundColor: Colors.transparent,
             elevation: 0,
             scrolledUnderElevation: 0,
+            // Progress line: how far through the session you are.
+            bottom: controller.isView
+                ? null
+                : PreferredSize(
+                    preferredSize: const Size.fromHeight(30),
+                    child: _StudyProgress(
+                      controller: controller,
+                      sidePadding: hPad,
+                    ),
+                  ),
           ),
           body: SafeArea(
             child: Obx(
               () => PageView.builder(
                 itemBuilder: (context, index) {
                   return SingleChildScrollView(
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: hPad, vertical: 20),
                     child: Obx(
                       () => Column(
                         children: [
@@ -52,14 +81,15 @@ class CardViewScreen extends GetView<CardViewController> {
   </div>
   ''',
                               textStyle: TextStyle(
-                                fontSize: controller.getFrontSize(),
+                                fontSize: controller.getFrontSize() * textScale,
                                 color: AppColor.textPrimary,
                               ),
                             ),
                             if (controller.data.image.isNotEmpty) ...[
                               const SizedBox(height: 14),
                               SizedBox(
-                                width: controller.data.imageData.width * width,
+                                width:
+                                    controller.data.imageData.width * areaWidth,
                                 height:
                                     controller.data.imageData.height * height,
                                 child: Stack(
@@ -78,6 +108,7 @@ class CardViewScreen extends GetView<CardViewController> {
                                                 controller.data.shapes[index];
                                             return ShapesWidget(
                                               item: item,
+                                              areaWidth: areaWidth,
                                               onTap: () => controller
                                                   .onTapOnShape(index),
                                             );
@@ -105,7 +136,8 @@ class CardViewScreen extends GetView<CardViewController> {
   </div>
   ''',
                                   textStyle: TextStyle(
-                                    fontSize: controller.getBackSize(),
+                                    fontSize:
+                                        controller.getBackSize() * textScale,
                                     color: AppColor.textPrimary,
                                   ),
                                 ),
@@ -125,7 +157,8 @@ class CardViewScreen extends GetView<CardViewController> {
   </div>
   ''',
                                   textStyle: TextStyle(
-                                    fontSize: controller.getCommentSize(),
+                                    fontSize:
+                                        controller.getCommentSize() * textScale,
                                     color: AppColor.textPrimary,
                                   ),
                                 ),
@@ -140,7 +173,7 @@ class CardViewScreen extends GetView<CardViewController> {
   </div>
   ''',
                               textStyle: TextStyle(
-                                fontSize: controller.getFrontSize(),
+                                fontSize: controller.getFrontSize() * textScale,
                                 color: AppColor.textPrimary,
                               ),
                             ),
@@ -169,7 +202,7 @@ class CardViewScreen extends GetView<CardViewController> {
   </div>
   ''',
                                 textStyle: TextStyle(
-                                  fontSize: controller.getBackSize(),
+                                  fontSize: controller.getBackSize() * textScale,
                                   color: AppColor.textPrimary,
                                 ),
                               ),
@@ -330,51 +363,59 @@ class CardViewScreen extends GetView<CardViewController> {
                             ),
                           ),
                         ],
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(14, 14, 14, 18),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Expanded(
-                                child: _GradeButton(
-                                  label: "Again",
-                                  color: const Color(0xFFE4574C),
-                                  textColor: Colors.white,
-                                  onTap: () => controller
-                                      .onTapOnStatusButton("AGAIN"),
-                                ),
+                        Center(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                                maxWidth: isTablet ? _tabletContentWidth : width),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(14, 14, 14, 18),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Expanded(
+                                    child: _GradeButton(
+                                      label: "Again",
+                                      color: const Color(0xFFE4574C),
+                                      textColor: Colors.white,
+                                      onTap: () => controller
+                                          .onTapOnStatusButton("AGAIN"),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: _GradeButton(
+                                      label: "Hard",
+                                      color: const Color(0xFFE8A33D),
+                                      textColor: Colors.white,
+                                      onTap: () => controller
+                                          .onTapOnStatusButton("HARD"),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: _GradeButton(
+                                      label: "Good",
+                                      color: AppColor.greenColor,
+                                      textColor: Colors.white,
+                                      onTap: () => controller
+                                          .onTapOnStatusButton("GOOD"),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: _GradeButton(
+                                      label: "Easy",
+                                      color: AppColor.lightGreenColor,
+                                      textColor: AppColor.textPrimary,
+                                      onTap: () => controller
+                                          .onTapOnStatusButton("EASY"),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: _GradeButton(
-                                  label: "Hard",
-                                  color: const Color(0xFFE8A33D),
-                                  textColor: Colors.white,
-                                  onTap: () =>
-                                      controller.onTapOnStatusButton("HARD"),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: _GradeButton(
-                                  label: "Good",
-                                  color: AppColor.greenColor,
-                                  textColor: Colors.white,
-                                  onTap: () =>
-                                      controller.onTapOnStatusButton("GOOD"),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: _GradeButton(
-                                  label: "Easy",
-                                  color: AppColor.lightGreenColor,
-                                  textColor: AppColor.textPrimary,
-                                  onTap: () =>
-                                      controller.onTapOnStatusButton("EASY"),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ],
@@ -416,6 +457,73 @@ class CardViewScreen extends GetView<CardViewController> {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// A thin line under the top bar showing how far through the session you
+/// are, with "3 / 12" and how many cards are left.
+class _StudyProgress extends StatelessWidget {
+  final CardViewController controller;
+  final double sidePadding;
+  const _StudyProgress({required this.controller, required this.sidePadding});
+
+  @override
+  Widget build(BuildContext context) {
+    final pc = controller.pageController;
+    return AnimatedBuilder(
+      // Rebuilds whenever the pager moves to another card.
+      animation: pc,
+      builder: (context, _) {
+        final total = controller.cards.length;
+        if (total == 0) return const SizedBox.shrink();
+
+        int index = controller.pageViewIndex;
+        if (pc.hasClients) {
+          final page = pc.page;
+          if (page != null) index = page.round();
+        }
+        index = math.max(0, math.min(index, total - 1));
+        final left = total - index - 1;
+
+        return Padding(
+          padding: EdgeInsets.fromLTRB(sidePadding, 0, sidePadding, 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: LinearProgressIndicator(
+                    value: index / total,
+                    minHeight: 7,
+                    backgroundColor: AppColor.lightGreenColor,
+                    valueColor:
+                        const AlwaysStoppedAnimation(AppColor.greenColor),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                '${index + 1} / $total',
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: AppColor.textPrimary,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                left == 0 ? 'الأخيرة' : 'متبقي $left',
+                style: const TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w600,
+                  color: AppColor.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -463,10 +571,16 @@ class ShapesWidget extends StatefulWidget {
   final ShapeCreatorShapesEntity item;
   final void Function()? onTap;
 
+  /// Width the positions/sizes are measured against. Defaults to the
+  /// screen width (as before); the card viewer passes the width of its
+  /// content column on tablets.
+  final double? areaWidth;
+
   const ShapesWidget({
     super.key,
     required this.item,
     this.onTap,
+    this.areaWidth,
   });
 
   @override
@@ -476,7 +590,7 @@ class ShapesWidget extends StatefulWidget {
 class _ShapesWidgetState extends State<ShapesWidget> {
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
+    final width = widget.areaWidth ?? MediaQuery.sizeOf(context).width;
     final height = MediaQuery.sizeOf(context).height;
 
     final color = widget.item.type == "Rectangle"

@@ -101,6 +101,7 @@ class ShapeCreator extends GetView<ShapeCreatorController> {
                               color: Colors.blue,
                             ),
                             opacity: item.opacity,
+onDelete: () => controller.removeShape(index),
                             getPositioned: (double top, double left) {
                               controller.pos[index] = ShapeCreatorPositionModel(
                                 x: left,
@@ -121,6 +122,7 @@ class ShapeCreator extends GetView<ShapeCreatorController> {
                               ),
                             ),
                             opacity: item.opacity,
+onDelete: () => controller.removeShape(index),
                             getPositioned: (double top, double left) {
                               controller.pos[index] = ShapeCreatorPositionModel(
                                 x: left,
@@ -149,6 +151,7 @@ class ShapeCreator extends GetView<ShapeCreatorController> {
                             ),
                           ),
                           opacity: item.opacity,
+onDelete: () => controller.removeShape(index),
                           getPositioned: (double top, double left) {
                             controller.pos[index] = ShapeCreatorPositionModel(
                               x: left,
@@ -173,12 +176,14 @@ class DraggableResizableShape extends StatefulWidget {
   final Widget shape;
   final double opacity;
   final void Function(double top, double left) getPositioned;
+  final VoidCallback? onDelete;
 
   const DraggableResizableShape({
     super.key,
     required this.shape,
     required this.opacity,
     required this.getPositioned,
+    this.onDelete,
   });
 
   @override
@@ -223,6 +228,23 @@ class DraggableResizableShapeState extends State<DraggableResizableShape> {
             // الزاوية السفلية اليسرى
             _buildResizeHandle(width - 15, height - 15),
             // الزاوية السفلية اليمنى
+            if (widget.onDelete != null)
+              Positioned(
+                left: (width - 22) / 2,
+                top: 0,
+                child: GestureDetector(
+                  onTap: widget.onDelete,
+                  child: Container(
+                    width: 22,
+                    height: 22,
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.close, size: 14, color: Colors.white),
+                  ),
+                ),
+              ),
           ],
         ),
       ),

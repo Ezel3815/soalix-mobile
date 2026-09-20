@@ -13,6 +13,7 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
+  TextEditingController nameController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController confirmEmailController = TextEditingController();
@@ -136,7 +137,7 @@ class _RegisterState extends State<Register> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         TextFormField(
-                          controller: usernameController,
+                          controller: nameController,
                           cursorColor: AppColor.greenColor,
                           keyboardType: TextInputType.name,
                           textAlign: TextAlign.right,
@@ -146,7 +147,32 @@ class _RegisterState extends State<Register> {
                           ),
                           validator: AppValidation.validateEmpty,
                           decoration: _fieldDecoration(
-                              Icons.person_outline_rounded, 'اسم المستخدم'),
+                              Icons.person_outline_rounded, 'الاسم'),
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: usernameController,
+                          cursorColor: AppColor.greenColor,
+                          keyboardType: TextInputType.text,
+                          textDirection: TextDirection.ltr,
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            color: AppColor.textPrimary,
+                          ),
+                          validator: (v) {
+                            final t = (v ?? '').trim();
+                            if (t.length < 3 || t.length > 20) {
+                              return 'من 3 إلى 20 حرفاً';
+                            }
+                            if (!RegExp(r'^[a-zA-Z0-9_.]+$').hasMatch(t)) {
+                              return 'أحرف إنجليزية وأرقام و _ . فقط';
+                            }
+                            return null;
+                          },
+                          decoration: _fieldDecoration(
+                              Icons.alternate_email_rounded,
+                              'معرّف المستخدم (فريد)'),
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
@@ -229,6 +255,7 @@ class _RegisterState extends State<Register> {
                                         isLoading = true;
                                       });
                                       await ApiController.register(
+                                          nameController.text,
                                           usernameController.text,
                                           emailController.text,
                                           passwordController.text,

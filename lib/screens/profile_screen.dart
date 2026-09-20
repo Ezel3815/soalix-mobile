@@ -26,6 +26,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     tag: widget.userId?.toString() ?? "me",
   );
 
+  Future<void> _openFollowList(ProfileEntity p, String kind) async {
+    await Get.toNamed(AppRoutes.followListRoute,
+        arguments: {'userId': p.id, 'kind': kind, 'name': p.name});
+    controller.load(); // counts may have changed (follow / unfollow)
+  }
+
   String _formatJoined(DateTime? date) {
     if (date == null) return "";
     const months = [
@@ -268,17 +274,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 width: 1,
                                 height: 32,
                                 color: Colors.black.withOpacity(0.06)),
-                            _StatItem(
-                              value: "${profile.followingCount}",
-                              label: "Following",
+                            InkWell(
+                              borderRadius: BorderRadius.circular(12),
+                              onTap: () => _openFollowList(profile, 'following'),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 4),
+                                child: _StatItem(
+                                  value: "${profile.followingCount}",
+                                  label: "Following",
+                                ),
+                              ),
                             ),
                             Container(
                                 width: 1,
                                 height: 32,
                                 color: Colors.black.withOpacity(0.06)),
-                            _StatItem(
-                              value: "${profile.followersCount}",
-                              label: "Followers",
+                            InkWell(
+                              borderRadius: BorderRadius.circular(12),
+                              onTap: () => _openFollowList(profile, 'followers'),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 4),
+                                child: _StatItem(
+                                  value: "${profile.followersCount}",
+                                  label: "Followers",
+                                ),
+                              ),
                             ),
                           ],
                         ),

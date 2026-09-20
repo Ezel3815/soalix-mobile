@@ -1,3 +1,4 @@
+import 'package:upgrade/entity/quests_entity.dart';
 import 'package:get/get.dart';
 import 'package:upgrade/controllers/api_controller.dart';
 import 'package:upgrade/controllers/years_controller.dart';
@@ -24,7 +25,8 @@ enum ProgressTab { statistics, leaderboard, achievements }
 
 class ProgressController extends GetxController {
   final yearsController = Get.find<YearsController>();
-  final Rx<ProgressTab> tab = ProgressTab.statistics.obs;
+  // The first tab (enum name kept as `achievements`) is now "المهام" (quests).
+  final Rx<ProgressTab> tab = ProgressTab.achievements.obs;
 
   final RxList<LeaderboardEntry> leaderboard = <LeaderboardEntry>[].obs;
   final RxBool leaderboardLoading = false.obs;
@@ -33,6 +35,32 @@ class ProgressController extends GetxController {
     leaderboardLoading.value = true;
     leaderboard.assignAll(await ApiController.getLeaderboard());
     leaderboardLoading.value = false;
+  }
+
+  final Rxn<QuestsData> quests = Rxn<QuestsData>();
+  final RxBool questsLoading = false.obs;
+  final RxBool questsFailed = false.obs;
+  final RxString claimingId = ''.obs;
+
+  Future<void> loadQuests() async {
+    if (quests.value == null) questsLoading.value = true;
+    final data = await ApiController.getQuests();
+    questsFailed.value = data == null && quests.value == null;
+    if (data != null) quests.value = data;
+    questsLoading.value = false;
+  }
+
+  /// Opens a ready chest, then refreshes quests + Home/leaderboard XP.
+  Future<int?> claimChest(String id) async {
+    if (claimingId.value.isNotEmpty) return null;
+    claimingId.value = id;
+    final xp = await ApiController.claimQuestChest(id);
+    claimingId.value = '';
+    if (xp != null) {
+      await loadQuests();
+      loadLeaderboard();
+    }
+    return xp;
   }
 
   final RxList<Achievement> achievements = <Achievement>[].obs;
@@ -48,6 +76,7 @@ class ProgressController extends GetxController {
   void onInit() {
     loadLeaderboard();
     loadAchievements();
+    loadQuests();
     super.onInit();
   }
 

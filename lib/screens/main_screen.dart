@@ -10,12 +10,21 @@ class MainScreen extends GetView<MainController> {
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => Scaffold(
+      () => PopScope(
+        canPop: controller.page == 0,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) controller.onChangePage(0);
+        },
+        child: Scaffold(
         key: controller.scaffoldKey,
         body: controller.pages[controller.page],
         drawerEnableOpenDragGesture: false,
         drawer: const AppDrawer(),
-        bottomNavigationBar: CurvedNavigationBar(
+        bottomNavigationBar: Container(
+          color: AppColor.surfaceColor,
+          child: SafeArea(
+          top: false,
+          child: CurvedNavigationBar(
           color: AppColor.surfaceColor,
           backgroundColor: AppColor.scaffoldBackgroundColor,
           buttonBackgroundColor: AppColor.greenColor,
@@ -57,6 +66,9 @@ class MainScreen extends GetView<MainController> {
           index: controller.page,
           onTap: controller.onChangePage,
         ),
+        ),
+        ),
+      ),
       ),
     );
   }

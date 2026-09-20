@@ -1,3 +1,4 @@
+import 'package:upgrade/entity/quests_entity.dart';
 import 'dart:convert';
 import 'dart:developer';
 import 'package:dio/dio.dart';
@@ -865,6 +866,45 @@ class ApiController {
       }
     }
     return [];
+  }
+
+  static Future<QuestsData?> getQuests() async {
+    try {
+      final response = await dio.get(
+        Api.quests,
+        options: GetOptions.getOptions(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return QuestsData.fromJson(response.data);
+      }
+    } catch (e) {
+      if (ErrorHandler.handle(e).failure.code != -6) {
+        showSnackBarWidget(
+            message: ErrorHandler.handle(e).failure.message ?? "");
+      }
+    }
+    return null;
+  }
+
+  /// Opens a chest. Returns the XP gained, or null if it couldn't be opened.
+  static Future<int?> claimQuestChest(String id) async {
+    try {
+      final response = await dio.post(
+        Api.claimQuest,
+        data: {'id': id},
+        options: GetOptions.getOptions(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final xp = response.data['xp'];
+        return xp is num ? xp.toInt() : 0;
+      }
+    } catch (e) {
+      if (ErrorHandler.handle(e).failure.code != -6) {
+        showSnackBarWidget(
+            message: ErrorHandler.handle(e).failure.message ?? "");
+      }
+    }
+    return null;
   }
 
     static Future<List<DailyMission>> getDailyMissions() async {

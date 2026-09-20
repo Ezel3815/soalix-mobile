@@ -30,4 +30,6 @@ class Api {
   static String followUser(int id) => '$baseUrl/users/$id/follow';
   static String unfollowUser(int id) => '$baseUrl/users/$id/follow';
   static const String updateProfile = '$baseUrl/users/me/profile';
+  static String userByUsername(String u) => '$baseUrl/users/by-username/$u';
+  static String usernameAvailable(String u) => '$baseUrl/auth/username-available/$u';
 }

@@ -33,13 +33,13 @@ class YearsController extends GetxController {
     final result = <DeckEntity>[];
     for (final node in nodes) {
       if (node.type != "PACKAGE_DECK") continue;
-      final isSubjectLevel = node.children.isNotEmpty &&
-          node.children.every((c) => c.type == "CARDS_DECK");
-      if (isSubjectLevel) {
+      // Any package holding chapters directly is a subject (even if it
+      // also holds sub-packages); keep looking inside sub-packages too.
+      if (node.children.any((c) => c.type == "CARDS_DECK")) {
         result.add(node);
-      } else {
-        result.addAll(_collectSubjects(node.children));
       }
+      result.addAll(_collectSubjects(
+          node.children.where((c) => c.type == "PACKAGE_DECK").toList()));
     }
     return result;
   }

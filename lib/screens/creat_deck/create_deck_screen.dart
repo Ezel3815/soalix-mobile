@@ -18,10 +18,6 @@ class CreateDeckScreen extends GetView<CreateDeckController> {
           height: double.infinity,
           decoration: const BoxDecoration(
             color: AppColor.scaffoldBackgroundColor,
-            image: DecorationImage(
-              image: AssetImage('lib/assests/images/background_5.jpg'),
-              fit: BoxFit.fill,
-            ),
           ),
         ),
         Scaffold(
@@ -83,7 +79,7 @@ class CreateDeckScreen extends GetView<CreateDeckController> {
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
-                            PhosphorIcons.folderPlus(PhosphorIconsStyle.bold),
+                            PhosphorIcons.pencilSimpleLine(PhosphorIconsStyle.duotone),
                             size: 40,
                             color: AppColor.greenColor,
                           ),

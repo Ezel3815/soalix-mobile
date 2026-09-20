@@ -1,3 +1,4 @@
+import 'package:upgrade/screens/feed_screen.dart';
 import 'package:upgrade/utils/deep_link_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -33,5 +34,6 @@ class MainController extends GetxController {
     LibraryScreen(),
     ProgressScreen(),
     ProfileScreen(),
+    FeedScreen(),
   ];
 }

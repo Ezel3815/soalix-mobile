@@ -348,7 +348,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           ),
                                         )
                                       : ElevatedButton(
-                                          onPressed: controller.toggleFollow,
+                                          onPressed: controller.followBusy.value
+                                              ? null
+                                              : controller.toggleFollow,
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor:
                                                 profile.isFollowing

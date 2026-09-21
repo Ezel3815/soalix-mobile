@@ -36,8 +36,14 @@ class QuestPerson {
   final int id;
   final String name;
   final String? photo;
+  final bool studiedToday;
 
-  QuestPerson({required this.id, required this.name, this.photo});
+  QuestPerson({
+    required this.id,
+    required this.name,
+    this.photo,
+    this.studiedToday = false,
+  });
 
   static QuestPerson? fromJson(dynamic j) {
     if (j is! Map) return null;
@@ -46,6 +52,35 @@ class QuestPerson {
       id: _int(m['id']),
       name: '${m['name'] ?? ''}',
       photo: m['avatar_hair'] as String?,
+      studiedToday: m['studied_today'] == true,
+    );
+  }
+}
+
+/// A mutual friend the user can pick as their friends-quest partner.
+class QuestFriend {
+  final int id;
+  final String name;
+  final String? username;
+  final String? photo;
+  final bool isPartner;
+
+  QuestFriend({
+    required this.id,
+    required this.name,
+    this.username,
+    this.photo,
+    required this.isPartner,
+  });
+
+  factory QuestFriend.fromJson(dynamic j) {
+    final m = _map(j);
+    return QuestFriend(
+      id: _int(m['id']),
+      name: '${m['name'] ?? ''}',
+      username: m['username'] as String?,
+      photo: m['avatar_hair'] as String?,
+      isPartner: m['is_partner'] == true,
     );
   }
 }

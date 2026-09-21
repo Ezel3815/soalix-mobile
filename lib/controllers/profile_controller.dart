@@ -1,106 +1,169 @@
-import 'dart:convert';
-import 'package:image_picker/image_picker.dart';
+import 'package:upgrade/widgets/app_snack_bar.dart';
+import 'package:upgrade/entity/quests_entity.dart';
 import 'package:get/get.dart';
 import 'package:upgrade/controllers/api_controller.dart';
-import 'package:upgrade/entity/profile_entity.dart';
-import 'package:upgrade/main.dart';
-import 'package:upgrade/models/user_model.dart';
+import 'package:upgrade/controllers/years_controller.dart';
+import 'package:upgrade/entity/achievement.dart';
+import 'package:upgrade/entity/leaderboard_entry.dart';
+import 'package:upgrade/entity/card_entity.dart';
+import 'package:upgrade/entity/deck_entity.dart';
 
-class ProfileController extends GetxController {
-  final int? targetUserId;
-  ProfileController({this.targetUserId});
+class SubjectProgress {
+  final String title;
+  final int totalCards;
+  final int masteredCards; // answered GOOD or EASY
 
-  final Rx<ProfileEntity?> profile = Rx<ProfileEntity?>(null);
-  final RxBool loading = false.obs;
-  final RxBool uploadingPhoto = false.obs;
-  int? myId;
+  SubjectProgress({
+    required this.title,
+    required this.totalCards,
+    required this.masteredCards,
+  });
 
-  bool get isOwnProfile => targetUserId == null || targetUserId == myId;
+  double get mastery => totalCards == 0 ? 0 : masteredCards / totalCards;
+}
+
+enum ProgressTab { statistics, leaderboard, achievements }
+
+class ProgressController extends GetxController {
+  final yearsController = Get.find<YearsController>();
+  // The first tab (enum name kept as `achievements`) is now "المهام" (quests).
+  final Rx<ProgressTab> tab = ProgressTab.achievements.obs;
+
+  final RxList<LeaderboardEntry> leaderboard = <LeaderboardEntry>[].obs;
+  final RxBool leaderboardLoading = false.obs;
+
+  Future<void> loadLeaderboard() async {
+    leaderboardLoading.value = true;
+    leaderboard.assignAll(await ApiController.getLeaderboard());
+    leaderboardLoading.value = false;
+  }
+
+  final Rxn<QuestsData> quests = Rxn<QuestsData>();
+  final RxBool questsLoading = false.obs;
+  final RxBool questsFailed = false.obs;
+  final RxString claimingId = ''.obs;
+  final RxBool remindBusy = false.obs;
+
+  /// Nudge the friends-quest partner (feed post + push notification).
+  Future<void> remindPartner(QuestPerson p) async {
+    if (remindBusy.value) return;
+    remindBusy.value = true;
+    final r = await ApiController.remindFriend(p.id);
+    remindBusy.value = false;
+    if (r == null) return; // ApiController already showed the error
+    if (r['sent'] == true) {
+      showSnackBarWidget(message: 'تم إرسال التذكير إلى ${p.name} 👋');
+    } else if (r['reason'] == 'already_studied') {
+      showSnackBarWidget(message: '${p.name} درس اليوم بالفعل 🎉');
+    } else {
+      showSnackBarWidget(message: 'أرسلت تذكيراً إلى ${p.name} اليوم بالفعل');
+    }
+    loadQuests();
+  }
+
+  /// Picks who the friends quest is played with, then refreshes the quests.
+  Future<bool> choosePartner(int friendId) async {
+    final ok = await ApiController.setQuestPartner(friendId);
+    if (ok) await loadQuests();
+    return ok;
+  }
+
+  Future<void> loadQuests() async {
+    if (quests.value == null) questsLoading.value = true;
+    final data = await ApiController.getQuests();
+    questsFailed.value = data == null && quests.value == null;
+    if (data != null) quests.value = data;
+    questsLoading.value = false;
+  }
+
+  /// Opens a ready chest, then refreshes quests + Home/leaderboard XP.
+  Future<int?> claimChest(String id) async {
+    if (claimingId.value.isNotEmpty) return null;
+    claimingId.value = id;
+    final xp = await ApiController.claimQuestChest(id);
+    claimingId.value = '';
+    if (xp != null) {
+      await loadQuests();
+      loadLeaderboard();
+    }
+    return xp;
+  }
+
+  final RxList<Achievement> achievements = <Achievement>[].obs;
+  final RxBool achievementsLoading = false.obs;
+
+  Future<void> loadAchievements() async {
+    achievementsLoading.value = true;
+    achievements.assignAll(await ApiController.getAchievements());
+    achievementsLoading.value = false;
+  }
 
   @override
   void onInit() {
-    myId = getMyId();
-    load();
+    loadLeaderboard();
+    loadAchievements();
+    loadQuests();
     super.onInit();
   }
 
-  int? getMyId() {
-    final userJson = sharedPref.getString("user");
-    if (userJson == null) return null;
-    return UserModel.fromJson(jsonDecode(userJson)).id;
-  }
-
-  Future<void> load() async {
-    final id = targetUserId ?? myId;
-    if (id == null) return;
-    final isFirstLoad = profile.value == null;
-    if (isFirstLoad) loading.value = true;
-    profile.value = await ApiController.getProfile(id);
-    loading.value = false;
-  }
-
-  /// True while a follow / unfollow request is in flight (prevents double taps).
-  final RxBool followBusy = false.obs;
-
-  ProfileEntity _withFollowing(ProfileEntity p, bool following) => ProfileEntity(
-        id: p.id,
-        name: p.name,
-        email: p.email,
-        username: p.username,
-        avatarHair: p.avatarHair,
-        avatarHairColor: p.avatarHairColor,
-        avatarSkinColor: p.avatarSkinColor,
-        avatarClothingColor: p.avatarClothingColor,
-        avatarGlasses: p.avatarGlasses,
-        currentStreak: p.currentStreak,
-        followersCount: (p.followersCount + (following ? 1 : -1)).clamp(0, 1 << 30).toInt(),
-        followingCount: p.followingCount,
-        isFollowing: following,
-        isFriend: following ? p.isFriend : false,
-        createdAt: p.createdAt,
-        xp: p.xp,
-        level: p.level,
-        xpIntoLevel: p.xpIntoLevel,
-        xpForNextLevel: p.xpForNextLevel,
-      );
-
-  /// Optimistic: the button flips instantly, the request runs behind it, and
-  /// it flips back if the server refuses (no more "frozen, then follows").
-  Future<void> toggleFollow() async {
-    final current = profile.value;
-    if (current == null || followBusy.value) return;
-    followBusy.value = true;
-    final id = current.id;
-    final wasFollowing = current.isFollowing;
-    profile.value = _withFollowing(current, !wasFollowing);
-
-    final ok = wasFollowing
-        ? await ApiController.unfollowUser(id)
-        : await ApiController.followUser(id);
-
-    if (!ok) profile.value = current; // revert
-    followBusy.value = false;
-
-    // Refresh the real numbers (friend status, counts) in the background.
-    final fresh = await ApiController.getProfile(id);
-    if (fresh != null) profile.value = fresh;
-  }
-
-  Future<void> pickAndUploadAvatar() async {
-    final pickedFile = await ImagePicker()
-        .pickImage(source: ImageSource.gallery, imageQuality: 50);
-    if (pickedFile == null) return;
-    uploadingPhoto.value = true;
-    final imageName = await ApiController.uploadImage(pickedFile.path);
-    if (imageName != null) {
-      await ApiController.updateProfile(avatarHair: imageName);
-      await load();
+  List<CardEntity> _allCards(List<DeckEntity> decks) {
+    final result = <CardEntity>[];
+    for (final d in decks) {
+      if (d.type == "CARDS_DECK") {
+        result.addAll(d.cards);
+      } else {
+        result.addAll(_allCards(d.children));
+      }
     }
-    uploadingPhoto.value = false;
+    return result;
   }
 
-  Future<void> updateUsername(String username) async {
-    final success = await ApiController.updateProfile(username: username);
-    if (success) await load();
+  /// A "subject" is a PACKAGE_DECK whose direct children are all leaf
+  /// CARDS_DECK (i.e. one level above chapters) — same convention used
+  /// for the guided lesson path on Home.
+  List<SubjectProgress> get subjectBreakdown {
+    List<SubjectProgress> collect(List<DeckEntity> decks) {
+      final result = <SubjectProgress>[];
+      for (final d in decks) {
+        if (d.type != "PACKAGE_DECK") continue;
+        final isSubjectLevel = d.children.isNotEmpty &&
+            d.children.every((c) => c.type == "CARDS_DECK");
+        if (isSubjectLevel) {
+          final cards = d.children.expand((c) => c.cards).toList();
+          final mastered = cards
+              .where((c) => c.answer == "GOOD" || c.answer == "EASY")
+              .length;
+          result.add(SubjectProgress(
+            title: d.title,
+            totalCards: cards.length,
+            masteredCards: mastered,
+          ));
+        } else {
+          result.addAll(collect(d.children));
+        }
+      }
+      return result;
+    }
+
+    return collect(yearsController.decks);
   }
+
+  int get totalCardsReviewed {
+    final cards = _allCards(yearsController.decks);
+    return cards
+        .where((c) => c.answer.isNotEmpty && c.answer != "NONE")
+        .length;
+  }
+
+  int get masteryPercent {
+    final cards = _allCards(yearsController.decks);
+    final reviewed =
+        cards.where((c) => c.answer.isNotEmpty && c.answer != "NONE").toList();
+    if (reviewed.isEmpty) return 0;
+    final mastered =
+        reviewed.where((c) => c.answer == "GOOD" || c.answer == "EASY").length;
+    return ((mastered / reviewed.length) * 100).round();
+  }
+
+  int get streak => yearsController.profile.value?.currentStreak ?? 0;
 }

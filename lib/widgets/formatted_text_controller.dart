@@ -1,463 +1,305 @@
-import 'package:upgrade/widgets/formatted_text_controller.dart';
-import 'dart:convert';
+import 'dart:math' as math;
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:upgrade/controllers/api_controller.dart';
-import 'package:upgrade/controllers/card_controller.dart';
-import 'package:upgrade/entity/card_entity.dart';
-import 'package:upgrade/entity/user_entity.dart';
-import 'package:upgrade/extension.dart';
-import 'package:upgrade/main.dart';
-import 'package:upgrade/mapper/app_mapper.dart';
-import 'package:upgrade/models/shape_creator_model.dart';
-import 'package:upgrade/models/user_model.dart';
-import 'package:upgrade/widgets/app_snack_bar.dart';
-import 'package:upgrade/widgets/color_picker_dialog.dart';
-import 'package:upgrade/widgets/font_size_dialog.dart';
 
-class AddCardController extends GetxController {
-  late int id;
-  late bool isEdit;
-  late UserEntity user;
-  CardEntity? cardEntity;
-  ShapeCreatorModel? shapeCreatorModel;
-  final RichTextEditingController controllerFront = RichTextEditingController();
-  final RichTextEditingController controllerBack = RichTextEditingController();
-  final RichTextEditingController controllerComments =
-      RichTextEditingController();
-  final List<String> types = [
-    "BASIC",
-    "CLOZE",
-    "OCCLUSION",
-  ];
+/// Rich-text controller for the card editor.
+///
+/// The field shows PLAIN text with real formatting (bold, italic, underline,
+/// strike, colour) — never HTML tags, hidden characters or tiny placeholder
+/// glyphs. Formatting is kept per character; the HTML-like tags the rest of
+/// the app understands (`<b>`, `<i>`, `<u>`, `<s>`, `<span style="color:#rrggbb">`)
+/// only exist at the edges: [setTagged] reads them in when a card is opened,
+/// [tagged] writes them out when it is saved.
+class RichTextEditingController extends TextEditingController {
+  RichTextEditingController();
 
-  final RxString _frontImage = ''.obs;
-  final RxString _backImage = ''.obs;
-  final RxString _commentImage = ''.obs;
-  final RxString _file = ''.obs;
-  final RxString _fileName = ''.obs;
-  final RxString _selectedTypes = 'BASIC'.obs;
-  final RxDouble _selectedFontSizeFront = 14.0.obs;
-  final RxDouble _selectedFontSizeBack = 14.0.obs;
-  final RxDouble _selectedFontSizeComment = 14.0.obs;
-  final Rx<TextAlign> _selectedAlignFront = TextAlign.center.obs;
-  final Rx<TextAlign> _selectedAlignBack = TextAlign.center.obs;
-  final Rx<TextAlign> _selectedAlignComment = TextAlign.center.obs;
+  static const int bold = 1;
+  static const int italic = 2;
+  static const int underline = 4;
+  static const int strike = 8;
 
-  String get frontImage => _frontImage.value;
+  List<int> _flags = <int>[];
+  List<int?> _colors = <int?>[];
+  bool _loading = false;
 
-  String get backImage => _backImage.value;
+  // ─────────────────────── keeping formatting in step with typing
 
-  String get commentImage => _commentImage.value;
+  @override
+  set value(TextEditingValue newValue) {
+    if (!_loading && newValue.text != text) {
+      _syncAttributes(text, newValue.text);
+    }
+    super.value = newValue;
+  }
 
-  String get file => _file.value;
+  /// Shifts / trims the per-character formatting after the text changed
+  /// (typing, deleting, pasting, replacing).
+  void _syncAttributes(String oldText, String newText) {
+    if (_flags.length != oldText.length) {
+      _flags = List<int>.filled(oldText.length, 0, growable: true);
+      _colors = List<int?>.filled(oldText.length, null, growable: true);
+    }
+    final oldLen = oldText.length;
+    final newLen = newText.length;
 
-  String get fileName => _fileName.value;
+    var prefix = 0;
+    final maxPrefix = math.min(oldLen, newLen);
+    while (prefix < maxPrefix &&
+        oldText.codeUnitAt(prefix) == newText.codeUnitAt(prefix)) {
+      prefix++;
+    }
+    var suffix = 0;
+    final maxSuffix = math.min(oldLen, newLen) - prefix;
+    while (suffix < maxSuffix &&
+        oldText.codeUnitAt(oldLen - 1 - suffix) ==
+            newText.codeUnitAt(newLen - 1 - suffix)) {
+      suffix++;
+    }
 
-  String get selectedTypes => _selectedTypes.value;
+    final removed = oldLen - prefix - suffix;
+    final inserted = newLen - prefix - suffix;
 
-  double get selectedFontSizeFront => _selectedFontSizeFront.value;
-
-  double get selectedFontSizeBack => _selectedFontSizeBack.value;
-
-  double get selectedFontSizeComment => _selectedFontSizeComment.value;
-
-  TextAlign get selectedAlignFront => _selectedAlignFront.value;
-
-  TextAlign get selectedAlignBack => _selectedAlignBack.value;
-
-  TextAlign get selectedAlignComment => _selectedAlignComment.value;
-
-  set frontImage(value) => _frontImage.value = value;
-
-  set backImage(value) => _backImage.value = value;
-
-  set commentImage(value) => _commentImage.value = value;
-
-  set file(value) => _file.value = value;
-
-  set fileName(value) => _fileName.value = value;
-
-  set selectedTypes(value) => _selectedTypes.value = value;
-
-  set selectedFontSizeFront(value) => _selectedFontSizeFront.value = value;
-
-  set selectedFontSizeBack(value) => _selectedFontSizeBack.value = value;
-
-  set selectedFontSizeComment(value) => _selectedFontSizeComment.value = value;
-
-  set selectedAlignFront(TextAlign value) => _selectedAlignFront.value = value;
-
-  set selectedAlignBack(TextAlign value) => _selectedAlignBack.value = value;
-
-  set selectedAlignComment(TextAlign value) =>
-      _selectedAlignComment.value = value;
-
-  void addBraces() {
-    if (controllerFront.selection.start != controllerFront.selection.end) {
-      String selectedText = controllerFront.text.substring(
-        controllerFront.selection.start,
-        controllerFront.selection.end,
-      );
-      controllerFront.text = controllerFront.text.replaceRange(
-        controllerFront.selection.start,
-        controllerFront.selection.end,
-        "{$selectedText}",
-      );
-    } else {
-      controllerFront.text += "{}";
-      controllerFront.selection = TextSelection.collapsed(
-        offset: controllerFront.text.length - 1,
-      );
+    if (removed > 0) {
+      _flags.removeRange(prefix, prefix + removed);
+      _colors.removeRange(prefix, prefix + removed);
+    }
+    if (inserted > 0) {
+      // Text typed strictly inside a formatted run keeps that formatting;
+      // text typed at its edges (or elsewhere) is plain.
+      var f = 0;
+      int? c;
+      if (prefix > 0 &&
+          prefix < _flags.length &&
+          _flags[prefix - 1] == _flags[prefix] &&
+          _colors[prefix - 1] == _colors[prefix]) {
+        f = _flags[prefix];
+        c = _colors[prefix];
+      }
+      _flags.insertAll(prefix, List<int>.filled(inserted, f));
+      _colors.insertAll(prefix, List<int?>.filled(inserted, c));
     }
   }
 
-  void pickImage(FrontBackType type) async {
-    final pickedFile = await ImagePicker()
-        .pickImage(source: ImageSource.gallery, imageQuality: 50);
+  // ─────────────────────── what the field shows
 
-    if (pickedFile != null) {
-      final image = await ApiController.uploadImage(pickedFile.path);
-      if (image != null) {
-        switch (type) {
-          case FrontBackType.front:
-            frontImage = image;
-          case FrontBackType.back:
-            backImage = image;
-          case FrontBackType.comments:
-            commentImage = image;
-        }
+  @override
+  TextSpan buildTextSpan({
+    required BuildContext context,
+    TextStyle? style,
+    required bool withComposing,
+  }) {
+    final base = style ?? const TextStyle();
+    final t = text;
+    if (t.isEmpty || _flags.length != t.length) {
+      return TextSpan(style: base, text: t);
+    }
+    final spans = <InlineSpan>[];
+    var start = 0;
+    for (var i = 1; i <= t.length; i++) {
+      if (i == t.length ||
+          _flags[i] != _flags[start] ||
+          _colors[i] != _colors[start]) {
+        spans.add(TextSpan(
+          text: t.substring(start, i),
+          style: _styleFor(base, _flags[start], _colors[start]),
+        ));
+        start = i;
       }
     }
+    return TextSpan(style: base, children: spans);
   }
 
-  pickFile() async {
-    showAppLoadingDialog();
-    final pickedFile = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf'],
-      allowMultiple: false,
+  TextStyle _styleFor(TextStyle base, int flags, int? color) {
+    final decorations = <TextDecoration>[
+      if (flags & underline != 0) TextDecoration.underline,
+      if (flags & strike != 0) TextDecoration.lineThrough,
+    ];
+    return base.copyWith(
+      fontWeight: flags & bold != 0 ? FontWeight.w800 : null,
+      fontStyle: flags & italic != 0 ? FontStyle.italic : null,
+      color: color != null ? Color(color) : null,
+      decoration:
+          decorations.isEmpty ? null : TextDecoration.combine(decorations),
     );
-    if (pickedFile != null) {
-      if (pickedFile.files.isNotEmpty) {
-        file =
-            await ApiController.uploadFile(pickedFile.files.first.path ?? "") ??
-                '';
-        fileName = pickedFile.files.first.path?.split("/").last ?? '';
+  }
+
+  // ─────────────────────── applying formatting to the selection
+
+  bool get hasSelection => selection.isValid && selection.start != selection.end;
+
+  int get _selStart => math.min(selection.start, selection.end);
+  int get _selEnd => math.max(selection.start, selection.end);
+
+  bool get _attributesReady => _flags.length == text.length;
+
+  /// Toggles bold / italic / underline / strike on the selected text: if all
+  /// of it already has the style it is removed, otherwise it is added.
+  /// Returns false when nothing is selected.
+  bool toggleFlag(int flag) {
+    if (!hasSelection || !_attributesReady) return false;
+    final s = _selStart.clamp(0, text.length).toInt();
+    final e = _selEnd.clamp(0, text.length).toInt();
+    var all = true;
+    for (var i = s; i < e; i++) {
+      if (_flags[i] & flag == 0) {
+        all = false;
+        break;
+      }
+    }
+    for (var i = s; i < e; i++) {
+      _flags[i] = all ? (_flags[i] & ~flag) : (_flags[i] | flag);
+    }
+    notifyListeners();
+    return true;
+  }
+
+  /// Colours the selected text ([color] null clears the colour).
+  bool setColor(Color? color) {
+    if (!hasSelection || !_attributesReady) return false;
+    final s = _selStart.clamp(0, text.length).toInt();
+    final e = _selEnd.clamp(0, text.length).toInt();
+    final argb = color == null ? null : (0xFF000000 | (color.value & 0x00FFFFFF));
+    for (var i = s; i < e; i++) {
+      _colors[i] = argb;
+    }
+    notifyListeners();
+    return true;
+  }
+
+  // ─────────────────────── saving: formatting -> tags
+
+  /// The text with formatting written as HTML-like tags (what gets saved).
+  String get tagged {
+    final t = text;
+    if (t.isEmpty) return '';
+    if (!_attributesReady) return _escape(t);
+    final out = StringBuffer();
+    var i = 0;
+    while (i < t.length) {
+      var j = i + 1;
+      while (j < t.length && _flags[j] == _flags[i] && _colors[j] == _colors[i]) {
+        j++;
+      }
+      out.write(_wrap(_escape(t.substring(i, j)), _flags[i], _colors[i]));
+      i = j;
+    }
+    return out.toString();
+  }
+
+  String _wrap(String s, int flags, int? color) {
+    var open = '';
+    var close = '';
+    if (color != null) {
+      final hex = (color & 0x00FFFFFF).toRadixString(16).padLeft(6, '0');
+      open += '<span style="color: #$hex;">';
+      close = '</span>$close';
+    }
+    if (flags & bold != 0) {
+      open += '<b>';
+      close = '</b>$close';
+    }
+    if (flags & italic != 0) {
+      open += '<i>';
+      close = '</i>$close';
+    }
+    if (flags & underline != 0) {
+      open += '<u>';
+      close = '</u>$close';
+    }
+    if (flags & strike != 0) {
+      open += '<s>';
+      close = '</s>$close';
+    }
+    return '$open$s$close';
+  }
+
+  static String _escape(String s) =>
+      s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
+  static String _unescape(String s) => s
+      .replaceAll('&lt;', '<')
+      .replaceAll('&gt;', '>')
+      .replaceAll('&nbsp;', ' ')
+      .replaceAll('&quot;', '"')
+      .replaceAll('&#39;', "'")
+      .replaceAll('&amp;', '&');
+
+  // ─────────────────────── opening a card: tags -> formatting
+
+  static final RegExp _tagPattern =
+      RegExp(r'<\s*(/?)\s*([a-zA-Z][a-zA-Z0-9]*)\b([^>]*)>');
+  static final RegExp _colorPattern = RegExp(r'color:\s*#([0-9a-fA-F]{6})');
+
+  /// Loads saved text: reads the tags into real formatting (unknown tags are
+  /// dropped, their text is kept).
+  void setTagged(String tagged) {
+    final plain = StringBuffer();
+    final flags = <int>[];
+    final colors = <int?>[];
+    var b = 0, i = 0, u = 0, s = 0;
+    final colorStack = <int>[];
+    final spanHadColor = <bool>[];
+
+    void addText(String raw) {
+      final text = _unescape(raw);
+      final f = (b > 0 ? bold : 0) |
+          (i > 0 ? italic : 0) |
+          (u > 0 ? underline : 0) |
+          (s > 0 ? strike : 0);
+      final c = colorStack.isEmpty ? null : colorStack.last;
+      for (final unit in text.codeUnits) {
+        plain.writeCharCode(unit);
+        flags.add(f);
+        colors.add(c);
       }
     }
 
-    if (Get.isDialogOpen == true) {
-      Get.back();
-    }
-  }
-
-  clearFile() {
-    file = '';
-    fileName = '';
-  }
-
-  RichTextEditingController _controllerFor(FrontBackType type) {
-    switch (type) {
-      case FrontBackType.front:
-        return controllerFront;
-      case FrontBackType.back:
-        return controllerBack;
-      case FrontBackType.comments:
-        return controllerComments;
-    }
-  }
-
-  void _needSelection() => showSnackBarWidget(
-      message: 'حدّد كلمة أو نصاً أولاً، ثم اختر التنسيق');
-
-  void pickColor(FrontBackType type) async {
-    final controller = _controllerFor(type);
-    if (!controller.hasSelection) {
-      _needSelection();
-      return;
-    }
-    Color? color =
-        await Get.dialog(const ColorPickerDialog(tempColor: Colors.black));
-    if (color != null) controller.setColor(color);
-  }
-
-  void toggleFontSize(FrontBackType type) async {
-    double? selectedSize = await Get.dialog(const FontSizeDialog());
-
-    if (selectedSize != null) {
-      switch (type) {
-        case FrontBackType.front:
-          selectedFontSizeFront = selectedSize;
-        case FrontBackType.back:
-          selectedFontSizeBack = selectedSize;
-        case FrontBackType.comments:
-          selectedFontSizeComment = selectedSize;
+    var last = 0;
+    for (final m in _tagPattern.allMatches(tagged)) {
+      addText(tagged.substring(last, m.start));
+      last = m.end;
+      final closing = m.group(1) == '/';
+      final name = (m.group(2) ?? '').toLowerCase();
+      switch (name) {
+        case 'b':
+        case 'strong':
+          b = math.max(0, b + (closing ? -1 : 1));
+        case 'i':
+        case 'em':
+          i = math.max(0, i + (closing ? -1 : 1));
+        case 'u':
+          u = math.max(0, u + (closing ? -1 : 1));
+        case 's':
+        case 'strike':
+        case 'del':
+          s = math.max(0, s + (closing ? -1 : 1));
+        case 'br':
+          if (!closing) addText('\n');
+        case 'span':
+          if (closing) {
+            if (spanHadColor.isNotEmpty && spanHadColor.removeLast()) {
+              colorStack.removeLast();
+            }
+          } else {
+            final cm = _colorPattern.firstMatch(m.group(3) ?? '');
+            if (cm != null) {
+              colorStack.add(int.parse('FF${cm.group(1)}', radix: 16));
+              spanHadColor.add(true);
+            } else {
+              spanHadColor.add(false);
+            }
+          }
+        default:
+          break; // unknown tag: ignore the tag, keep the text
       }
     }
-  }
+    addText(tagged.substring(last));
 
-  void addAlignToText(FrontBackType type, TextAlign align) async {
-    switch (type) {
-      case FrontBackType.front:
-        selectedAlignFront = align;
-      case FrontBackType.back:
-        selectedAlignBack = align;
-      case FrontBackType.comments:
-        selectedAlignComment = align;
-    }
-  }
-
-  void toggleBold(FrontBackType type) {
-    if (!_controllerFor(type).toggleFlag(RichTextEditingController.bold)) {
-      _needSelection();
-    }
-  }
-
-  void toggleItalic(FrontBackType type) {
-    if (!_controllerFor(type).toggleFlag(RichTextEditingController.italic)) {
-      _needSelection();
-    }
-  }
-
-  void toggleUnderline(FrontBackType type) {
-    if (!_controllerFor(type).toggleFlag(RichTextEditingController.underline)) {
-      _needSelection();
-    }
-  }
-
-  void toggleStrikethrough(FrontBackType type) {
-    if (!_controllerFor(type).toggleFlag(RichTextEditingController.strike)) {
-      _needSelection();
-    }
-  }
-
-  String getTitle(CardTypes type, FrontBackType type2) {
-    if (type == CardTypes.basic && type2 == FrontBackType.front) {
-      return "الوجه الأمامي";
-    }
-    if (type == CardTypes.cloze && type2 == FrontBackType.front) {
-      return "النص";
-    }
-    if (type == CardTypes.occlusion && type2 == FrontBackType.front) {
-      return "العنوان";
-    }
-    if (type == CardTypes.basic && type2 == FrontBackType.back) {
-      return "الوجه الخلفي";
-    }
-    if ((type == CardTypes.cloze || type == CardTypes.occlusion) &&
-        type2 == FrontBackType.back) {
-      return "معلومات إضافية";
-    }
-    if (type == CardTypes.occlusion && type2 == FrontBackType.comments) {
-      return "ملاحظات";
-    }
-    return "";
-  }
-
-  String getImage(FrontBackType type) {
-    switch (type) {
-      case FrontBackType.front:
-        return frontImage;
-      case FrontBackType.back:
-        return backImage;
-      case FrontBackType.comments:
-        return commentImage;
-    }
-  }
-
-  onTapClearImage(FrontBackType type) {
-    switch (type) {
-      case FrontBackType.front:
-        frontImage = '';
-      case FrontBackType.back:
-        backImage = '';
-      case FrontBackType.comments:
-        commentImage = '';
-    }
-  }
-
-  onChangeTypeValue(String? level) {
-    selectedTypes = level!;
-    frontImage = '';
-    backImage = '';
-    commentImage = '';
-  }
-
-  addCard() async {
-    showAppLoadingDialog();
-    final cardData = getCardData();
-
-    CardEntity? card;
-
-    if (isEdit) {
-      card = await ApiController.editcard(
-        cardEntity!.id,
-        cardEntity!.deckId,
-        selectedTypes,
-        cardData,
-        frontImageName: frontImage.isNotEmpty ? frontImage : null,
-        backImageName: backImage.isNotEmpty ? backImage : null,
-        documentName: file.isNotEmpty ? file : null,
-        documenttitle: fileName.isNotEmpty ? fileName : null,
-      );
-    } else {
-      card = await ApiController.addcard(
-        id,
-        selectedTypes,
-        cardData,
-        frontImageName: frontImage,
-        backImageName: backImage,
-        documentName: file.isNotEmpty ? file : null,
-        documenttitle: fileName.isNotEmpty ? fileName : null,
-      );
-    }
-
-    if (card != null) {
-      Get.find<CardController>().getCard();
-      Get.until((route) {
-        return Get.currentRoute == AppRoutes.cardRoute;
-      });
-    }
-  }
-
-  Map<String, dynamic> getCardData() {
-    final cardData = {
-      'front': {
-        'text': controllerFront.tagged,
-        'size': selectedFontSizeFront,
-        'align': selectedAlignFront.name,
-      },
-      'back': {
-        'text': controllerBack.tagged,
-        'size': selectedFontSizeBack,
-        'align': selectedAlignBack.name,
-      },
-      if (selectedTypes == "OCCLUSION")
-        'comment': {
-          'text': controllerComments.tagged,
-          'size': selectedFontSizeComment,
-          'align': selectedAlignComment.name,
-        },
-      if (selectedTypes == "OCCLUSION" && shapeCreatorModel != null)
-        "shapes": jsonEncode(shapeCreatorModel!.toJson()),
-    };
-    return cardData;
-  }
-
-  iniCard() {
-    if (isEdit && cardEntity != null) {
-      selectedTypes = cardEntity!.type;
-      final data = jsonDecode(cardEntity!.data);
-      controllerFront.setTagged(data['front'] != null && data['front']['text'] != null
-              ? data['front']['text']
-              : '');
-      controllerBack.setTagged(data['back'] != null && data['back']['text'] != null
-          ? data['back']['text']
-          : '');
-      selectedFontSizeFront =
-          data['front'] != null && data['front']['size'] != null
-              ? (data['front']['size'] as int).toDouble()
-              : 14.0;
-      selectedFontSizeBack =
-          data['back'] != null && data['back']['size'] != null
-              ? (data['back']['size'] as int).toDouble()
-              : 14.0;
-      frontImage = cardEntity?.frontImageUrl ?? '';
-      backImage = cardEntity?.backImageUrl ?? '';
-      file = cardEntity?.documentUrl ?? '';
-
-      selectedAlignFront =
-          data['front'] != null && data['front']['align'] != null
-              ? data['front']['align'] == "center"
-                  ? TextAlign.center
-                  : data['front']['align'] == "start"
-                      ? TextAlign.start
-                      : TextAlign.end
-              : TextAlign.center;
-      selectedAlignBack = data['back'] != null && data['back']['align'] != null
-          ? data['back']['align'] == "center"
-              ? TextAlign.center
-              : data['back']['align'] == "start"
-                  ? TextAlign.start
-                  : TextAlign.end
-          : TextAlign.center;
-
-      if (cardEntity!.type == "OCCLUSION") {
-        controllerComments.setTagged(data['comment'] != null && data['comment']['text'] != null
-                ? data['comment']['text']
-                : '');
-        selectedFontSizeComment =
-            data['comment'] != null && data['comment']['size'] != null
-                ? (data['comment']['size'] as int).toDouble()
-                : 14.0;
-        selectedAlignComment =
-            data['comment'] != null && data['comment']['align'] != null
-                ? data['comment']['align'] == "center"
-                    ? TextAlign.center
-                    : data['comment']['align'] == "start"
-                        ? TextAlign.start
-                        : TextAlign.end
-                : TextAlign.center;
-        shapeCreatorModel = data['shapes'] != null
-            ? ShapeCreatorModel.fromJson(jsonDecode(data['shapes']))
-            : ShapeCreatorModel();
-      }
-    }
-  }
-
-  goToShapeCreator() async {
-    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      final model =
-          await Get.toNamed(AppRoutes.shapeCreatorRoute, arguments: image.path);
-      shapeCreatorModel = model;
-    }
-  }
-
-  deleteCard() async {
-    Get.back();
-    if (await ApiController.deleteCard(cardEntity!.deckId, cardEntity!.id)) {
-      Get.until(
-        (route) {
-          return Get.currentRoute == AppRoutes.cardRoute;
-        },
-      );
-      Get.find<CardController>().getCard();
-    }
-  }
-
-  @override
-  void onInit() {
-    id = Get.arguments['id'];
-    isEdit = Get.arguments['isEdit'];
-    cardEntity = Get.arguments['cardEntity'];
-    user = UserModel.fromJson(jsonDecode(sharedPref.getString('user') ?? "{}"))
-        .toDomain();
-    iniCard();
-    super.onInit();
-  }
-
-  @override
-  void onClose() {
-    controllerFront.dispose();
-    controllerBack.dispose();
-    controllerComments.dispose();
-    super.onClose();
-  }
-
-  bool isArabic(String text) {
-    final arabicRegex = RegExp(r'[\u0600-\u06FF]');
-    return arabicRegex.hasMatch(text);
+    _loading = true;
+    text = plain.toString();
+    _flags = flags;
+    _colors = colors;
+    _loading = false;
+    selection = TextSelection.collapsed(offset: text.length);
   }
 }
-
-
-
-
-enum CardTypes { basic, cloze, occlusion }
-
-enum FrontBackType { front, back, comments }

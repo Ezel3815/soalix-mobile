@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:upgrade/controllers/api_controller.dart';
 import 'package:upgrade/controllers/progress_controller.dart';
 import 'package:upgrade/entity/quests_entity.dart';
 import 'package:upgrade/main.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/widgets/app_image.dart';
+import 'package:upgrade/widgets/app_snack_bar.dart';
 
 const List<String> _months = [
   'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
@@ -467,6 +468,7 @@ class _FriendsCard extends StatelessWidget {
                     label: 'أنت',
                     count: q.myCount,
                     color: AppColor.greenColor,
+                    studied: me?.studiedToday,
                   ),
                 ),
                 const VerticalDivider(
@@ -477,27 +479,23 @@ class _FriendsCard extends StatelessWidget {
                     label: partner.name,
                     count: q.partnerCount,
                     color: AppColor.warningColor,
+                    studied: partner.studiedToday,
                   ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: OutlinedButton(
-              onPressed: () => Share.share(
-                  'يلا نكمل تحدي MOZAIK هذا الأسبوع! 👋 راجع بطاقاتك وساعدني نفتح الصندوق.'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColor.textPrimary,
-                side: const BorderSide(color: _cardBorder, width: 2),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
-              ),
-              child: const Text(
-                '👋  تذكير الصديق',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+          _NudgeButton(partner: partner, controller: controller),
+          const SizedBox(height: 4),
+          TextButton(
+            onPressed: () => _showFriendPicker(controller),
+            child: const Text(
+              'تغيير الشريك',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: AppColor.greenColor,
               ),
             ),
           ),
@@ -512,7 +510,7 @@ class _FriendsCard extends StatelessWidget {
       child: Column(
         children: [
           const Text(
-            'ابدأ تحدياً مع صديق',
+            'اختر صديقاً للتحدي',
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w800,
@@ -521,16 +519,17 @@ class _FriendsCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           const Text(
-            'تابع صديقاً ويتابعك ليصبح شريكك في التحدي الأسبوعي',
+            'اختر من أصدقائك (تتابعان بعضكما) من تريد أن تنجز معه التحدي الأسبوعي',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 12.5, color: AppColor.textSecondary),
+            style: TextStyle(
+                fontSize: 12.5, color: AppColor.textSecondary, height: 1.4),
           ),
           const SizedBox(height: 14),
           SizedBox(
             width: double.infinity,
             height: 48,
             child: ElevatedButton(
-              onPressed: () => Get.toNamed(AppRoutes.searchUsersRoute),
+              onPressed: () => _showFriendPicker(controller),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColor.greenColor,
                 foregroundColor: Colors.white,
@@ -539,7 +538,7 @@ class _FriendsCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16)),
               ),
               child: const Text(
-                'ابحث عن صديق',
+                'اختيار صديق',
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
               ),
             ),
@@ -594,11 +593,15 @@ class _PersonColumn extends StatelessWidget {
   final String label;
   final int count;
   final Color color;
+
+  /// null = unknown (no status shown)
+  final bool? studied;
   const _PersonColumn({
     required this.person,
     required this.label,
     required this.count,
     required this.color,
+    this.studied,
   });
 
   @override
@@ -626,6 +629,28 @@ class _PersonColumn extends StatelessWidget {
             color: color,
           ),
         ),
+        if (studied != null) ...[
+          const SizedBox(height: 6),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                studied! ? Icons.check_circle_rounded : Icons.schedule_rounded,
+                size: 14,
+                color: studied! ? AppColor.greenColor : AppColor.disabledColor,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                studied! ? 'درس اليوم' : 'لم يدرس بعد',
+                style: TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w700,
+                  color: studied! ? AppColor.greenColor : AppColor.disabledColor,
+                ),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }
@@ -955,4 +980,287 @@ class _ChestPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _ChestPainter old) => old.tier != tier;
+}
+
+// ───────────────────────── Nudge + partner picker ─────────────────────────
+
+/// Real nudge: a feed post + push notification for the friend — or, if the
+/// friend already studied today, a "they studied" badge instead.
+class _NudgeButton extends StatelessWidget {
+  final QuestPerson partner;
+  final ProgressController controller;
+  const _NudgeButton({required this.partner, required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      if (partner.studiedToday) {
+        return Container(
+          width: double.infinity,
+          height: 48,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppColor.greenColor.withOpacity(0.10),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+                color: AppColor.greenColor.withOpacity(0.35), width: 2),
+          ),
+          child: Text(
+            '${partner.name} درس اليوم 🎉',
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+              color: AppColor.greenColor,
+            ),
+          ),
+        );
+      }
+      final busy = controller.remindBusy.value;
+      return SizedBox(
+        width: double.infinity,
+        height: 48,
+        child: OutlinedButton(
+          onPressed: busy ? null : () => controller.remindPartner(partner),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColor.textPrimary,
+            side: const BorderSide(color: _cardBorder, width: 2),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16)),
+          ),
+          child: busy
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2.2, color: AppColor.greenColor),
+                )
+              : Text(
+                  '👋  ذكّر ${partner.name}',
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w800),
+                ),
+        ),
+      );
+    });
+  }
+}
+
+Future<void> _showFriendPicker(ProgressController controller) async {
+  await Get.bottomSheet(
+    _FriendPickerSheet(controller: controller),
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+  );
+}
+
+class _FriendPickerSheet extends StatefulWidget {
+  final ProgressController controller;
+  const _FriendPickerSheet({required this.controller});
+
+  @override
+  State<_FriendPickerSheet> createState() => _FriendPickerSheetState();
+}
+
+class _FriendPickerSheetState extends State<_FriendPickerSheet> {
+  List<QuestFriend>? friends;
+  bool failed = false;
+  int? busyId;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final data = await ApiController.getQuestFriends();
+    if (!mounted) return;
+    setState(() {
+      friends = data;
+      failed = data == null;
+    });
+  }
+
+  Future<void> _choose(QuestFriend f) async {
+    if (busyId != null) return;
+    setState(() => busyId = f.id);
+    final ok = await widget.controller.choosePartner(f.id);
+    if (!mounted) return;
+    setState(() => busyId = null);
+    if (ok) {
+      Get.back();
+      showSnackBarWidget(message: 'تم اختيار ${f.name} — أرسلنا له دعوة 🏆');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        constraints: BoxConstraints(maxHeight: media.size.height * 0.62),
+        decoration: const BoxDecoration(
+          color: AppColor.scaffoldBackgroundColor,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 10),
+            Container(
+              width: 42,
+              height: 5,
+              decoration: BoxDecoration(
+                color: _cardBorder,
+                borderRadius: BorderRadius.circular(3),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 14, 20, 4),
+              child: Text(
+                'اختر شريك التحدي',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                  color: AppColor.textPrimary,
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 12),
+              child: Text(
+                'تظهر هنا فقط الأصدقاء الذين تتابعهم ويتابعونك',
+                style: TextStyle(fontSize: 12.5, color: AppColor.textSecondary),
+              ),
+            ),
+            const Divider(height: 1, thickness: 1, color: _cardBorder),
+            Flexible(child: _content()),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _content() {
+    final list = friends;
+    if (failed) {
+      return Padding(
+        padding: const EdgeInsets.all(24),
+        child: TextButton(
+          onPressed: () {
+            setState(() => failed = false);
+            _load();
+          },
+          child: const Text('تعذّر تحميل الأصدقاء، إعادة المحاولة'),
+        ),
+      );
+    }
+    if (list == null) {
+      return const Padding(
+        padding: EdgeInsets.all(32),
+        child: CircularProgressIndicator(color: AppColor.greenColor),
+      );
+    }
+    if (list.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'لا يوجد أصدقاء متبادلون بعد. تابع صديقاً واطلب منه أن يتابعك.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 14, color: AppColor.textSecondary, height: 1.4),
+            ),
+            const SizedBox(height: 14),
+            OutlinedButton(
+              onPressed: () {
+                Get.back();
+                Get.toNamed(AppRoutes.searchUsersRoute);
+              },
+              child: const Text('ابحث عن أصدقاء'),
+            ),
+          ],
+        ),
+      );
+    }
+    return ListView.separated(
+      shrinkWrap: true,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+      itemCount: list.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      itemBuilder: (_, i) {
+        final f = list[i];
+        final busy = busyId == f.id;
+        return InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => _choose(f),
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColor.surfaceColor,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: f.isPartner ? AppColor.greenColor : _cardBorder,
+                width: f.isPartner ? 2 : 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                _QuestAvatar(
+                  person: QuestPerson(id: f.id, name: f.name, photo: f.photo),
+                  size: 44,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        f.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: AppColor.textPrimary,
+                        ),
+                      ),
+                      if (f.username != null && f.username!.isNotEmpty)
+                        Text(
+                          '@${f.username}',
+                          style: const TextStyle(
+                              fontSize: 12.5, color: AppColor.textSecondary),
+                        ),
+                    ],
+                  ),
+                ),
+                if (busy)
+                  const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2.2, color: AppColor.greenColor),
+                  )
+                else if (f.isPartner)
+                  const Icon(Icons.check_circle_rounded,
+                      color: AppColor.greenColor)
+                else
+                  const Text(
+                    'اختيار',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: AppColor.greenColor,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }

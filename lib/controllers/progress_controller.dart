@@ -1,3 +1,4 @@
+import 'package:upgrade/widgets/app_snack_bar.dart';
 import 'package:upgrade/entity/quests_entity.dart';
 import 'package:get/get.dart';
 import 'package:upgrade/controllers/api_controller.dart';
@@ -41,6 +42,31 @@ class ProgressController extends GetxController {
   final RxBool questsLoading = false.obs;
   final RxBool questsFailed = false.obs;
   final RxString claimingId = ''.obs;
+  final RxBool remindBusy = false.obs;
+
+  /// Nudge the friends-quest partner (feed post + push notification).
+  Future<void> remindPartner(QuestPerson p) async {
+    if (remindBusy.value) return;
+    remindBusy.value = true;
+    final r = await ApiController.remindFriend(p.id);
+    remindBusy.value = false;
+    if (r == null) return; // ApiController already showed the error
+    if (r['sent'] == true) {
+      showSnackBarWidget(message: 'تم إرسال التذكير إلى ${p.name} 👋');
+    } else if (r['reason'] == 'already_studied') {
+      showSnackBarWidget(message: '${p.name} درس اليوم بالفعل 🎉');
+    } else {
+      showSnackBarWidget(message: 'أرسلت تذكيراً إلى ${p.name} اليوم بالفعل');
+    }
+    loadQuests();
+  }
+
+  /// Picks who the friends quest is played with, then refreshes the quests.
+  Future<bool> choosePartner(int friendId) async {
+    final ok = await ApiController.setQuestPartner(friendId);
+    if (ok) await loadQuests();
+    return ok;
+  }
 
   Future<void> loadQuests() async {
     if (quests.value == null) questsLoading.value = true;

@@ -39,15 +39,51 @@ class ProfileController extends GetxController {
     loading.value = false;
   }
 
+  /// True while a follow / unfollow request is in flight (prevents double taps).
+  final RxBool followBusy = false.obs;
+
+  ProfileEntity _withFollowing(ProfileEntity p, bool following) => ProfileEntity(
+        id: p.id,
+        name: p.name,
+        email: p.email,
+        username: p.username,
+        avatarHair: p.avatarHair,
+        avatarHairColor: p.avatarHairColor,
+        avatarSkinColor: p.avatarSkinColor,
+        avatarClothingColor: p.avatarClothingColor,
+        avatarGlasses: p.avatarGlasses,
+        currentStreak: p.currentStreak,
+        followersCount: (p.followersCount + (following ? 1 : -1)).clamp(0, 1 << 30).toInt(),
+        followingCount: p.followingCount,
+        isFollowing: following,
+        isFriend: following ? p.isFriend : false,
+        createdAt: p.createdAt,
+        xp: p.xp,
+        level: p.level,
+        xpIntoLevel: p.xpIntoLevel,
+        xpForNextLevel: p.xpForNextLevel,
+      );
+
+  /// Optimistic: the button flips instantly, the request runs behind it, and
+  /// it flips back if the server refuses (no more "frozen, then follows").
   Future<void> toggleFollow() async {
-    if (profile.value == null) return;
-    final id = profile.value!.id;
-    if (profile.value!.isFollowing) {
-      await ApiController.unfollowUser(id);
-    } else {
-      await ApiController.followUser(id);
-    }
-    profile.value = await ApiController.getProfile(id);
+    final current = profile.value;
+    if (current == null || followBusy.value) return;
+    followBusy.value = true;
+    final id = current.id;
+    final wasFollowing = current.isFollowing;
+    profile.value = _withFollowing(current, !wasFollowing);
+
+    final ok = wasFollowing
+        ? await ApiController.unfollowUser(id)
+        : await ApiController.followUser(id);
+
+    if (!ok) profile.value = current; // revert
+    followBusy.value = false;
+
+    // Refresh the real numbers (friend status, counts) in the background.
+    final fresh = await ApiController.getProfile(id);
+    if (fresh != null) profile.value = fresh;
   }
 
   Future<void> pickAndUploadAvatar() async {

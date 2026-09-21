@@ -62,6 +62,11 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  // Make the system navigation bar match the app instead of a black strip.
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    systemNavigationBarColor: AppColor.scaffoldBackgroundColor,
+    systemNavigationBarIconBrightness: Brightness.dark,
+  ));
   sharedPref = await SharedPreferences.getInstance();
   await initAppModule();
   await ApiController.initDio();
@@ -96,6 +101,19 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      // Keep every screen above the system navigation bar (gesture pill or
+      // 3-button bar). Android draws apps edge-to-edge on newer phones, which
+      // slid content underneath it. Screens that already use a SafeArea are
+      // unaffected: nested SafeAreas don't add up.
+      builder: (context, child) => ColoredBox(
+        color: AppColor.scaffoldBackgroundColor,
+        child: SafeArea(
+          top: false,
+          left: false,
+          right: false,
+          child: child ?? const SizedBox.shrink(),
+        ),
+      ),
       theme: ThemeData(
         fontFamily: "ELMESSIRI",
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(

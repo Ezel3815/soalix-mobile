@@ -146,17 +146,36 @@ class _Header extends StatelessWidget {
           InkWell(
             onTap: () => Get.find<MainController>().onChangePage(3),
             child: Obx(() {
-              final name = controller.profile.value?.name ?? "";
+              final me = controller.profile.value;
+              final name = me?.name ?? "";
               final initial = name.isNotEmpty ? name[0].toUpperCase() : "?";
-              return CircleAvatar(
-                radius: 18,
-                backgroundColor: AppColor.greenColor,
-                child: Text(
-                  initial,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
+              final photo = me?.avatarHair;
+              // The same picture as on the profile; the initial is only a
+              // fallback for people who haven't set a photo.
+              return Container(
+                width: 36,
+                height: 36,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColor.greenColor,
+                ),
+                child: ClipOval(
+                  child: (photo != null && photo.isNotEmpty)
+                      ? AppImage(
+                          image: photo,
+                          width: 36,
+                          height: 36,
+                          fit: BoxFit.cover,
+                        )
+                      : Center(
+                          child: Text(
+                            initial,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
                 ),
               );
             }),

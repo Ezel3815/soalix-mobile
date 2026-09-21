@@ -4,6 +4,9 @@ class Api {
   static const String dailyMissions = '$baseUrl/users/me/missions';
   static const String achievements = '$baseUrl/users/me/achievements';
   static const String quests = '$baseUrl/users/me/quests';
+  static const String questFriends = '$baseUrl/users/me/quests/friends';
+  static const String questPartner = '$baseUrl/users/me/quests/partner';
+  static String remind(int id) => '$baseUrl/users/$id/remind';
   static const String feed = '$baseUrl/users/me/feed';
   static String feedCelebrate(int id) => '$baseUrl/users/feed/$id/celebrate';
   static String feedComments(int id) => '$baseUrl/users/feed/$id/comments';

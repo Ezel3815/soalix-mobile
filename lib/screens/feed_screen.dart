@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
@@ -23,7 +24,8 @@ const double _feedMaxWidth = 680;
 
 /// Posts that are addressed to ONE person only ("X followed you",
 /// "X reminds you to study"): no celebrate button, no comments.
-bool _isTargeted(String type) => type == 'followed' || type == 'reminder';
+bool _isTargeted(String type) =>
+    type == 'followed' || type == 'reminder' || type == 'challenge_invite';
 
 /// Duolingo-style social feed: your activity + the people you follow.
 class FeedScreen extends StatefulWidget {
@@ -221,9 +223,15 @@ class _PostCard extends StatelessWidget {
   /// The text shown for the post. A reminder is built here (the server
   /// only says "a reminder from <user>"), everything else comes from the
   /// post itself.
-  String get _message => post.type == 'reminder'
-      ? 'ذكّرك ${post.userName} بالمذاكرة اليوم 📚'
-      : post.message;
+  String get _message {
+    if (post.type == 'reminder') {
+      return 'ذكّرك ${post.userName} بالمذاكرة اليوم 📚';
+    }
+    if (post.type == 'challenge_invite') {
+      return 'دعاك ${post.userName} لتحدي الأصدقاء هذا الأسبوع 🏆';
+    }
+    return post.message;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -358,6 +366,16 @@ class _PostCard extends StatelessWidget {
         onTap: () => Get.find<MainController>().onChangePage(0),
         icon: Icons.play_arrow_rounded,
         label: 'ابدأ المذاكرة الآن',
+        filled: true,
+        fullWidth: true,
+      );
+    }
+    if (post.type == 'challenge_invite') {
+      // "X invited you to the friends challenge": open the Quests tab.
+      return _Pill(
+        onTap: () => Get.find<MainController>().onChangePage(2),
+        icon: Icons.emoji_events_rounded,
+        label: 'افتح التحدي',
         filled: true,
         fullWidth: true,
       );
@@ -516,6 +534,10 @@ class _PostBadge extends StatelessWidget {
       case 'followed':
         colors = const [Color(0xFF6CC3D5), Color(0xFF3C9DB8)];
         icon = Icons.person_add_alt_1_rounded;
+        break;
+      case 'challenge_invite':
+        colors = const [Color(0xFFFFD25A), Color(0xFFF0A020)];
+        icon = Icons.groups_rounded;
         break;
       case 'reminder':
         colors = const [Color(0xFFFF9C7A), Color(0xFFE8663D)];
@@ -693,12 +715,14 @@ class _CommentsSheetState extends State<_CommentsSheet> {
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
-    final keyboardOpen = media.viewInsets.bottom > 0;
     // Height is worked out from the space that is really left, so the sheet
     // never gets taller than the screen when the keyboard is open.
     final available =
         media.size.height - media.viewInsets.bottom - media.padding.top;
-    final sheetHeight = available * (keyboardOpen ? 0.96 : 0.68);
+    // min(...) keeps the height CONTINUOUS while the keyboard slides up. The
+    // old "0.68 -> 0.96" switch made the sheet leap when the first pixel of
+    // keyboard appeared, then shrink again — that was the visible glitch.
+    final sheetHeight = math.min(media.size.height * 0.68, available * 0.96);
 
     return Align(
       alignment: Alignment.bottomCenter,

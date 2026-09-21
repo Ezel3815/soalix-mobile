@@ -1008,6 +1008,60 @@ class ApiController {
     return null;
   }
 
+  /// Mutual friends the user can pick as friends-quest partner (null = failed).
+  static Future<List<QuestFriend>?> getQuestFriends() async {
+    try {
+      final response = await dio.get(
+        Api.questFriends,
+        options: GetOptions.getOptions(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return (response.data as List)
+            .map((e) => QuestFriend.fromJson(e))
+            .toList();
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+    return null;
+  }
+
+  static Future<bool> setQuestPartner(int friendId) async {
+    try {
+      final response = await dio.put(
+        Api.questPartner,
+        data: {'friend_id': friendId},
+        options: GetOptions.getOptions(),
+      );
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
+      if (ErrorHandler.handle(e).failure.code != -6) {
+        showSnackBarWidget(
+            message: ErrorHandler.handle(e).failure.message ?? "");
+      }
+    }
+    return false;
+  }
+
+  /// Nudges a friend (feed post + push). Returns {sent, reason?} or null.
+  static Future<Map<String, dynamic>?> remindFriend(int id) async {
+    try {
+      final response = await dio.post(
+        Api.remind(id),
+        options: GetOptions.getOptions(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return Map<String, dynamic>.from(response.data as Map);
+      }
+    } catch (e) {
+      if (ErrorHandler.handle(e).failure.code != -6) {
+        showSnackBarWidget(
+            message: ErrorHandler.handle(e).failure.message ?? "");
+      }
+    }
+    return null;
+  }
+
   static Future<QuestsData?> getQuests() async {
     try {
       final response = await dio.get(

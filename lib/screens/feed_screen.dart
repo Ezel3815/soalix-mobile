@@ -715,13 +715,26 @@ class _CommentsSheetState extends State<_CommentsSheet> {
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
+
+    // Some phones already SHRINK the whole app window when the keyboard opens
+    // (Android "adjustResize") and ALSO report the keyboard as a view inset.
+    // Using both counted the keyboard twice: the sheet was squeezed and then
+    // lifted a second keyboard-height up, leaving a gap above the keyboard.
+    // If the window is already smaller than the screen by the keyboard's
+    // height, don't lift the sheet again.
+    final view = View.of(context);
+    final dpr = view.devicePixelRatio;
+    final windowHeight = view.physicalSize.height / dpr;
+    final screenHeight = view.display.size.height / dpr;
+    final keyboard = media.viewInsets.bottom;
+    final windowAlreadyShrunk =
+        keyboard > 0 && windowHeight + keyboard <= screenHeight + 4;
+    final lift = windowAlreadyShrunk ? 0.0 : keyboard;
+
     // Height is worked out from the space that is really left, so the sheet
     // never gets taller than the screen when the keyboard is open.
-    final available =
-        media.size.height - media.viewInsets.bottom - media.padding.top;
-    // min(...) keeps the height CONTINUOUS while the keyboard slides up. The
-    // old "0.68 -> 0.96" switch made the sheet leap when the first pixel of
-    // keyboard appeared, then shrink again — that was the visible glitch.
+    final available = media.size.height - lift - media.padding.top;
+    // min(...) keeps the height CONTINUOUS while the keyboard slides up.
     final sheetHeight = math.min(media.size.height * 0.68, available * 0.96);
 
     return Align(
@@ -729,7 +742,7 @@ class _CommentsSheetState extends State<_CommentsSheet> {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: _feedMaxWidth),
         child: Padding(
-          padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
+          padding: EdgeInsets.only(bottom: lift),
           child: Container(
             height: sheetHeight,
             decoration: const BoxDecoration(

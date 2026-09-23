@@ -106,7 +106,12 @@ class CardViewController extends GetxController {
   }
 
   getData() {
-    return jsonDecode(cards[pageViewIndex].data);
+    try {
+      return jsonDecode(cards[pageViewIndex].data);
+    } catch (_) {
+      // Corrupt/legacy data must not crash the card (same fix as getOCCData).
+      return {};
+    }
   }
 
   String getFrontText() {

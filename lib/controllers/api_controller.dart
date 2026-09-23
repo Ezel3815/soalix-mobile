@@ -409,7 +409,12 @@ class ApiController {
         if (response.statusCode == 200 || response.statusCode == 201) {
           List<DeckModel> list = [];
           for (var value in json) {
-            list.add(DeckModel.fromJson(value));
+            try {
+              list.add(DeckModel.fromJson(value));
+            } catch (e) {
+              // One bad deck/card must not wipe the entire tree.
+              log(e.toString());
+            }
           }
 
           final data = list.map((e) => e.toDomain()).toList();
@@ -455,7 +460,12 @@ class ApiController {
         if (response.statusCode == 200 || response.statusCode == 201) {
           List<DeckModel> list = [];
           for (var value in json) {
-            list.add(DeckModel.fromJson(value));
+            try {
+              list.add(DeckModel.fromJson(value));
+            } catch (e) {
+              // One bad deck/card must not wipe the entire tree.
+              log(e.toString());
+            }
           }
           final data = list.map((e) => e.toDomain()).toList();
           await _appLocalDataSource.setMyDeckEntityToLocal(data);

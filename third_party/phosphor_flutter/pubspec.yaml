@@ -1,0 +1,10 @@
+name: phosphor_flutter
+description: Local compatibility shim redirecting to phosphoricons_flutter.
+version: 2.1.0
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  phosphoricons_flutter: ^1.0.0

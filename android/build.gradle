@@ -16,6 +16,21 @@ subprojects {
                 }
             }
         }
+        // Force every plugin (file_picker, etc.) to build with the same
+        // Java/Kotlin version as the app itself, so they stop disagreeing.
+        if (project.hasProperty('android')) {
+            project.android {
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_17
+                    targetCompatibility JavaVersion.VERSION_17
+                }
+            }
+        }
+        project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+            kotlinOptions {
+                jvmTarget = "17"
+            }
+        }
     }
 }
 subprojects {

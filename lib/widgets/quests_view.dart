@@ -994,6 +994,7 @@ class _NudgeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      final busy = controller.remindBusy.value; // read first: Obx needs an observable touched on every branch
       if (partner.studiedToday) {
         return Container(
           width: double.infinity,
@@ -1015,7 +1016,6 @@ class _NudgeButton extends StatelessWidget {
           ),
         );
       }
-      final busy = controller.remindBusy.value;
       return SizedBox(
         width: double.infinity,
         height: 48,

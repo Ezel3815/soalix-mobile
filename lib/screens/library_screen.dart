@@ -377,10 +377,13 @@ class _SubjectCard extends StatelessWidget {
                           ],
                         ),
                       )
-                    : Icon(
+                    : const Icon(
                         Icons.chevron_right_rounded,
                         color: AppColor.textSecondary,
                         size: 20,
+                        // Disclosure chevron: mirror for RTL so it points
+                        // toward the reading direction's "forward" side.
+                        matchTextDirection: true,
                       ),
               ],
             ),

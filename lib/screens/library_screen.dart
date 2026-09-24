@@ -364,14 +364,14 @@ class _SubjectCard extends StatelessWidget {
                           color: AppColor.scaffoldBackgroundColor,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.lock,
+                            const Icon(Icons.lock,
                                 size: 12, color: AppColor.textSecondary),
-                            SizedBox(width: 3),
+                            const SizedBox(width: 3),
                             Text(AppStrings.locked,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 10,
                                     color: AppColor.textSecondary)),
                           ],

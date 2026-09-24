@@ -130,6 +130,8 @@ Failure _handleError(DioException error) {
       return DataSource.unknown.getFailure();
     case DioExceptionType.connectionError:
       return DataSource.noInternetConnection.getFailure();
+    case DioExceptionType.transformTimeout:
+      return DataSource.unknown.getFailure();
     case DioExceptionType.badResponse:
       // if (error.response?.statusCode == ResponseCode.badRequest) {
       //   return DataSource.badRequest.getFailure();

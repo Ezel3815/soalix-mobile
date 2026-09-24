@@ -69,7 +69,6 @@ class CardWidget extends StatelessWidget {
                   Icons.chevron_right,
                   size: 18,
                   color: AppColor.greenColor,
-                  matchTextDirection: true,
                 ),
               ),
             ),

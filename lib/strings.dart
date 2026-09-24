@@ -94,4 +94,18 @@ class AppStrings {
   static String get gradeGood => _t("جيد", "Good");
   static String get gradeEasy => _t("سهل", "Easy");
   static String get attachedFile => _t("ملف مرفق: \n", "Attached file: \n");
+
+  // ===== Drawer =====
+  static String get flashcardsTagline => _t("بطاقات تعليمية", "Flashcards");
+  static String get drawerHome => _t("الرئيسية", "Home");
+  static String get drawerFlashcards => _t("البطاقات", "Flashcards");
+  static String get drawerProgress => _t("التقدم", "Progress");
+  static String get drawerProfile => _t("الملف الشخصي", "Profile");
+  static String get enterCode => _t("إدخال كود", "Enter Code");
+  static String get shareThisApp => _t("شارك التطبيق", "Share This App");
+  static String get shareAppMessage =>
+      _t("جرّب هذا التطبيق: https://googleplay.com",
+          "Checkout this app in https://googleplay.com");
+  static String get helpAndFeedback => _t("المساعدة والملاحظات", "Help & Feedback");
+  static String get logOut => _t("تسجيل الخروج", "Log Out");
 }

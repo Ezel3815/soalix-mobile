@@ -58,4 +58,30 @@ class AppStrings {
   static String get language => _t("اللغة", "Language");
   static String get arabic => _t("العربية", "Arabic");
   static String get english => _t("الإنجليزية", "English");
+
+  // ===== Profile =====
+  static String get couldntLoadProfile =>
+      _t("تعذّر تحميل الملف الشخصي", "Couldn't load profile");
+  static String get changePhoto => _t("تغيير الصورة", "Change Photo");
+  static String get streak => _t("سلسلة الأيام", "Streak");
+  static String get following => _t("متابَعون", "Following");
+  static String get followers => _t("متابِعون", "Followers");
+  static String get editProfile => _t("تعديل الملف الشخصي", "EDIT PROFILE");
+  static String get friends => _t("أصدقاء", "FRIENDS");
+  static String get followingButton => _t("متابَع", "FOLLOWING");
+  static String get follow => _t("متابعة", "FOLLOW");
+  static String get joined => _t("انضم في", "Joined");
+  static const List<String> monthsAr = [
+    "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
+    "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
+  ];
+  static const List<String> monthsEn = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  static List<String> get months => _isEnglish ? monthsEn : monthsAr;
+
+  // ===== Onboarding =====
+  static String get skip => _t("تخطي", "Skip");
+  static String get next => _t("التالي", "Next");
 }

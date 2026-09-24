@@ -1,4 +1,5 @@
 import 'package:upgrade/screens/follow_list_screen.dart';
+import 'package:upgrade/screens/locale_controller.dart';
 import 'package:upgrade/utils/deep_link_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -68,6 +69,10 @@ void main() async {
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
   sharedPref = await SharedPreferences.getInstance();
+  // Loads the saved language (defaults to Arabic) before the first frame,
+  // so GetMaterialApp picks the right locale/direction on the very first
+  // build instead of flashing Arabic then flipping.
+  Get.put(LocaleController(), permanent: true);
   await initAppModule();
   await ApiController.initDio();
   await NotificationService.instance.init();
@@ -89,13 +94,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    final localeController = Get.find<LocaleController>();
+    return Obx(() => GetMaterialApp(
       title: "MOZAIK",
       debugShowCheckedModeBanner: false,
       getPages: AppRoutes.pages,
-      // Whole app is Arabic + right-to-left.
-      locale: const Locale("ar"),
-      supportedLocales: const [Locale("ar")],
+      // Reactive: follows LocaleController, which defaults to Arabic and
+      // persists whatever the user picks in the drawer. Registering both
+      // locales (rather than just "ar") is what lets Get.updateLocale("en")
+      // actually take, and also what makes Flutter auto-flip text
+      // direction (RTL for ar, LTR for en) via GlobalWidgetsLocalizations.
+      locale: Locale(localeController.languageCode.value),
+      supportedLocales: const [Locale("ar"), Locale("en")],
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -124,7 +134,7 @@ class MyApp extends StatelessWidget {
           surfaceTintColor: Colors.transparent,
         ),
       ),
-    );
+    ));
   }
 }
 

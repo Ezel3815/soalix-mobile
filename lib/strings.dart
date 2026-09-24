@@ -110,6 +110,7 @@ class AppStrings {
   static String get lastCard => _t("الأخيرة", "Last");
   static String remaining(int left) => _t("متبقي $left", "$left left");
 
-  // ===== Document screen =====
-  static String get pdfFiles => _t("ملفات PDF", "PDF Files");
+  // ===== Onboarding =====
+  static String get skip => _t("تخطي", "Skip");
+  static String get next => _t("التالي", "Next");
 }

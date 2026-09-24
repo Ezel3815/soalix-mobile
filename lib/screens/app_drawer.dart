@@ -9,6 +9,7 @@ import 'package:upgrade/controllers/api_controller.dart';
 import 'package:upgrade/controllers/main_controller.dart';
 import 'package:upgrade/main.dart';
 import 'package:upgrade/resources.dart';
+import 'package:upgrade/screens/locale_controller.dart';
 import 'package:upgrade/widgets/inter_code_dialog.dart';
 import 'package:upgrade/widgets/mozaik_mark_icon.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -20,12 +21,63 @@ class AppDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
     final mainController = Get.find<MainController>();
+    final localeController = Get.find<LocaleController>();
 
     TextStyle itemStyle({Color? color}) => TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.w600,
           color: color ?? AppColor.textPrimary,
         );
+
+    void showLanguagePicker() {
+      Get.bottomSheet(
+        SafeArea(
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: const BoxDecoration(
+              color: AppColor.scaffoldBackgroundColor,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    AppStrings.language,
+                    style: itemStyle(),
+                  ),
+                ),
+                Obx(() => Column(
+                      children: [
+                        RadioListTile<String>(
+                          value: "ar",
+                          groupValue: localeController.languageCode.value,
+                          activeColor: AppColor.darkGreenColor,
+                          title: Text(AppStrings.arabic, style: itemStyle()),
+                          onChanged: (code) {
+                            if (code != null) localeController.setLanguage(code);
+                            Get.back();
+                          },
+                        ),
+                        RadioListTile<String>(
+                          value: "en",
+                          groupValue: localeController.languageCode.value,
+                          activeColor: AppColor.darkGreenColor,
+                          title: Text(AppStrings.english, style: itemStyle()),
+                          onChanged: (code) {
+                            if (code != null) localeController.setLanguage(code);
+                            Get.back();
+                          },
+                        ),
+                      ],
+                    )),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     Widget iconBadge(IconData icon, {Color? badgeColor}) {
       return Container(
@@ -152,6 +204,20 @@ class AppDrawer extends StatelessWidget {
                   Get.back();
                   Get.dialog(const InterCodeDialog());
                 },
+              ),
+              ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                leading: iconBadge(Icons.language_rounded),
+                title: Text(AppStrings.language, style: itemStyle()),
+                trailing: Obx(() => Text(
+                      localeController.isEnglish
+                          ? AppStrings.english
+                          : AppStrings.arabic,
+                      style: itemStyle(color: AppColor.textSecondary),
+                    )),
+                onTap: showLanguagePicker,
               ),
               ListTile(
                 shape: RoundedRectangleBorder(

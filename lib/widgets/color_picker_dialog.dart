@@ -1,6 +1,7 @@
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:upgrade/strings.dart';
 
 class ColorPickerDialog extends StatefulWidget {
   final Color tempColor;
@@ -25,7 +26,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
     return AlertDialog(
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.white,
-      title: const Text('Choose Color'),
+      title: Text(AppStrings.chooseColor),
       content: SingleChildScrollView(
         child: ColorPicker(
           color: tempColor,
@@ -34,30 +35,33 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
           width: 44,
           height: 44,
           borderRadius: 22,
-          showRecentColors: true,
-          recentColors: const [
-            Colors.black,
-            Colors.white,
-          ],
-          maxRecentColors: 8,
+          // Was growing a "recently used" row of circles every time a new
+          // color was picked (up to 8), which read as a visual glitch since
+          // nothing in the UI explains what that row is. Off for a fixed,
+          // predictable palette.
+          showRecentColors: false,
           borderColor: Colors.black,
           hasBorder: true,
           onColorChanged: (Color color) {
             tempColor = color;
           },
+          pickerTypeLabels: <ColorPickerType, String>{
+            ColorPickerType.primary: AppStrings.primaryColorLabel,
+            ColorPickerType.accent: AppStrings.accentColorLabel,
+          },
           heading: Text(
-            'Select color',
+            AppStrings.selectColor,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           subheading: Text(
-            'Select color shade',
+            AppStrings.selectColorShade,
             style: Theme.of(context).textTheme.titleSmall,
           ),
         ),
       ),
       actions: <Widget>[
         TextButton(
-          child: const Text('ok'),
+          child: Text(AppStrings.ok),
           onPressed: () {
             Get.back(result: tempColor);
           },

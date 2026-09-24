@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:upgrade/api.dart';
 
 /// Centralized, bilingual app text. Every screen that reads from here
 /// automatically follows the language switch in the drawer — no
@@ -59,53 +60,53 @@ class AppStrings {
   static String get arabic => _t("العربية", "Arabic");
   static String get english => _t("الإنجليزية", "English");
 
-  // ===== Profile =====
-  static String get couldntLoadProfile =>
-      _t("تعذّر تحميل الملف الشخصي", "Couldn't load profile");
-  static String get changePhoto => _t("تغيير الصورة", "Change Photo");
-  static String get streak => _t("سلسلة الأيام", "Streak");
-  static String get following => _t("متابَعون", "Following");
-  static String get followers => _t("متابِعون", "Followers");
-  static String get editProfile => _t("تعديل الملف الشخصي", "EDIT PROFILE");
-  static String get friends => _t("أصدقاء", "FRIENDS");
-  static String get followingButton => _t("متابَع", "FOLLOWING");
-  static String get follow => _t("متابعة", "FOLLOW");
-  static String get joined => _t("انضم في", "Joined");
-  static const List<String> monthsAr = [
-    "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
-    "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
-  ];
-  static const List<String> monthsEn = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-  static List<String> get months => _isEnglish ? monthsEn : monthsAr;
+  // ===== Library / Cards screen =====
+  static String get searchSubjectHint =>
+      _t("ابحث عن مادة", "Search for a subject");
+  static String get allYears => _t("كل السنوات", "All years");
+  static String get all => _t("الكل", "All");
+  static String get myCards => _t("بطاقاتي", "My Cards");
+  static String get createdByMe => _t("أنشأتها", "Created by me");
+  static String get noSubjects => _t("لا توجد مواد", "No subjects");
+  static String get subjectLockedHint => _t(
+      "هذه المادة مقفلة، أدخل الكود لفتحها من القائمة",
+      "This subject is locked - enter the code to unlock it from the menu");
+  static String get locked => _t("مقفل", "Locked");
+  static String cardsCount(int total) => _t("$total بطاقة", "$total cards");
 
-  // ===== Onboarding =====
-  static String get skip => _t("تخطي", "Skip");
-  static String get next => _t("التالي", "Next");
+  // ===== Progress screen =====
+  static String get tasks => _t("المهام", "Tasks");
+  static String get statistics => _t("الإحصائيات", "Statistics");
+  static String get leaderboard => _t("المتصدرون", "Leaderboard");
+  static String get achievements => _t("الإنجازات", "Achievements");
+  static String unlockedOf(int unlocked, int total) =>
+      _t("$unlocked/$total مفتوح", "$unlocked/$total unlocked");
+  static String get followFriendsForRank => _t(
+      "تابع بعض الأصدقاء لمعرفة ترتيبك بينهم",
+      "Follow some friends to see your rank among them");
+  static String get cardsReviewed =>
+      _t("بطاقات تمت مراجعتها", "Cards reviewed");
+  static String get masteryRate => _t("نسبة الإتقان", "Mastery rate");
+  static String get performanceBySubject =>
+      _t("الأداء حسب المادة", "Performance by subject");
+  static String get noDataYet => _t("لا توجد بيانات بعد", "No data yet");
 
-  // ===== Card / study view =====
+  // ===== Profile screen =====
+  static String get following => _t("المتابَعون", "Following");
+  static String get followers => _t("المتابِعون", "Followers");
+  static String shareMe(String username) => _t(
+      "تابعني على MOZAIK: @$username\n${Api.baseUrl}/users/share/$username",
+      "Follow me on MOZAIK: @$username\n${Api.baseUrl}/users/share/$username");
+
+  // ===== Card study screen =====
   static String get showAnswer => _t("إظهار الإجابة", "Show Answer");
   static String get hideAnswer => _t("إخفاء الإجابة", "Hide Answer");
-  static String get toggleMask => _t("إظهار/إخفاء القناع", "Toggle Mask");
-  static String get gradeAgain => _t("أعد", "Again");
-  static String get gradeHard => _t("صعب", "Hard");
-  static String get gradeGood => _t("جيد", "Good");
-  static String get gradeEasy => _t("سهل", "Easy");
+  static String get toggleMask => _t("إظهار/إخفاء التظليل", "Toggle Mask");
   static String get attachedFile => _t("ملف مرفق: \n", "Attached file: \n");
-
-  // ===== Drawer =====
-  static String get flashcardsTagline => _t("بطاقات تعليمية", "Flashcards");
-  static String get drawerHome => _t("الرئيسية", "Home");
-  static String get drawerFlashcards => _t("البطاقات", "Flashcards");
-  static String get drawerProgress => _t("التقدم", "Progress");
-  static String get drawerProfile => _t("الملف الشخصي", "Profile");
-  static String get enterCode => _t("إدخال كود", "Enter Code");
-  static String get shareThisApp => _t("شارك التطبيق", "Share This App");
-  static String get shareAppMessage =>
-      _t("جرّب هذا التطبيق: https://googleplay.com",
-          "Checkout this app in https://googleplay.com");
-  static String get helpAndFeedback => _t("المساعدة والملاحظات", "Help & Feedback");
-  static String get logOut => _t("تسجيل الخروج", "Log Out");
+  static String get again => _t("مرة أخرى", "Again");
+  static String get hard => _t("صعب", "Hard");
+  static String get good => _t("جيد", "Good");
+  static String get easy => _t("سهل", "Easy");
+  static String get lastCard => _t("الأخيرة", "Last");
+  static String remaining(int left) => _t("متبقي $left", "$left left");
 }

@@ -1,4 +1,5 @@
 import 'package:upgrade/widgets/quests_view.dart';
+import 'package:upgrade/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:upgrade/controllers/progress_controller.dart';
@@ -46,8 +47,8 @@ class ProgressScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 14),
-                const Text(
-                  "التقدم",
+                Text(
+                  AppStrings.navProgress,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
@@ -62,7 +63,7 @@ class ProgressScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _TabPill(
-                      label: "المهام",
+                      label: AppStrings.tasks,
                       selected:
                           controller.tab.value == ProgressTab.achievements,
                       onTap: () =>
@@ -72,7 +73,7 @@ class ProgressScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: _TabPill(
-                      label: "الإحصائيات",
+                      label: AppStrings.statistics,
                       selected: controller.tab.value == ProgressTab.statistics,
                       onTap: () =>
                           controller.tab.value = ProgressTab.statistics,
@@ -81,7 +82,7 @@ class ProgressScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: _TabPill(
-                      label: "المتصدرون",
+                      label: AppStrings.leaderboard,
                       selected: controller.tab.value == ProgressTab.leaderboard,
                       onTap: () =>
                           controller.tab.value = ProgressTab.leaderboard,
@@ -98,8 +99,8 @@ class ProgressScreen extends StatelessWidget {
                   children: [
                     QuestsBody(controller: controller),
                     const SizedBox(height: 28),
-                    const Text(
-                      "الإنجازات",
+                    Text(
+                      AppStrings.achievements,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
@@ -181,7 +182,7 @@ class _AchievementsBody extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "$unlockedCount/${achievements.length} مفتوح",
+            AppStrings.unlockedOf(unlockedCount, achievements.length),
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -280,11 +281,11 @@ class _LeaderboardBody extends StatelessWidget {
       }
       final entries = controller.leaderboard;
       if (entries.isEmpty) {
-        return const Padding(
-          padding: EdgeInsets.symmetric(vertical: 40),
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 40),
           child: Center(
             child: Text(
-              "تابع بعض الأصدقاء لمعرفة ترتيبك بينهم",
+              AppStrings.followFriendsForRank,
               textAlign: TextAlign.center,
               style: TextStyle(color: AppColor.textSecondary),
             ),
@@ -427,7 +428,7 @@ class _StatisticsBody extends StatelessWidget {
                     icon: Icons.local_fire_department_rounded,
                     color: AppColor.warningColor,
                     value: "${controller.streak}",
-                    label: "أيام متتالية",
+                    label: AppStrings.dayStreak,
                   ),
                 ),
                 Container(
@@ -439,7 +440,7 @@ class _StatisticsBody extends StatelessWidget {
                     icon: Icons.menu_book_rounded,
                     color: AppColor.greenColor,
                     value: "${controller.totalCardsReviewed}",
-                    label: "بطاقات تمت مراجعتها",
+                    label: AppStrings.cardsReviewed,
                   ),
                 ),
               ],
@@ -463,10 +464,10 @@ class _StatisticsBody extends StatelessWidget {
             ),
             child: Column(
               children: [
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "نسبة الإتقان",
+                    AppStrings.masteryRate,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
@@ -506,7 +507,7 @@ class _StatisticsBody extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              "الأداء حسب المادة",
+              AppStrings.performanceBySubject,
               style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
@@ -516,10 +517,10 @@ class _StatisticsBody extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           if (subjects.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
               child: Text(
-                "لا توجد بيانات بعد",
+                AppStrings.noDataYet,
                 style: TextStyle(color: AppColor.textSecondary),
               ),
             )

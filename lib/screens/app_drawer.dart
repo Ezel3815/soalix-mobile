@@ -152,7 +152,7 @@ class AppDrawer extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 leading: iconBadge(PhosphorIcons.house(PhosphorIconsStyle.bold)),
-                title: Text("Home", style: itemStyle()),
+                title: Text(AppStrings.drawerHome, style: itemStyle()),
                 onTap: () => goToTab(0),
               ),
               ListTile(
@@ -160,7 +160,7 @@ class AppDrawer extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 leading: iconBadge(Icons.style_rounded),
-                title: Text("Flashcards", style: itemStyle()),
+                title: Text(AppStrings.drawerFlashcards, style: itemStyle()),
                 onTap: () => goToTab(1),
               ),
               ListTile(
@@ -168,7 +168,7 @@ class AppDrawer extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 leading: iconBadge(Icons.bar_chart_rounded),
-                title: Text("Progress", style: itemStyle()),
+                title: Text(AppStrings.drawerProgress, style: itemStyle()),
                 onTap: () => goToTab(2),
               ),
               ListTile(
@@ -177,7 +177,7 @@ class AppDrawer extends StatelessWidget {
                 ),
                 leading: iconBadge(
                     PhosphorIcons.userCircle(PhosphorIconsStyle.bold)),
-                title: Text("Profile", style: itemStyle()),
+                title: Text(AppStrings.drawerProfile, style: itemStyle()),
                 onTap: () => goToTab(3),
               ),
               ListTile(
@@ -199,7 +199,7 @@ class AppDrawer extends StatelessWidget {
                 ),
                 leading:
                     iconBadge(PhosphorIcons.keyboard(PhosphorIconsStyle.bold)),
-                title: Text("Enter Code", style: itemStyle()),
+                title: Text(AppStrings.enterCode, style: itemStyle()),
                 onTap: () {
                   Get.back();
                   Get.dialog(const InterCodeDialog());
@@ -242,7 +242,7 @@ class AppDrawer extends StatelessWidget {
                 ),
                 leading:
                     iconBadge(PhosphorIcons.thumbsUp(PhosphorIconsStyle.bold)),
-                title: Text("Share This App", style: itemStyle()),
+                title: Text(AppStrings.shareThisApp, style: itemStyle()),
                 onTap: () {
                   Share.share("Checkout this app in https://googleplay.com");
                 },
@@ -258,7 +258,7 @@ class AppDrawer extends StatelessWidget {
                 },
                 leading:
                     iconBadge(PhosphorIcons.question(PhosphorIconsStyle.bold)),
-                title: Text("Help & Feedback", style: itemStyle()),
+                title: Text(AppStrings.helpFeedback, style: itemStyle()),
               ),
               ListTile(
                 shape: RoundedRectangleBorder(
@@ -271,7 +271,7 @@ class AppDrawer extends StatelessWidget {
                   PhosphorIcons.signOut(PhosphorIconsStyle.bold),
                   badgeColor: AppColor.errorColor,
                 ),
-                title: Text("Log Out", style: itemStyle(color: AppColor.errorColor)),
+                title: Text(AppStrings.logOut, style: itemStyle(color: AppColor.errorColor)),
               ),
             ],
           ),

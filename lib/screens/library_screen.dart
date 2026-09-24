@@ -1,5 +1,6 @@
 import 'package:upgrade/widgets/app_snack_bar.dart';
 import 'package:upgrade/utils/chapter_navigation.dart';
+import 'package:upgrade/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -58,8 +59,8 @@ class LibraryScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 14),
-                  const Text(
-                    "البطاقات",
+                  Text(
+                    AppStrings.navLibrary,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
@@ -96,11 +97,11 @@ class LibraryScreen extends StatelessWidget {
                     Expanded(
                       child: TextField(
                         onChanged: (v) => controller.query.value = v,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           border: InputBorder.none,
                           isDense: true,
-                          contentPadding: EdgeInsets.symmetric(vertical: 14),
-                          hintText: "ابحث عن مادة",
+                          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                          hintText: AppStrings.searchSubjectHint,
                           hintStyle: TextStyle(
                             fontSize: 13,
                             color: AppColor.textSecondary,
@@ -121,7 +122,7 @@ class LibraryScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   children: [
                     _YearChip(
-                      label: "كل السنوات",
+                      label: AppStrings.allYears,
                       selected: controller.selectedYearId.value == null,
                       onTap: () => controller.selectedYearId.value = null,
                     ),
@@ -146,20 +147,20 @@ class LibraryScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   children: [
                     _FilterPill(
-                      label: "الكل",
+                      label: AppStrings.all,
                       selected: controller.filter.value == LibraryFilter.all,
                       onTap: () => controller.filter.value = LibraryFilter.all,
                     ),
                     const SizedBox(width: 8),
                     _FilterPill(
-                      label: "بطاقاتي",
+                      label: AppStrings.myCards,
                       selected: controller.filter.value == LibraryFilter.mine,
                       onTap: () =>
                           controller.filter.value = LibraryFilter.mine,
                     ),
                     const SizedBox(width: 8),
                     _FilterPill(
-                      label: "أنشأتها",
+                      label: AppStrings.createdByMe,
                       selected:
                           controller.filter.value == LibraryFilter.created,
                       onTap: () =>
@@ -174,9 +175,9 @@ class LibraryScreen extends StatelessWidget {
               child: Obx(() {
                 final subjects = controller.filteredSubjects;
                 if (subjects.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Text(
-                      "لا توجد مواد",
+                      AppStrings.noSubjects,
                       style: TextStyle(color: AppColor.textSecondary),
                     ),
                   );
@@ -309,7 +310,7 @@ class _SubjectCard extends StatelessWidget {
       onTap: () {
         if (subject.locked) {
           showSnackBarWidget(
-              message: "هذه المادة مقفلة، أدخل الكود لفتحها من القائمة");
+              message: AppStrings.subjectLockedHint);
           return;
         }
         if (isCardsDeck) {
@@ -369,7 +370,7 @@ class _SubjectCard extends StatelessWidget {
                             Icon(Icons.lock,
                                 size: 12, color: AppColor.textSecondary),
                             SizedBox(width: 3),
-                            Text("مقفل",
+                            Text(AppStrings.locked,
                                 style: TextStyle(
                                     fontSize: 10,
                                     color: AppColor.textSecondary)),
@@ -396,7 +397,7 @@ class _SubjectCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              "$total بطاقة",
+              AppStrings.cardsCount(total),
               style: const TextStyle(
                 fontSize: 11,
                 color: AppColor.textSecondary,

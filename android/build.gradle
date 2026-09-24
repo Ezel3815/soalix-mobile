@@ -9,6 +9,12 @@ rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
     afterEvaluate { project ->
+        // file_picker (11.0.0–11.0.3) ships Kotlin source but forgets to apply
+        // the Kotlin compiler plugin to itself, so its class never compiles.
+        // Force it on for that one module only.
+        if (project.name == "file_picker" && !project.plugins.hasPlugin("org.jetbrains.kotlin.android")) {
+            project.apply plugin: "org.jetbrains.kotlin.android"
+        }
         if (project.hasProperty('android')) {
             project.android {
                 if (namespace == null) {

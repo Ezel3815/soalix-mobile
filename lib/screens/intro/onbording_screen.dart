@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:upgrade/main.dart';
 import 'package:upgrade/resources.dart';
+import 'package:upgrade/strings.dart';
 import 'package:upgrade/screens/intro/second_page.dart';
 import 'package:upgrade/screens/intro/third_page.dart';
 
@@ -30,6 +31,8 @@ class OutBoordinagState extends State<OnBording> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView(
+        // Arabic UI: swiping should feel right-to-left, not left-to-right.
+        reverse: true,
         onPageChanged: (index) {
           setState(() {
             islastpage = index == 2;
@@ -96,8 +99,8 @@ class OutBoordinagState extends State<OnBording> {
                         // Navigator.of(context).pushReplacement(MaterialPageRoute(
                         //     builder: (context) => const Register()));
                       },
-                      child: const Text('Skip',
-                          style: TextStyle(
+                      child: Text(AppStrings.skip,
+                          style: const TextStyle(
                               fontSize: 18,
                               color: Colors.black,
              ))),
@@ -123,8 +126,8 @@ class OutBoordinagState extends State<OnBording> {
                             duration: const Duration(seconds: 1),
                             curve: Curves.easeInOut);
                       },
-                      child: const Text('Next',
-                          style: TextStyle(
+                      child: Text(AppStrings.next,
+                          style: const TextStyle(
                               fontSize: 18,
                               color: Colors.black,
                 ))),

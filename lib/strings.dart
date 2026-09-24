@@ -114,6 +114,14 @@ class AppStrings {
   static String get skip => _t("تخطي", "Skip");
   static String get next => _t("التالي", "Next");
 
+  // ===== Color picker =====
+  static String get chooseColor => _t("اختر اللون", "Choose Color");
+  static String get selectColor => _t("اختر اللون", "Select color");
+  static String get selectColorShade => _t("اختر درجة اللون", "Select color shade");
+  static String get primaryColorLabel => _t("أساسي", "Primary");
+  static String get accentColorLabel => _t("مميز", "Accent");
+  static String get ok => _t("موافق", "ok");
+
   // ===== Document screen =====
   static String get pdfFiles => _t("ملفات PDF", "PDF Files");
 

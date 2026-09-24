@@ -84,4 +84,14 @@ class AppStrings {
   // ===== Onboarding =====
   static String get skip => _t("تخطي", "Skip");
   static String get next => _t("التالي", "Next");
+
+  // ===== Card / study view =====
+  static String get showAnswer => _t("إظهار الإجابة", "Show Answer");
+  static String get hideAnswer => _t("إخفاء الإجابة", "Hide Answer");
+  static String get toggleMask => _t("إظهار/إخفاء القناع", "Toggle Mask");
+  static String get gradeAgain => _t("أعد", "Again");
+  static String get gradeHard => _t("صعب", "Hard");
+  static String get gradeGood => _t("جيد", "Good");
+  static String get gradeEasy => _t("سهل", "Easy");
+  static String get attachedFile => _t("ملف مرفق: \n", "Attached file: \n");
 }

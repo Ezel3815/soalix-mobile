@@ -136,7 +136,7 @@ class AddCardController extends GetxController {
 
   pickFile() async {
     showAppLoadingDialog();
-    final pickedFile = await FilePicker.platform.pickFiles(
+   final pickedFile = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf'],
       allowMultiple: false,

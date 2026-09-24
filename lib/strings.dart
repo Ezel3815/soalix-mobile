@@ -116,4 +116,32 @@ class AppStrings {
 
   // ===== Document screen =====
   static String get pdfFiles => _t("ملفات PDF", "PDF Files");
+
+  // ===== Drawer =====
+  static String get drawerHome => _t("الرئيسية", "Home");
+  static String get drawerFlashcards => _t("البطاقات", "Flashcards");
+  static String get drawerProgress => _t("التقدم", "Progress");
+  static String get drawerProfile => _t("الملف الشخصي", "Profile");
+  static String get enterCode => _t("إدخال الكود", "Enter Code");
+  static String get shareThisApp => _t("شارك التطبيق", "Share This App");
+  static String get helpFeedback => _t("المساعدة والملاحظات", "Help & Feedback");
+  static String get logOut => _t("تسجيل الخروج", "Log Out");
+
+  // ===== Profile screen (misc) =====
+  static String get changePhoto => _t("تغيير الصورة", "Change Photo");
+  static String get editProfile => _t("تعديل الملف الشخصي", "EDIT PROFILE");
+  static String joinedOn(String month, int year) =>
+      _t("انضم في $month $year", "Joined $month $year");
+  static String get monthJanuary => _t("يناير", "January");
+  static String get monthFebruary => _t("فبراير", "February");
+  static String get monthMarch => _t("مارس", "March");
+  static String get monthApril => _t("أبريل", "April");
+  static String get monthMay => _t("مايو", "May");
+  static String get monthJune => _t("يونيو", "June");
+  static String get monthJuly => _t("يوليو", "July");
+  static String get monthAugust => _t("أغسطس", "August");
+  static String get monthSeptember => _t("سبتمبر", "September");
+  static String get monthOctober => _t("أكتوبر", "October");
+  static String get monthNovember => _t("نوفمبر", "November");
+  static String get monthDecember => _t("ديسمبر", "December");
 }

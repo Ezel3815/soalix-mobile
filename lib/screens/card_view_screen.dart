@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:upgrade/strings.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
@@ -9,7 +10,6 @@ import 'package:upgrade/api.dart';
 import 'package:upgrade/controllers/card_view_controller.dart';
 import 'package:upgrade/entity/shape_creator_entity.dart';
 import 'package:upgrade/resources.dart';
-import 'package:upgrade/strings.dart';
 import 'package:upgrade/widgets/app_image.dart';
 import 'package:upgrade/widgets/download_dialog.dart';
 
@@ -316,9 +316,7 @@ class CardViewScreen extends GetView<CardViewController> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          controller.showAnswer
-                              ? AppStrings.hideAnswer
-                              : AppStrings.showAnswer,
+                          controller.showAnswer ? AppStrings.hideAnswer : AppStrings.showAnswer,
                           style: const TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w600,
@@ -378,7 +376,7 @@ class CardViewScreen extends GetView<CardViewController> {
                                 children: [
                                   Expanded(
                                     child: _GradeButton(
-                                      label: AppStrings.gradeAgain,
+                                      label: AppStrings.again,
                                       color: const Color(0xFFE4574C),
                                       textColor: Colors.white,
                                       onTap: () => controller
@@ -388,7 +386,7 @@ class CardViewScreen extends GetView<CardViewController> {
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: _GradeButton(
-                                      label: AppStrings.gradeHard,
+                                      label: AppStrings.hard,
                                       color: const Color(0xFFE8A33D),
                                       textColor: Colors.white,
                                       onTap: () => controller
@@ -398,7 +396,7 @@ class CardViewScreen extends GetView<CardViewController> {
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: _GradeButton(
-                                      label: AppStrings.gradeGood,
+                                      label: AppStrings.good,
                                       color: AppColor.greenColor,
                                       textColor: Colors.white,
                                       onTap: () => controller
@@ -408,7 +406,7 @@ class CardViewScreen extends GetView<CardViewController> {
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: _GradeButton(
-                                      label: AppStrings.gradeEasy,
+                                      label: AppStrings.easy,
                                       color: AppColor.lightGreenColor,
                                       textColor: AppColor.textPrimary,
                                       onTap: () => controller
@@ -515,7 +513,7 @@ class _StudyProgress extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                left == 0 ? 'الأخيرة' : 'متبقي $left',
+                left == 0 ? AppStrings.lastCard : AppStrings.remaining(left),
                 style: const TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w600,

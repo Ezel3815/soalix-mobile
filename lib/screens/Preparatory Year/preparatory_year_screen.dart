@@ -41,6 +41,7 @@ class PreparatoryYear extends StatelessWidget {
                         Icons.arrow_back,
                         size: 26,
                         color: AppColor.textPrimary,
+                        matchTextDirection: true,
                       ),
                     ),
                     const SizedBox(width: 10),

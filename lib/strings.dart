@@ -113,4 +113,7 @@ class AppStrings {
   // ===== Onboarding =====
   static String get skip => _t("تخطي", "Skip");
   static String get next => _t("التالي", "Next");
+
+  // ===== Document screen =====
+  static String get pdfFiles => _t("ملفات PDF", "PDF Files");
 }

@@ -79,9 +79,7 @@ class _FollowListScreenState extends State<FollowListScreen> {
                     onPressed: Get.back,
                     icon: const Icon(Icons.arrow_back_ios_new_rounded,
                         size: 20,
-                        color: AppColor.textPrimary,
-                        // Real "back" navigation: mirror for RTL.
-                        matchTextDirection: true),
+                        color: AppColor.textPrimary),
                   ),
                   Expanded(
                     child: Column(

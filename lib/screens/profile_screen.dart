@@ -9,6 +9,7 @@ import 'package:upgrade/entity/profile_entity.dart';
 import 'package:upgrade/main.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
+import 'package:upgrade/strings.dart';
 import 'package:upgrade/widgets/app_image.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -34,11 +35,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String _formatJoined(DateTime? date) {
     if (date == null) return "";
-    const months = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
-    ];
-    return "Joined ${months[date.month - 1]} ${date.year}";
+    final months = AppStrings.months;
+    return "${AppStrings.joined} ${months[date.month - 1]} ${date.year}";
   }
 
   @override
@@ -59,7 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (profile == null) {
             return const Center(
               child: Text(
-                "Couldn't load profile",
+                AppStrings.couldntLoadProfile,
                 style: TextStyle(color: AppColor.textSecondary),
               ),
             );
@@ -213,8 +211,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             color: Colors.white,
                                           ),
                                     const SizedBox(width: 6),
-                                    const Text(
-                                      "Change Photo",
+                                    Text(
+                                      AppStrings.changePhoto,
                                       style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
@@ -280,7 +278,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       PhosphorIconsStyle.fill),
                                   iconColor: AppColor.warningColor,
                                   value: "${profile.currentStreak}",
-                                  label: "Streak",
+                                  label: AppStrings.streak,
                                 ),
                                 Container(
                                     width: 1,
@@ -295,7 +293,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         horizontal: 10, vertical: 4),
                                     child: _StatItem(
                                       value: "${profile.followingCount}",
-                                      label: "Following",
+                                      label: AppStrings.following,
                                     ),
                                   ),
                                 ),
@@ -312,7 +310,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         horizontal: 10, vertical: 4),
                                     child: _StatItem(
                                       value: "${profile.followersCount}",
-                                      label: "Followers",
+                                      label: AppStrings.followers,
                                     ),
                                   ),
                                 ),
@@ -338,8 +336,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   BorderRadius.circular(16),
                                             ),
                                           ),
-                                          child: const Text(
-                                            "EDIT PROFILE",
+                                          child: Text(
+                                            AppStrings.editProfile,
                                             style: TextStyle(
                                               fontSize: 13,
                                               fontWeight: FontWeight.w700,
@@ -383,10 +381,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               ],
                                               Text(
                                                 profile.isFriend
-                                                    ? "FRIENDS"
+                                                    ? AppStrings.friends
                                                     : profile.isFollowing
-                                                        ? "FOLLOWING"
-                                                        : "FOLLOW",
+                                                        ? AppStrings
+                                                            .followingButton
+                                                        : AppStrings.follow,
                                                 style: TextStyle(
                                                   fontSize: 13,
                                                   fontWeight: FontWeight.w700,

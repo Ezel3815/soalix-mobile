@@ -35,11 +35,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String _formatJoined(DateTime? date) {
     if (date == null) return "";
-    const months = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
+    final months = [
+      AppStrings.monthJanuary, AppStrings.monthFebruary, AppStrings.monthMarch,
+      AppStrings.monthApril, AppStrings.monthMay, AppStrings.monthJune,
+      AppStrings.monthJuly, AppStrings.monthAugust, AppStrings.monthSeptember,
+      AppStrings.monthOctober, AppStrings.monthNovember, AppStrings.monthDecember
     ];
-    return "Joined ${months[date.month - 1]} ${date.year}";
+    return AppStrings.joinedOn(months[date.month - 1], date.year);
   }
 
   @override
@@ -214,9 +216,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             color: Colors.white,
                                           ),
                                     const SizedBox(width: 6),
-                                    const Text(
-                                      "Change Photo",
-                                      style: TextStyle(
+                                    Text(
+                                      AppStrings.changePhoto,
+                                      style: const TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
                                         color: Colors.white,
@@ -339,9 +341,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   BorderRadius.circular(16),
                                             ),
                                           ),
-                                          child: const Text(
-                                            "EDIT PROFILE",
-                                            style: TextStyle(
+                                          child: Text(
+                                            AppStrings.editProfile,
+                                            style: const TextStyle(
                                               fontSize: 13,
                                               fontWeight: FontWeight.w700,
                                               color: AppColor.greenColor,

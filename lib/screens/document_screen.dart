@@ -11,6 +11,7 @@ import 'package:upgrade/di.dart';
 import 'package:upgrade/network_info.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/screens/app_drawer.dart';
+import 'package:upgrade/strings.dart';
 import 'package:upgrade/widgets/app_snack_bar.dart';
 import 'package:upgrade/widgets/download_dialog.dart';
 import 'package:upgrade/widgets/tablet_bounded.dart';
@@ -69,7 +70,7 @@ class DocumentScreen extends GetView<DocumentController> {
                           'lib/assests/images/logodeck.png',
                         ),
                         Text(
-                          "PDF Files",
+                          AppStrings.pdfFiles,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,

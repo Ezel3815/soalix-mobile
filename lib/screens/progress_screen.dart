@@ -9,6 +9,9 @@ import 'package:upgrade/screens/app_drawer.dart';
 import 'package:upgrade/widgets/app_image.dart';
 import 'package:upgrade/widgets/mozaik_mark_icon.dart';
 import 'package:upgrade/widgets/tablet_bounded.dart';
+import 'package:upgrade/controllers/mosaic_controller.dart';
+import 'package:upgrade/widgets/mosaic/mosaic_artwork.dart';
+import 'package:upgrade/main.dart' show AppRoutes;
 
 const List<Color> _subjectAccentColors = [
   AppColor.greenColor,
@@ -57,6 +60,8 @@ class ProgressScreen extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 18),
+            const _MosaicTeaser(),
             const SizedBox(height: 18),
             Obx(
               () => Row(
@@ -641,5 +646,91 @@ class _SummaryStat extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+/// Compact hero teaser: real artwork thumbnail + "N/100", linking to the
+/// full mosaic screen. Deliberately small here — the full premium
+/// experience lives on its own screen (see mosaic_screen.dart).
+class _MosaicTeaser extends StatefulWidget {
+  const _MosaicTeaser();
+
+  @override
+  State<_MosaicTeaser> createState() => _MosaicTeaserState();
+}
+
+class _MosaicTeaserState extends State<_MosaicTeaser> {
+  late final MosaicController _c;
+
+  @override
+  void initState() {
+    super.initState();
+    _c = Get.isRegistered<MosaicController>()
+        ? Get.find<MosaicController>()
+        : Get.put(MosaicController());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final state = _c.state.value;
+      final geometry = _c.geometry.value;
+      if (state == null || geometry == null || state.status == 'timezone_required') {
+        return const SizedBox.shrink();
+      }
+      return InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: () => Get.toNamed(AppRoutes.mosaicRoute),
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: const Color(0xFFEDE6D6)),
+          ),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 64,
+                height: 64,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: MosaicArtwork(
+                    geometry: geometry,
+                    ownedPieceIds: _c.ownedPieceIds,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "لوحتك الفسيفسائية",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: AppColor.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "${state.piecesEarned} / ${state.totalPieces}",
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColor.greenColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_left, color: AppColor.textSecondary),
+            ],
+          ),
+        ),
+      );
+    });
   }
 }

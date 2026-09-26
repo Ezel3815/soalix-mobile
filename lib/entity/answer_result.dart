@@ -1,3 +1,5 @@
+import 'mosaic_entity.dart';
+
 class AnswerResult {
   final bool leveledUp;
   final int? newLevel;
@@ -6,6 +8,7 @@ class AnswerResult {
   final bool chapterCompleted;
   final String? chapterTitle;
   final List<String> newAchievements;
+  final MosaicAward? mosaic;
 
   AnswerResult({
     required this.leveledUp,
@@ -15,6 +18,7 @@ class AnswerResult {
     required this.chapterCompleted,
     this.chapterTitle,
     this.newAchievements = const [],
+    this.mosaic,
   });
 
   factory AnswerResult.fromJson(Map<String, dynamic> json) {
@@ -28,6 +32,10 @@ class AnswerResult {
       newAchievements: json['newAchievements'] != null
           ? List<String>.from(json['newAchievements'])
           : [],
+      // Older server responses (or the timezone_required state) omit this —
+      // absence must never be treated as "no piece earned" by mistake, so
+      // callers check `mosaic?.newPieces` rather than assuming a value.
+      mosaic: MosaicAward.tryParse(json['mosaic']),
     );
   }
 

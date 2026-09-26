@@ -1,0 +1,236 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:upgrade/controllers/mosaic_controller.dart';
+import 'package:upgrade/entity/mosaic_entity.dart';
+import 'package:upgrade/resources.dart';
+import 'package:upgrade/widgets/mosaic/mosaic_artwork.dart';
+import 'package:upgrade/widgets/mosaic/mosaic_reveal_overlay.dart';
+import 'package:upgrade/widgets/tablet_bounded.dart';
+
+/// The premium mosaic hero screen: "I'm building this." The artwork stays
+/// the visual focus — no dashboard chrome, no confetti, nothing gamified.
+class MosaicScreen extends StatefulWidget {
+  const MosaicScreen({super.key});
+
+  @override
+  State<MosaicScreen> createState() => _MosaicScreenState();
+}
+
+class _MosaicScreenState extends State<MosaicScreen> {
+  final _artworkKey = GlobalKey();
+  late final MosaicController _c;
+  bool _revealing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _c = Get.isRegistered<MosaicController>()
+        ? Get.find<MosaicController>()
+        : Get.put(MosaicController());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybePlayReveal());
+  }
+
+  Future<void> _maybePlayReveal() async {
+    if (_revealing || _c.pendingReveal.isEmpty || _c.geometry.value == null) return;
+    final box = _artworkKey.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null || !box.hasSize) {
+      // Artwork not laid out yet (e.g. still loading state) — retry next frame.
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      if (mounted) _maybePlayReveal();
+      return;
+    }
+    _revealing = true;
+    final rect = box.localToGlobal(Offset.zero) & box.size;
+    // Fire pending pieces one at a time so each flight is legible.
+    while (_c.pendingReveal.isNotEmpty) {
+      final piece = _c.pendingReveal.first;
+      final geo = _c.geometry.value!.pieces[piece.pieceId];
+      if (geo == null) {
+        _c.markRevealed(piece);
+        continue;
+      }
+      await showMosaicPieceReveal(
+        context,
+        piece: geo,
+        sourceCenter: rect.center, // reward "source": the artwork's own center
+        artworkRect: rect,
+        canvasWidth: _c.geometry.value!.canvasWidth,
+      );
+      _c.markRevealed(piece);
+      await Future<void>.delayed(const Duration(milliseconds: 120));
+    }
+    _revealing = false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColor.scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: AppColor.scaffoldBackgroundColor,
+        elevation: 0,
+        title: const Text(
+          "لوحتك الفسيفسائية",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: AppColor.textPrimary,
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: TabletBounded(
+          child: Obx(() {
+            final state = _c.state.value;
+            final geometry = _c.geometry.value;
+            if (_c.loading.value && state == null) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (state == null || geometry == null) {
+              return const Center(child: Text("تعذر تحميل اللوحة"));
+            }
+            WidgetsBinding.instance.addPostFrameCallback((_) => _maybePlayReveal());
+            return ListView(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 30),
+              children: [
+                Text(
+                  "Garden by the Sea",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: AppColor.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "${state.piecesEarned} / ${state.totalPieces}",
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: AppColor.greenColor,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                MosaicArtwork(
+                  key: _artworkKey,
+                  geometry: geometry,
+                  ownedPieceIds: _c.ownedPieceIds,
+                ),
+                const SizedBox(height: 24),
+                if (state.today != null) _TodayProgress(today: state.today!),
+                const SizedBox(height: 20),
+                ...state.chests.map((chest) => _ChestRow(chest: chest, onClaim: () => _c.claimChest(chest.id))),
+              ],
+            );
+          }),
+        ),
+      ),
+    );
+  }
+}
+
+class _TodayProgress extends StatelessWidget {
+  final MosaicToday today;
+  const _TodayProgress({required this.today});
+
+  @override
+  Widget build(BuildContext context) {
+    Widget step(String label, bool done) => Row(
+          children: [
+            Icon(
+              done ? Icons.check_circle : Icons.circle_outlined,
+              size: 18,
+              color: done ? AppColor.greenColor : AppColor.textSecondary,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                color: done ? AppColor.textPrimary : AppColor.textSecondary,
+                fontWeight: done ? FontWeight.w700 : FontWeight.w500,
+              ),
+            ),
+          ],
+        );
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFEDE6D6)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "تقدم اليوم",
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColor.textPrimary),
+              ),
+              Text(
+                "${today.stepsDone} / 3",
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColor.greenColor),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          step("دراسة", today.study.done),
+          const SizedBox(height: 8),
+          step("إتقان", today.mastery.done),
+          const SizedBox(height: 8),
+          step("تحدي", today.challenge.done),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChestRow extends StatelessWidget {
+  final MosaicChest chest;
+  final VoidCallback onClaim;
+  const _ChestRow({required this.chest, required this.onClaim});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: chest.claimed ? const Color(0xFFF6F1E7) : Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFEDE6D6)),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              chest.claimed ? Icons.lock_open : Icons.card_giftcard,
+              color: chest.ready ? const Color(0xFFD8B65A) : AppColor.textSecondary,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                "صندوق الأسبوع ${chest.index} — يوم ${chest.unlockDay}",
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColor.textPrimary),
+              ),
+            ),
+            if (chest.claimed)
+              const Text("تم الفتح", style: TextStyle(fontSize: 13, color: AppColor.textSecondary))
+            else if (chest.ready)
+              TextButton(
+                onPressed: onClaim,
+                child: const Text("افتح", style: TextStyle(fontWeight: FontWeight.w700)),
+              )
+            else
+              Text("${chest.pieces} قطع", style: const TextStyle(fontSize: 13, color: AppColor.textSecondary)),
+          ],
+        ),
+      ),
+    );
+  }
+}

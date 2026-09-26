@@ -34,6 +34,7 @@ import 'package:upgrade/screens/profile_screen.dart';
 import 'package:upgrade/screens/search_users_screen.dart';
 import 'package:upgrade/screens/session_result_screen.dart';
 import 'package:upgrade/screens/notification_settings_screen.dart';
+import 'package:upgrade/screens/mosaic_screen.dart';
 import 'package:upgrade/services/notification_service.dart';
 import 'package:upgrade/services/push_service.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -263,6 +264,7 @@ class AppRoutes {
   static const String createDeckRoute = "/createDeckRoute";
   static const String sessionResultRoute = "/sessionResultRoute";
   static const String notificationSettingsRoute = "/notificationSettingsRoute";
+  static const String mosaicRoute = "/mosaicRoute";
 
   static final List<GetPage> pages = [
     GetPage(name: searchUsersRoute, page: () => const SearchUsersScreen()),
@@ -362,6 +364,10 @@ class AppRoutes {
     GetPage(
       name: notificationSettingsRoute,
       page: () => const NotificationSettingsScreen(),
+    ),
+    GetPage(
+      name: mosaicRoute,
+      page: () => const MosaicScreen(),
     ),
     GetPage(
       name: mainRoute,

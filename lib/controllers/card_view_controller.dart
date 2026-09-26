@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:upgrade/controllers/api_controller.dart';
 import 'package:upgrade/controllers/card_controller.dart';
 import 'package:upgrade/controllers/years_controller.dart';
+import 'package:upgrade/controllers/mosaic_controller.dart';
 import 'package:upgrade/entity/card_entity.dart';
 import 'package:upgrade/entity/shape_creator_entity.dart';
 import 'package:upgrade/extension.dart';
@@ -275,6 +276,17 @@ class CardViewController extends GetxController {
     final result = await ApiController.answerCard(
         cardID: cards[pageViewIndex].id, answer: answer);
     if (result != null) showCelebration(result);
+    // Queued (not shown inline here) because the LAST card's answer resolves
+    // AFTER _goToSessionResult() has already navigated away. The mosaic
+    // screen/result screen read this reactively, so the piece is never lost
+    // regardless of that ordering, and it's already persisted server-side
+    // either way.
+    if (result?.mosaic != null) {
+      (Get.isRegistered<MosaicController>()
+              ? Get.find<MosaicController>()
+              : Get.put(MosaicController()))
+          .handleAward(result!.mosaic);
+    }
     if (Get.isRegistered<CardController>()) {
       Get.find<CardController>().getCard();
     }

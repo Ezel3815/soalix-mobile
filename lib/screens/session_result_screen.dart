@@ -6,6 +6,7 @@ import 'package:upgrade/entity/card_entity.dart';
 import 'package:upgrade/main.dart';
 import 'package:upgrade/resources.dart';
 import 'package:upgrade/widgets/tablet_bounded.dart';
+import 'package:upgrade/controllers/mosaic_controller.dart';
 
 /// Shown after finishing every card in a study session. Reads its data
 /// straight from the arguments CardViewController passes when the last
@@ -187,6 +188,43 @@ class _SessionResultScreenState extends State<SessionResultScreen>
                     opacity: _contentFade,
                     child: Column(
                       children: [
+                        Obx(() {
+                          final mosaic = Get.isRegistered<MosaicController>()
+                              ? Get.find<MosaicController>()
+                              : Get.put(MosaicController());
+                          final earned = mosaic.pendingReveal;
+                          if (earned.isEmpty) return const SizedBox.shrink();
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 52,
+                              child: OutlinedButton.icon(
+                                onPressed: () =>
+                                    Get.toNamed(AppRoutes.mosaicRoute),
+                                icon: const Icon(Icons.auto_awesome,
+                                    color: Color(0xFFD8B65A)),
+                                label: Text(
+                                  earned.length == 1
+                                      ? "لقد ربحت قطعة جديدة من لوحتك! شاهد لوحتك الفسيفسائية"
+                                      : "لقد ربحت ${earned.length} قطع جديدة! شاهد لوحتك الفسيفسائية",
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColor.textPrimary,
+                                  ),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(
+                                      color: Color(0xFFD8B65A)),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
                         if (mistakes.isNotEmpty) ...[
                           SizedBox(
                             width: double.infinity,

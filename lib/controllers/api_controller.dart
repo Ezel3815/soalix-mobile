@@ -17,6 +17,7 @@ import 'package:upgrade/entity/document_entity.dart';
 import 'package:upgrade/entity/achievement.dart';
 import 'package:upgrade/entity/activity_feed_item.dart';
 import 'package:upgrade/entity/answer_result.dart';
+import 'package:upgrade/entity/mosaic_entity.dart';
 import 'package:upgrade/entity/daily_mission.dart';
 import 'package:upgrade/entity/leaderboard_entry.dart';
 import 'package:upgrade/entity/profile_entity.dart';
@@ -1070,6 +1071,72 @@ class ApiController {
       }
     }
     return null;
+  }
+
+  /// Opens a mosaic weekly chest (ids like "mosaic_chest_1"). Reuses the
+  /// quest-chest endpoint server-side, but the response also carries the
+  /// awarded mosaic pieces, so it's parsed separately from claimQuestChest().
+  static Future<MosaicAward?> claimMosaicChest(String id) async {
+    try {
+      final response = await dio.post(
+        Api.claimQuest,
+        data: {'id': id},
+        options: GetOptions.getOptions(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return MosaicAward.tryParse(response.data['mosaic']);
+      }
+    } catch (e) {
+      showSnackBarWidget(
+          message: ErrorHandler.handle(e).failure.message ?? "");
+    }
+    return null;
+  }
+
+  /// Read-only: never awards anything, so refreshing/reopening is always safe.
+  static Future<MosaicState?> getMosaic() async {
+    try {
+      final response = await dio.get(
+        Api.mosaic,
+        options: GetOptions.getOptions(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return MosaicState.fromJson(response.data);
+      }
+    } catch (e) {
+      if (ErrorHandler.handle(e).failure.code != -6) {
+        log(e.toString());
+      }
+    }
+    return null;
+  }
+
+  /// Acks that the reveal animation played for these pieces, so it doesn't
+  /// replay on next open. Best-effort — losing this ack just replays once.
+  static Future<void> ackMosaicReveal(List<int> pieceIds) async {
+    try {
+      await dio.post(
+        Api.mosaicReveal,
+        data: {'pieceIds': pieceIds},
+        options: GetOptions.getOptions(),
+      );
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  static Future<bool> updateTimezone(String timezone) async {
+    try {
+      final response = await dio.put(
+        Api.updateTimezone,
+        data: {'timezone': timezone},
+        options: GetOptions.getOptions(),
+      );
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
+      log(e.toString());
+      return false;
+    }
   }
 
   static Future<QuestsData?> getQuests() async {
